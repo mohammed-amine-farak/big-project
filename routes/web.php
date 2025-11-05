@@ -55,7 +55,9 @@ Route::get('/lesson-reports/{lesson_report}', [teacher_report::class, 'show'])->
 Route::put('/lesson-reports/{lesson_report}', [teacher_report::class, 'update'])->name('lesson-reports.update');
 
 Route::get('/admine-reports', [admine_report_controller::class, 'index'])->name('admine_report.index');
-
+Route::get('/admine-reports/{id}', [admine_report_controller::class, 'show'])->name('admine_report.show');
+Route::put('/admin-reports/{id}/response', [admine_report_controller::class, 'updateResponse'])
+->name('admin-reports.update-response');
 
 
 
