@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('skill_id'); 
             $table->string('level_name')->unique();
-            $table->text('level_description')->unique();
+            $table->string('level_description',500)->unique();
             $table->foreign('skill_id')->references('id')->on('skills')->onDelete('cascade');
             $table->timestamps();
         });
