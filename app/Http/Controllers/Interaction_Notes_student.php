@@ -56,7 +56,7 @@ class Interaction_Notes_student extends Controller
         Interaction_Notes_students::create([
             'student_id' => $validatedData['student_id'],
             'lesson_id' => $validatedData['lesson_id'],
-            'teacher_id' => 1, // Get the ID of the authenticated user
+            'teacher_id' => 2, // Get the ID of the authenticated user
             'note_content' => $validatedData['note_content'],
         ]);
 

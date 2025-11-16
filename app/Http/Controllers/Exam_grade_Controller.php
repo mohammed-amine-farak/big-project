@@ -73,7 +73,7 @@ class Exam_grade_Controller extends Controller
         $report->exam_note = $validatedData['exam_note'];
         
         // Assign the currently authenticated teacher's ID
-        $report->teacher_id = 1;
+        $report->teacher_id = 2;
 
         // 4. Save the new report to the database
         $report->save();

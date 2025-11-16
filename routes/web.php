@@ -86,9 +86,6 @@ Route::post('/create_progress/store',[Progress_Controller::class,'store'])->name
 Route::get('/create_progress/delete/{studentLessonProgress}',[Progress_Controller::class,'delete'])->name('student_progress.delete');
 
 
-
-
-
 Route::get('/Interaction_Notes_student',[Interaction_Notes_student::class,'index'])->name('Interaction_Notes_student.index');
 Route::get('/Interaction_Notes_student/create',[Interaction_Notes_student::class,'create'])->name('Interaction_Notes_student.create');
 Route::post('/Interaction_Notes_student/store',[Interaction_Notes_student::class,'store'])->name('Interaction_Notes_student.store');
@@ -97,13 +94,6 @@ Route::delete('/Interaction_Notes_student/{delete}',[Interaction_Notes_student::
 Route::get('/Interaction_Notes_student/{Interaction_Notes_students}',[Interaction_Notes_student::class,'update'])->name('Interaction_Notes_student.update');
 Route::put('/Interaction_Notes_student/edit/{edit}',[Interaction_Notes_student::class,'edit'])->name('Interaction_Notes_student.edit');
 
-Route::get('/exam_weeckly',[exam_weeckly_Controller::class,'index'])->name('exam_weeckly.index');
-Route::get('exam_weeklies/create', [exam_weeckly_Controller::class, 'create'])->name('exam_weeklies.create');
-Route::post('exam_weeklies', [exam_weeckly_Controller::class, 'store'])->name('exam_weeklies.store');
-Route::post('/get-classrooms-by-subject', [exam_weeckly_Controller::class, 'getClassroomsBySubject'])->name('get.classrooms.by.subject');
-Route::get('/exam_weeklies/{id}/edit', [exam_weeckly_Controller::class, 'edit'])->name('exam_weeklies.edit');
-Route::put('/exam_weeklies/{id}', [exam_weeckly_Controller::class, 'update'])->name('exam_weeklies.update');
-Route::delete('/exam_weeklies/{id}', [exam_weeckly_Controller::class, 'destroy'])->name('exam_weeklies.destroy');
 
 Route::get('/Exam_Grade/index',[Exam_grade_Controller::class,'index'])->name('Exam_Grade.index');
 Route::get('/Exam_Grade/create',[Exam_grade_Controller::class,'create'])->name('Exam_Grade.create');
@@ -112,6 +102,16 @@ Route::get('/Exam_Grade/edit/{Exam_Grade}',[Exam_grade_Controller::class,'edit']
 Route::put('/Exam_Grade/update/{Exam_Grade}',[Exam_grade_Controller::class,'update'])->name('Exam_Grade.update');
 Route::get('/Exam_Grade/update_status/{Exam_Grade}',[Exam_grade_Controller::class,'update_status'])->name('Exam_Grade.update_status');
 
+
+
+
+Route::get('/exam_weeckly',[exam_weeckly_Controller::class,'index'])->name('exam_weeckly.index');
+Route::get('exam_weeklies/create', [exam_weeckly_Controller::class, 'create'])->name('exam_weeklies.create');
+Route::post('exam_weeklies', [exam_weeckly_Controller::class, 'store'])->name('exam_weeklies.store');
+Route::post('/get-classrooms-by-subject', [exam_weeckly_Controller::class, 'getClassroomsBySubject'])->name('get.classrooms.by.subject');
+Route::get('/exam_weeklies/{id}/edit', [exam_weeckly_Controller::class, 'edit'])->name('exam_weeklies.edit');
+Route::put('/exam_weeklies/{id}', [exam_weeckly_Controller::class, 'update'])->name('exam_weeklies.update');
+Route::delete('/exam_weeklies/{id}', [exam_weeckly_Controller::class, 'destroy'])->name('exam_weeklies.destroy');
 
 
 

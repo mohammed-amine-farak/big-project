@@ -268,7 +268,7 @@
                     </button>
                     <ul class="sidebar-submenu hidden space-y-1 pt-2 pl-8 border-r-2 border-green-500 mr-4">
                         <li>
-                            <a href="#" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                            <a href="{{route('student_progress.index')}}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
                                 <span class="relative">
                                     نسبة إنجاز الدروس
                                     <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
@@ -276,7 +276,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                            <a href="{{route('Interaction_Notes_student.index')}}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
                                 <span class="relative">
                                     ملاحظات التفاعل
                                     <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
@@ -300,7 +300,7 @@
                     </button>
                     <ul class="sidebar-submenu hidden space-y-1 pt-2 pl-8 border-r-2 border-purple-500 mr-4">
                         <li>
-                            <a href="#" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                            <a href="{{route('Exam_Grade.index')}}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
                                 <span class="relative">
                                     تصحيح الامتحانات
                                     <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
@@ -430,99 +430,7 @@
 
         <!-- Main Content Area -->
         <div class="flex-1 w-full p-4 sm:p-6 lg:p-8">
-            <div class="bg-white rounded-2xl shadow-lg p-6 animate-fade-in">
-                <h1 class="text-2xl font-bold text-gray-800 mb-6">مرحباً بك في لوحة تحكم المعلمين</h1>
-                
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-xl shadow-lg hover-lift">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-blue-100 text-sm">عدد التلاميذ</p>
-                                <p class="text-2xl font-bold mt-1">42</p>
-                            </div>
-                            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                                <i class="fas fa-users text-white text-xl"></i>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-xl shadow-lg hover-lift">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-green-100 text-sm">الدروس المكتملة</p>
-                                <p class="text-2xl font-bold mt-1">28</p>
-                            </div>
-                            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                                <i class="fas fa-book text-white text-xl"></i>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-xl shadow-lg hover-lift">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-purple-100 text-sm">الامتحانات المصححة</p>
-                                <p class="text-2xl font-bold mt-1">15</p>
-                            </div>
-                            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                                <i class="fas fa-check-circle text-white text-xl"></i>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-6 rounded-xl shadow-lg hover-lift">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-orange-100 text-sm">متوسط الدرجات</p>
-                                <p class="text-2xl font-bold mt-1">85%</p>
-                            </div>
-                            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                                <i class="fas fa-chart-bar text-white text-xl"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Recent Activity -->
-                <div class="bg-gray-50 rounded-xl p-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-4">النشاط الأخير</h2>
-                    <div class="space-y-4">
-                        <div class="flex items-center p-4 bg-white rounded-lg shadow-sm">
-                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center ml-4">
-                                <i class="fas fa-book text-blue-500"></i>
-                            </div>
-                            <div class="flex-1">
-                                <p class="font-medium text-gray-800">تم إنشاء درس جديد</p>
-                                <p class="text-sm text-gray-500">الرياضيات - الجبر للصف الخامس</p>
-                            </div>
-                            <span class="text-sm text-gray-500">منذ ساعتين</span>
-                        </div>
-                        
-                        <div class="flex items-center p-4 bg-white rounded-lg shadow-sm">
-                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center ml-4">
-                                <i class="fas fa-check text-green-500"></i>
-                            </div>
-                            <div class="flex-1">
-                                <p class="font-medium text-gray-800">تم تصحيح الامتحان</p>
-                                <p class="text-sm text-gray-500">امتحان نهاية الفصل - الصف الرابع</p>
-                            </div>
-                            <span class="text-sm text-gray-500">منذ 5 ساعات</span>
-                        </div>
-                        
-                        <div class="flex items-center p-4 bg-white rounded-lg shadow-sm">
-                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center ml-4">
-                                <i class="fas fa-comment text-purple-500"></i>
-                            </div>
-                            <div class="flex-1">
-                                <p class="font-medium text-gray-800">ملاحظة جديدة من الأخصائي</p>
-                                <p class="text-sm text-gray-500">بخصوص الطالب أحمد محمد</p>
-                            </div>
-                            <span class="text-sm text-gray-500">منذ يوم</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @yield('content')
         </div>
     </main>
 
