@@ -11,43 +11,80 @@ use Illuminate\Support\Facades\DB;
 
 class Exam_grade_Controller extends Controller
 {
-    public function index(){
-       // $users = DB::table('users')
-        //->join('contacts', 'users.id', '=', 'contacts.user_id')
-        //->join('orders', 'users.id', '=', 'orders.user_id')
-        //->select('users.*', 'contacts.phone', 'orders.price')
-        //->get();
-       
-       $exam_grade = DB::table('exam_schol_weeckly_reports')
-       ->join('students', 'exam_schol_weeckly_reports.student_id', '=', 'students.id')
-       ->join('users as student_users', 'students.id', '=', 'student_users.id')
-       ->join('teachers', 'exam_schol_weeckly_reports.teacher_id', '=', 'teachers.id')
-       ->join('users as teacher_users', 'teachers.id', '=', 'teacher_users.id')
-       ->join('exam_weecklies', 'exam_schol_weeckly_reports.exam_weecklies_id', '=', 'exam_weecklies.id')
-      
-       ->select(
-        'student_users.name AS student_name',
-        'student_users.id AS student_id',
-        'teacher_users.name AS teacher_name',
-        'exam_weecklies.title AS exam_weeckly_title',
-        'exam_schol_weeckly_reports.exam_total_point AS exam_weeckly_total_point',
-        'exam_schol_weeckly_reports.exam_note AS exam_weeckly_note',
-       'exam_schol_weeckly_reports.created_at AS created_at',
-        'exam_schol_weeckly_reports.id AS exam_schol_weeckly_reports_id', 
-        'exam_schol_weeckly_reports.STATUS AS exam_schol_weeckly_reports_STATUS'
+ 
 
+public function index(Request $request)
+{
+    $query = DB::table('exam_schol_weeckly_reports')
+        ->join('students', 'exam_schol_weeckly_reports.student_id', '=', 'students.id')
+        ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
+        ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
+        ->join('users as student_users', 'students.id', '=', 'student_users.id')
+        ->join('teachers', 'exam_schol_weeckly_reports.teacher_id', '=', 'teachers.id')
+        ->join('users as teacher_users', 'teachers.id', '=', 'teacher_users.id')
+        ->join('exam_weecklies', 'exam_schol_weeckly_reports.exam_weecklies_id', '=', 'exam_weecklies.id')
+        ->where('classrooms.teacher_id', 2)
+        ->select(
+            'student_users.name AS student_name',
+            'student_users.id AS student_id',
+            'teacher_users.name AS teacher_name',
+            'exam_weecklies.title AS exam_weeckly_title',
+            'exam_schol_weeckly_reports.exam_total_point AS exam_weeckly_total_point',
+            'exam_schol_weeckly_reports.exam_note AS exam_weeckly_note',
+            'exam_schol_weeckly_reports.created_at AS created_at',
+            'exam_schol_weeckly_reports.id AS exam_schol_weeckly_reports_id', 
+            'exam_schol_weeckly_reports.status AS exam_schol_weeckly_reports_STATUS',
+            'classrooms.id AS classroom_id',
+            'classrooms.class_name AS classroom_name'
+        );
 
-        
-    )->get();
-   
-
-
-        return view('teacher-dashboard.Academic_Reports\Exam_Grades\index',compact('exam_grade'));
+    // تطبيق التصفية حسب اسم الطالب
+    if ($request->filled('student_name')) {
+        $query->where('student_users.name', 'like', '%' . $request->student_name . '%');
     }
+
+    // تطبيق التصفية حسب الصف
+    if ($request->filled('classroom_id')) {
+        $query->where('classrooms.id', $request->classroom_id);
+    }
+
+    // تطبيق التصفية حسب حالة التقرير
+    if ($request->filled('status')) {
+        $query->where('exam_schol_weeckly_reports.status', $request->status);
+    }
+
+    $exam_grade = $query->get();
+
+    // جلب البيانات للتصفية
+    $students =  DB::table('exam_schol_weeckly_reports')
+        ->join('students', 'exam_schol_weeckly_reports.student_id', '=', 'students.id')
+        ->join('users as student_users', 'students.id', '=', 'student_users.id')
+        ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
+        ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
+        ->where('classrooms.teacher_id', 2)
+        ->select('student_users.name', 'students.id')
+        ->distinct()
+        ->get();
+      
+       
+    $classrooms = DB::table('exam_schol_weeckly_reports')
+        ->join('students', 'exam_schol_weeckly_reports.student_id', '=', 'students.id')
+        ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
+        ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
+        ->where('classrooms.teacher_id', 2)
+        ->select('classrooms.id', 'classrooms.class_name')
+        ->distinct()
+        ->get();
+
+    return view('teacher-dashboard.Academic_Reports.Exam_Grades.index', compact('exam_grade', 'students', 'classrooms'));
+}
     public function create(){
        $exam_weeckly = exam_weeckly::all();
       
-        $results = User::join('students', 'users.id', '=', 'students.id') // <-- CHANGED HERE
+        $results = User::join('students', 'users.id', '=', 'students.id')
+        ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
+        ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
+        ->where('classrooms.teacher_id', 2)
         ->select('users.name', 'students.*')
         ->get();
         
@@ -92,6 +129,7 @@ class Exam_grade_Controller extends Controller
         ->join('users as teacher_users', 'teachers.id', '=', 'teacher_users.id')
         ->join('exam_weecklies', 'exam_schol_weeckly_reports.exam_weecklies_id', '=', 'exam_weecklies.id')
         ->where('exam_schol_weeckly_reports.id',$Exam_Grade->id)
+        
         ->select(
          'student_users.name AS student_name',
          'student_users.id AS student_id',
@@ -107,9 +145,12 @@ class Exam_grade_Controller extends Controller
      )
      ->first();
       $exam_weeckly = exam_weeckly::all();
-      $results = User::join('students', 'users.id', '=', 'students.id') // <-- CHANGED HERE
-     ->select('users.name', 'students.*')
-     ->get();
+      $results = User::join('students', 'users.id', '=', 'students.id')
+        ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
+        ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
+        ->where('classrooms.teacher_id', 2)
+        ->select('users.name', 'students.*')
+        ->get();
      return view('teacher-dashboard.Academic_Reports\Exam_Grades\update',compact('exam_grade','exam_weeckly','results'));
     }
     public function update(exam_schol_weeckly_report $Exam_Grade , Request $request){
@@ -145,5 +186,9 @@ class Exam_grade_Controller extends Controller
         $Exam_Grade->save(); // Save the changes to the database
     
         return redirect()->back()->with('success', 'تم إرسال الملاحظة بنجاح.');
+    }
+    public function destroy(exam_schol_weeckly_report $Exam_Grade){
+        $Exam_Grade->delete();
+        return redirect()->back()->with('success', 'تم حدف الملاحظة بنجاح.');
     }
 }

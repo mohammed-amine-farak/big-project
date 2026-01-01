@@ -13,6 +13,8 @@ use App\Http\Controllers\exam_skills_level_Controller;
 use App\Http\Controllers\exam_weeckly_Controller;
 use App\Http\Controllers\teacher_report;
 use App\Http\Controllers\admine_report_controller;
+use App\Http\Controllers\StudentPsychologyController;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 
 Route::get('/exam/create', [exam_Controller::class, 'create'])->name('exam.create');
 Route::post('/exam/store', [exam_Controller::class, 'store'])->name('exam.store');
@@ -80,31 +82,6 @@ Route::delete('/rules/{rule}/examples/{example}', [ruleExampleController::class,
 Route::get('/rules_Example/{example}/rules/{rule}/edit',[ruleExampleController::class,'edit'])->name('Example.edit');
 Route::put('/rules_Example/{example}/rules/{rule}/update',[ruleExampleController::class,'update'])->name('Example.update');
 
-Route::get('/student_progress',[Progress_Controller::class,'index'])->name('student_progress.index');
-Route::get('/create_progress',[Progress_Controller::class,'create'])->name('student_progress.create');
-Route::post('/create_progress/store',[Progress_Controller::class,'store'])->name('student_progress.store');
-Route::get('/create_progress/delete/{studentLessonProgress}',[Progress_Controller::class,'delete'])->name('student_progress.delete');
-
-
-Route::get('/Interaction_Notes_student',[Interaction_Notes_student::class,'index'])->name('Interaction_Notes_student.index');
-Route::get('/Interaction_Notes_student/create',[Interaction_Notes_student::class,'create'])->name('Interaction_Notes_student.create');
-Route::post('/Interaction_Notes_student/store',[Interaction_Notes_student::class,'store'])->name('Interaction_Notes_student.store');
-Route::put('/Interaction_Notes_student/{send}',[Interaction_Notes_student::class,'send'])->name('Interaction_Notes_student.send');
-Route::delete('/Interaction_Notes_student/{delete}',[Interaction_Notes_student::class,'delete'])->name('Interaction_Notes_student.delete');
-Route::get('/Interaction_Notes_student/{Interaction_Notes_students}',[Interaction_Notes_student::class,'update'])->name('Interaction_Notes_student.update');
-Route::put('/Interaction_Notes_student/edit/{edit}',[Interaction_Notes_student::class,'edit'])->name('Interaction_Notes_student.edit');
-
-
-Route::get('/Exam_Grade/index',[Exam_grade_Controller::class,'index'])->name('Exam_Grade.index');
-Route::get('/Exam_Grade/create',[Exam_grade_Controller::class,'create'])->name('Exam_Grade.create');
-Route::post('/Exam_Grade/store',[Exam_grade_Controller::class,'store'])->name('Exam_Grade.store');
-Route::get('/Exam_Grade/edit/{Exam_Grade}',[Exam_grade_Controller::class,'edit'])->name('Exam_Grade.edit');
-Route::put('/Exam_Grade/update/{Exam_Grade}',[Exam_grade_Controller::class,'update'])->name('Exam_Grade.update');
-Route::get('/Exam_Grade/update_status/{Exam_Grade}',[Exam_grade_Controller::class,'update_status'])->name('Exam_Grade.update_status');
-
-
-
-
 Route::get('/exam_weeckly',[exam_weeckly_Controller::class,'index'])->name('exam_weeckly.index');
 Route::get('exam_weeklies/create', [exam_weeckly_Controller::class, 'create'])->name('exam_weeklies.create');
 Route::post('exam_weeklies', [exam_weeckly_Controller::class, 'store'])->name('exam_weeklies.store');
@@ -137,7 +114,50 @@ Route::delete('skills/{id}', [skille_level_Controller::class, 'destroy'])->name(
 
 
 
-Route::get('class', function () {
+
+//techer routes
+
+Route::get('/Interaction_Notes_student',[Interaction_Notes_student::class,'index'])->name('Interaction_Notes_student.index');
+Route::get('/Interaction_Notes_student/create',[Interaction_Notes_student::class,'create'])->name('Interaction_Notes_student.create');
+Route::post('/Interaction_Notes_student/store',[Interaction_Notes_student::class,'store'])->name('Interaction_Notes_student.store');
+Route::put('/Interaction_Notes_student/{send}',[Interaction_Notes_student::class,'send'])->name('Interaction_Notes_student.send');
+Route::delete('/Interaction_Notes_student/{delete}',[Interaction_Notes_student::class,'delete'])->name('Interaction_Notes_student.delete');
+Route::get('/Interaction_Notes_student/{Interaction_Notes_students}',[Interaction_Notes_student::class,'update'])->name('Interaction_Notes_student.update');
+Route::put('/Interaction_Notes_student/edit/{edit}',[Interaction_Notes_student::class,'edit'])->name('Interaction_Notes_student.edit');
+
+
+Route::get('/Exam_Grade/index',[Exam_grade_Controller::class,'index'])->name('Exam_Grade.index');
+Route::get('/Exam_Grade/create',[Exam_grade_Controller::class,'create'])->name('Exam_Grade.create');
+Route::post('/Exam_Grade/store',[Exam_grade_Controller::class,'store'])->name('Exam_Grade.store');
+Route::get('/Exam_Grade/edit/{Exam_Grade}',[Exam_grade_Controller::class,'edit'])->name('Exam_Grade.edit');
+Route::put('/Exam_Grade/update/{Exam_Grade}',[Exam_grade_Controller::class,'update'])->name('Exam_Grade.update');
+Route::put('/Exam_Grade/update_status/{Exam_Grade}',[Exam_grade_Controller::class,'update_status'])->name('Exam_Grade.update_status');
+Route::delete('/Exam_Grade/destroy/{Exam_Grade}',[Exam_grade_Controller::class,'destroy'])->name('Exam_Grade.destroy');
+
+
+
+Route::get('/StudentPsychology',[StudentPsychologyController::class,'index'])->name('StudentPsychology.index');
+Route::get('/StudentPsychology/{student_psychology}', [StudentPsychologyController::class, 'show'])
+     ->name('StudentPsychology.show');
+Route::put('/StudentPsychology/{student_psychology}/status', [StudentPsychologyController::class, 'updateStatus'])
+     ->name('StudentPsychology.update-status');
+
+Route::get('/StudentPsychology/{student_psychology}/edit', [StudentPsychologyController::class, 'edit'])
+     ->name('StudentPsychology.edit');
+Route::put('/StudentPsychology/{student_psychology}', [StudentPsychologyController::class, 'update'])
+     ->name('StudentPsychology.update');
+Route::get('/create', [StudentPsychologyController::class, 'create'])
+     ->name('StudentPsychology.create');    
+Route::post('/StudentPsychology', [StudentPsychologyController::class, 'store'])
+     ->name('StudentPsychology.store');
+Route::delete('/StudentPsychology/{student_psychology}', [StudentPsychologyController::class, 'destroy'])
+     ->name('StudentPsychology.destroy');   
+
+Route::get('/psychology-responses', [StudentPsychologyController::class, 'student_psychology_response'])->name('student_psychology_response');
+Route::get('/psychology-responses/show/{response_admine}', [StudentPsychologyController::class, 'student_psychology_response_show'])->name('student_psychology_response_show');
+
+
+     Route::get('class', function () {
     return view('teacher-dashboard\class\index');
 })->name('class');
 

@@ -240,7 +240,7 @@
             <!-- Navigation Menu -->
             <ul class="space-y-2">
                 <li>
-                    <a href="#" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
+                    <a href="{{route('class')}}" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
                         <div class="flex items-center space-x-3 space-x-reverse">
                             <div class="w-8 h-8 rounded-lg bg-blue-900/20 flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -267,14 +267,7 @@
                         </div>
                     </button>
                     <ul class="sidebar-submenu hidden space-y-1 pt-2 pl-8 border-r-2 border-green-500 mr-4">
-                        <li>
-                            <a href="{{route('student_progress.index')}}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
-                                <span class="relative">
-                                    نسبة إنجاز الدروس
-                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                                </span>
-                            </a>
-                        </li>
+                        
                         <li>
                             <a href="{{route('Interaction_Notes_student.index')}}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
                                 <span class="relative">
@@ -283,22 +276,6 @@
                                 </span>
                             </a>
                         </li>
-                    </ul>
-                </li>
-
-                <li>
-                    <button class="sidebar-toggle-btn flex items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
-                        <svg class="arrow-icon h-5 w-5 text-gray-400 transition-transform duration-300 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        <div class="flex items-center space-x-3 space-x-reverse">
-                            <div class="w-8 h-8 rounded-lg bg-purple-900/20 flex items-center justify-center">
-                                <i class="fas fa-chart-line text-purple-400"></i>
-                            </div>
-                            <span class="text-base font-medium">الأكاديمية</span>
-                        </div>
-                    </button>
-                    <ul class="sidebar-submenu hidden space-y-1 pt-2 pl-8 border-r-2 border-purple-500 mr-4">
                         <li>
                             <a href="{{route('Exam_Grade.index')}}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
                                 <span class="relative">
@@ -307,17 +284,10 @@
                                 </span>
                             </a>
                         </li>
-                        <li>
-                            <a href="#" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
-                                <span class="relative">
-                                    سجل الدرجات
-                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                                </span>
-                            </a>
-                        </li>
                     </ul>
                 </li>
 
+                
                 <li>
                     <button class="sidebar-toggle-btn flex items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
                         <svg class="arrow-icon h-5 w-5 text-gray-400 transition-transform duration-300 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -331,19 +301,20 @@
                         </div>
                     </button>
                     <ul class="sidebar-submenu hidden space-y-1 pt-2 pl-8 border-r-2 border-yellow-500 mr-4">
+                        
                         <li>
-                            <a href="#" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                            <a href="{{route('StudentPsychology.index')}}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
                                 <span class="relative">
-                                    توصيات الأخصائي
+                                    ملاحظات يومية
                                     <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-yellow-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
                                 </span>
                             </a>
                         </li>
-                        <li>
-                            <a href="#" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                         <li>
+                            <a href="{{route('student_psychology_response')}}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
                                 <span class="relative">
-                                    ملاحظات يومية
-                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-yellow-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                    ردود الاداراة النفسية
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-indigo-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
                                 </span>
                             </a>
                         </li>
@@ -375,6 +346,14 @@
                             <a href="#" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
                                 <span class="relative">
                                     رسائل الأخصائي
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-indigo-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    رسائل الباحث 
                                     <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-indigo-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
                                 </span>
                             </a>

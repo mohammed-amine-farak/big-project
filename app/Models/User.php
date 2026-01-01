@@ -63,4 +63,12 @@ class User extends Authenticatable
         // This remains correct based on lessonss.researcher_id pointing to users.id
         return $this->hasMany(Lessonss::class, 'researcher_id');
     }
+   public function teacherProfile()
+    {
+        return $this->hasOne(Teacher::class,'id');
+    }   
+    public function adminProfile()
+    {
+        return $this->hasOne(Admin::class,'id');
+    }
 }

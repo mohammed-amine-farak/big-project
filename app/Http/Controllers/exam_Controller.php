@@ -239,7 +239,7 @@ class exam_Controller extends Controller
                 'questions.*.correct_choice.required' => 'يجب تحديد الإجابة الصحيحة',
                 'end_time.after' => 'وقت الانتهاء يجب أن يكون بعد وقت البدء',
             ]);
-    
+     
             DB::transaction(function () use ($validatedData, $exam) {
                 // Update exam details
                 $exam->update([

@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('classrooms', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('study_year_id');
-            $table->unsignedBigInteger('teacher_id');
-            $table->unsignedBigInteger('subject_id');
-            $table->unsignedBigInteger('school_id');
+            $table->unsignedBigInteger('study_year_id');//1
+            $table->unsignedBigInteger('teacher_id');//14
+            $table->unsignedBigInteger('subject_id');//1
+            $table->unsignedBigInteger('school_id');//1
             $table->string('class_name'); // اسم الفصل
             $table->string('class_name_ar'); // اسم الفصل بالعربية
             $table->string('grade_level'); // المستوى الدراسي

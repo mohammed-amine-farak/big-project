@@ -22,4 +22,18 @@ class teacher extends Model
     {
         return $this->hasMany(lesson_report::class);
     }
+    public function classrooms()
+    {
+        return $this->hasMany(classroom::class, 'teacher_id');
+    }   
+    public function exam_schol_weeckly_reports()
+    {
+        return $this->hasMany(exam_schol_weeckly_report::class, 'teacher_id');
+    }
+     public function student_psychology(){
+        return $this->hasMany(student_psychology::class, 'teacher_id');
+     }
+     public function psychology_report_response_admine(){
+        return $this->hasMany(psychology_report_response_admine::class, 'teacher_id');
+     }
 }

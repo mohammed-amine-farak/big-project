@@ -9,35 +9,92 @@ use Illuminate\Http\Request;
 
 class Interaction_Notes_student extends Controller
 {
-    public function index(){
-        $results = DB::select("
-    SELECT 
-        student_users.name AS student_name,
-        teacher_users.name AS teacher_name,
-        lessonss.title AS lesson_title,
-        interaction__notes_students.note_content,
-        interaction__notes_students.created_at,
-        interaction__notes_students.status AS interaction__notes_status,
-        interaction__notes_students.id AS interaction__notes_id
 
-    FROM 
-        interaction__notes_students
-    INNER JOIN 
-        students ON interaction__notes_students.student_id = students.id
-    INNER JOIN 
-        users AS student_users ON students.id = student_users.id
-    INNER JOIN 
-        teachers ON interaction__notes_students.teacher_id = teachers.id
-    INNER JOIN 
-        users AS teacher_users ON teachers.id = teacher_users.id
-    INNER JOIN 
-        lessonss ON interaction__notes_students.lesson_id = lessonss.id
-");
-        return view('teacher-dashboard.Student_Monitoring.Interaction_Notes.index',compact('results'));
+
+
+
+public function index(Request $request)
+{
+    $query = DB::table('interaction__notes_students')
+        ->join('students', 'interaction__notes_students.student_id', '=', 'students.id')
+        ->join('users as student_users', 'students.id', '=', 'student_users.id')
+        ->join('teachers', 'interaction__notes_students.teacher_id', '=', 'teachers.id')
+        ->join('users as teacher_users', 'teachers.id', '=', 'teacher_users.id')
+        ->join('lessonss', 'interaction__notes_students.lesson_id', '=', 'lessonss.id')
+        ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
+        ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
+        ->where('classrooms.teacher_id', 2)
+        ->select(
+            'student_users.name AS student_name',
+            'teacher_users.name AS teacher_name',
+            'classrooms.class_name',
+            'lessonss.title AS lesson_title',
+            'interaction__notes_students.note_content',
+            'interaction__notes_students.created_at',
+            'interaction__notes_students.status AS interaction__notes_status',
+            'interaction__notes_students.id AS interaction__notes_id'
+        );
+
+    // تطبيق التصفية حسب اسم الطالب
+    if ($request->filled('student_name')) {
+        $query->where('student_users.name', 'like', '%' . $request->student_name . '%');
     }
-    public function create(){
+
+    // تطبيق التصفية حسب الصف
+    if ($request->filled('classroom_id')) {
+        $query->where('classrooms.id', $request->classroom_id);
+    }
+
+    // تطبيق التصفية حسب حالة الملاحظة
+    if ($request->filled('status')) {
+        $query->where('interaction__notes_students.status', $request->status);
+    }
+
+    // تطبيق التصفية حسب الدرس
+    if ($request->filled('lesson_id')) {
+        $query->where('lessonss.id', $request->lesson_id);
+    }
+
+    // الترتيب حسب أحدث الملاحظات
+    $query->orderBy('interaction__notes_students.created_at', 'desc');
+
+    // Pagination
+    $results = $query->paginate(10);
+
+    // جلب البيانات للتصفية
+    $students = DB::table('interaction__notes_students')
+        ->join('students', 'interaction__notes_students.student_id', '=', 'students.id')
+        ->join('users as student_users', 'students.id', '=', 'student_users.id')
+        ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
+        ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
+        ->where('classrooms.teacher_id', 2)
+        ->select('student_users.name', 'students.id')
+        ->distinct()
+        ->get();
+
+    $classrooms = DB::table('interaction__notes_students')
+        ->join('students', 'interaction__notes_students.student_id', '=', 'students.id')
+        ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
+        ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
+        ->where('classrooms.teacher_id', 2)
+        ->select('classrooms.id', 'classrooms.class_name')
+        ->distinct()
+        ->get();
+
+    $lessons = DB::table('interaction__notes_students')
+        ->join('lessonss', 'interaction__notes_students.lesson_id', '=', 'lessonss.id')
+        ->select('lessonss.id', 'lessonss.title')
+        ->distinct()
+        ->get();
+
+    return view('teacher-dashboard.Student_Monitoring.Interaction_Notes.index', 
+        compact('results', 'students', 'classrooms', 'lessons'));
+}    public function create(){
         $lessons = lessonss::all();
-        $results = User::join('students', 'users.id', '=', 'students.id') // <-- CHANGED HERE
+        $results = User::join('students', 'users.id', '=', 'students.id')
+        ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
+        ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
+        ->where('classrooms.teacher_id', 2)
         ->select('users.name', 'students.*')
         ->get();
         return view('teacher-dashboard.Student_Monitoring.Interaction_Notes.create',compact('results','lessons'));
@@ -102,7 +159,10 @@ public function update(Interaction_Notes_students $Interaction_Notes_students){
         )
         ->first();
         $lessons = lessonss::all();
-        $results = User::join('students', 'users.id', '=', 'students.id') // <-- CHANGED HERE
+        $results = User::join('students', 'users.id', '=', 'students.id')
+         ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
+        ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
+        ->where('classrooms.teacher_id', 2) // <-- CHANGED HERE
         ->select('users.name', 'students.*')
         ->get();
     return view('teacher-dashboard.Student_Monitoring.Interaction_Notes.update', compact('interaction_notes_student','results','lessons'));
