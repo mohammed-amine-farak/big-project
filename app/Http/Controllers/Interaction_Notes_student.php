@@ -23,7 +23,7 @@ public function index(Request $request)
         ->join('lessonss', 'interaction__notes_students.lesson_id', '=', 'lessonss.id')
         ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
         ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
-        ->where('classrooms.teacher_id', 2)
+        ->where('classrooms.teacher_id', 12)
         ->select(
             'student_users.name AS student_name',
             'teacher_users.name AS teacher_name',
@@ -67,7 +67,7 @@ public function index(Request $request)
         ->join('users as student_users', 'students.id', '=', 'student_users.id')
         ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
         ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
-        ->where('classrooms.teacher_id', 2)
+        ->where('classrooms.teacher_id', 12)
         ->select('student_users.name', 'students.id')
         ->distinct()
         ->get();
@@ -76,7 +76,7 @@ public function index(Request $request)
         ->join('students', 'interaction__notes_students.student_id', '=', 'students.id')
         ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
         ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
-        ->where('classrooms.teacher_id', 2)
+        ->where('classrooms.teacher_id', 12)
         ->select('classrooms.id', 'classrooms.class_name')
         ->distinct()
         ->get();
@@ -94,7 +94,7 @@ public function index(Request $request)
         $results = User::join('students', 'users.id', '=', 'students.id')
         ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
         ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
-        ->where('classrooms.teacher_id', 2)
+        ->where('classrooms.teacher_id', 12)
         ->select('users.name', 'students.*')
         ->get();
         return view('teacher-dashboard.Student_Monitoring.Interaction_Notes.create',compact('results','lessons'));
@@ -113,7 +113,7 @@ public function index(Request $request)
         Interaction_Notes_students::create([
             'student_id' => $validatedData['student_id'],
             'lesson_id' => $validatedData['lesson_id'],
-            'teacher_id' => 2, // Get the ID of the authenticated user
+            'teacher_id' => 12, // Get the ID of the authenticated user
             'note_content' => $validatedData['note_content'],
         ]);
 
@@ -162,7 +162,7 @@ public function update(Interaction_Notes_students $Interaction_Notes_students){
         $results = User::join('students', 'users.id', '=', 'students.id')
          ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
         ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
-        ->where('classrooms.teacher_id', 2) // <-- CHANGED HERE
+        ->where('classrooms.teacher_id', 12) // <-- CHANGED HERE
         ->select('users.name', 'students.*')
         ->get();
     return view('teacher-dashboard.Student_Monitoring.Interaction_Notes.update', compact('interaction_notes_student','results','lessons'));

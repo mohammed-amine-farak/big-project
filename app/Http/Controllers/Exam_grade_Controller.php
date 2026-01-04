@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\classroom;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\exam_weeckly;
@@ -23,7 +24,7 @@ public function index(Request $request)
         ->join('teachers', 'exam_schol_weeckly_reports.teacher_id', '=', 'teachers.id')
         ->join('users as teacher_users', 'teachers.id', '=', 'teacher_users.id')
         ->join('exam_weecklies', 'exam_schol_weeckly_reports.exam_weecklies_id', '=', 'exam_weecklies.id')
-        ->where('classrooms.teacher_id', 2)
+        ->where('classrooms.teacher_id',12)
         ->select(
             'student_users.name AS student_name',
             'student_users.id AS student_id',
@@ -61,7 +62,7 @@ public function index(Request $request)
         ->join('users as student_users', 'students.id', '=', 'student_users.id')
         ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
         ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
-        ->where('classrooms.teacher_id', 2)
+        ->where('classrooms.teacher_id',12)
         ->select('student_users.name', 'students.id')
         ->distinct()
         ->get();
@@ -71,25 +72,58 @@ public function index(Request $request)
         ->join('students', 'exam_schol_weeckly_reports.student_id', '=', 'students.id')
         ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
         ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
-        ->where('classrooms.teacher_id', 2)
+        ->where('classrooms.teacher_id', 12)
         ->select('classrooms.id', 'classrooms.class_name')
         ->distinct()
         ->get();
 
     return view('teacher-dashboard.Academic_Reports.Exam_Grades.index', compact('exam_grade', 'students', 'classrooms'));
 }
-    public function create(){
-       $exam_weeckly = exam_weeckly::all();
-      
-        $results = User::join('students', 'users.id', '=', 'students.id')
-        ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
-        ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
-        ->where('classrooms.teacher_id', 2)
-        ->select('users.name', 'students.*')
-        ->get();
-        
-        return view('teacher-dashboard.Academic_Reports\Exam_Grades\create',compact('results','exam_weeckly'));
+
+      public function create()
+{
+    $teacherId = 12;
+    
+    // الحصول على الصفوف فقط
+    $classrooms = classroom::where('teacher_id', $teacherId)->get();
+    
+    // الحصول على الاختبارات فقط
+    $exam_weeckly = exam_weeckly::all();
+       
+    return view('teacher-dashboard.Academic_Reports.Exam_Grades.create', 
+        compact('classrooms', 'exam_weeckly'));
+}
+
+public function getStudentsAjax($classroomId)
+{
+    $teacherId = 12;
+    
+    // تحقق أن الصف يخص المعلم
+    $classroom = classroom::where('id', $classroomId)
+        ->where('teacher_id', $teacherId)
+        ->first();
+    
+    if (!$classroom) {
+        return response()->json([
+            'success' => false,
+            'message' => 'الصف غير موجود أو لا يخصك'
+        ]);
     }
+    
+    $students = DB::table('students')
+        ->join('users', 'students.id', '=', 'users.id')
+        ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
+        ->where('student_classrooms.classroom_id', $classroomId)
+        ->select('students.id', 'users.name')
+        ->orderBy('users.name')
+        ->get();
+    
+    return response()->json([
+        'success' => true,
+        'students' => $students
+    ]);
+}
+
     public function store (Request $request){
        
 
@@ -110,7 +144,7 @@ public function index(Request $request)
         $report->exam_note = $validatedData['exam_note'];
         
         // Assign the currently authenticated teacher's ID
-        $report->teacher_id = 2;
+        $report->teacher_id = 12;
 
         // 4. Save the new report to the database
         $report->save();
@@ -148,7 +182,7 @@ public function index(Request $request)
       $results = User::join('students', 'users.id', '=', 'students.id')
         ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
         ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
-        ->where('classrooms.teacher_id', 2)
+        ->where('classrooms.teacher_id', 12)
         ->select('users.name', 'students.*')
         ->get();
      return view('teacher-dashboard.Academic_Reports\Exam_Grades\update',compact('exam_grade','exam_weeckly','results'));
