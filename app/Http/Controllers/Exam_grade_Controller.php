@@ -80,36 +80,21 @@ public function index(Request $request)
     return view('teacher-dashboard.Academic_Reports.Exam_Grades.index', compact('exam_grade', 'students', 'classrooms'));
 }
 
-      public function create()
+    public function create()
 {
     $teacherId = 12;
     
-    // الحصول على الصفوف فقط
+    // الصفوف فقط
     $classrooms = classroom::where('teacher_id', $teacherId)->get();
-    
-    // الحصول على الاختبارات فقط
-    $exam_weeckly = exam_weeckly::all();
        
-    return view('teacher-dashboard.Academic_Reports.Exam_Grades.create', 
-        compact('classrooms', 'exam_weeckly'));
+    return view('teacher-dashboard.Academic_Reports.Exam_Grades.create', compact('classrooms'));
 }
 
-public function getStudentsAjax($classroomId)
+public function getClassroomDataAjax($classroomId)
 {
     $teacherId = 12;
     
-    // تحقق أن الصف يخص المعلم
-    $classroom = classroom::where('id', $classroomId)
-        ->where('teacher_id', $teacherId)
-        ->first();
-    
-    if (!$classroom) {
-        return response()->json([
-            'success' => false,
-            'message' => 'الصف غير موجود أو لا يخصك'
-        ]);
-    }
-    
+    // 1. الحصول على طلاب الصف
     $students = DB::table('students')
         ->join('users', 'students.id', '=', 'users.id')
         ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
@@ -118,12 +103,18 @@ public function getStudentsAjax($classroomId)
         ->orderBy('users.name')
         ->get();
     
+    // 2. الحصول على اختبارات هذا الصف
+    // طريقة 1: إذا كان هناك علاقة مباشرة
+    $exams = exam_weeckly::where('classroom_id', $classroomId)->get();
+    
+   
+    
     return response()->json([
         'success' => true,
-        'students' => $students
+        'students' => $students,
+        'exams' => $exams
     ]);
 }
-
     public function store (Request $request){
        
 

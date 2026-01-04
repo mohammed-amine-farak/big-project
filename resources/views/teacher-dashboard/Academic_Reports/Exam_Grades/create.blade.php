@@ -13,7 +13,7 @@
             </a>
         </div>
 
-        <!-- Success Message -->
+        <!-- Messages -->
         @if(session('success'))
         <div class="bg-green-100 border-r-4 border-green-500 text-green-700 p-4 mb-4 shadow-md rounded-lg" role="alert">
             <div class="flex items-center">
@@ -67,7 +67,7 @@
                             </option>
                         @endforeach
                     </select>
-                    <p class="text-xs text-gray-500 mt-1">اختر الصف أولاً لعرض الطلاب الموجودين فيه</p>
+                    <p class="text-xs text-gray-500 mt-1">اختر الصف أولاً لعرض الطلاب والاختبارات الخاصة به</p>
                 </div>
 
                 <!-- Student and Exam Selection -->
@@ -94,15 +94,16 @@
                         <label for="exam_weecklies_id" class="block text-sm font-medium text-gray-700 mb-1">
                             اختر الاختبار <span class="text-red-500">*</span>
                         </label>
-                        <select id="exam_weecklies_id" name="exam_weecklies_id" required 
+                        <select id="exam_weecklies_id" name="exam_weecklies_id" required disabled
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 transition duration-150">
-                            <option value="">اختر الاختبار...</option>
-                            @foreach ($exam_weeckly as $exam)
-                                <option value="{{ $exam->id }}">
-                                    {{ $exam->title }}
-                                </option>
-                            @endforeach
+                            <option value="">اختر الصف أولاً...</option>
                         </select>
+                        <div id="exams_loading" class="hidden text-xs text-blue-500 mt-1">
+                            جاري تحميل الاختبارات...
+                        </div>
+                        <div id="no_exams" class="hidden text-xs text-red-500 mt-1">
+                            لا يوجد اختبارات لهذا الصف
+                        </div>
                     </div>
                 </div>
 
@@ -178,8 +179,11 @@
         // Elements
         const classroomSelect = document.getElementById('classroom_id');
         const studentSelect = document.getElementById('student_id');
+        const examSelect = document.getElementById('exam_weecklies_id');
         const studentsLoading = document.getElementById('students_loading');
+        const examsLoading = document.getElementById('exams_loading');
         const noStudents = document.getElementById('no_students');
+        const noExams = document.getElementById('no_exams');
         
         // Auto-resize textarea
         const textarea = document.getElementById('exam_note');
@@ -212,79 +216,137 @@
             }
         });
 
-        // Load students when classroom changes
+        // Load classroom data when classroom changes
         classroomSelect.addEventListener('change', function() {
             const classroomId = this.value;
             
             if (!classroomId) {
-                studentSelect.innerHTML = '<option value="">اختر الصف أولاً...</option>';
-                studentSelect.disabled = true;
-                noStudents.classList.add('hidden');
+                // Reset everything
+                resetSelects();
                 return;
             }
             
             // Show loading
             studentsLoading.classList.remove('hidden');
+            examsLoading.classList.remove('hidden');
             noStudents.classList.add('hidden');
-            studentSelect.disabled = true;
+            noExams.classList.add('hidden');
             
-            // Simple AJAX fetch
-            fetch(`/ajax/get-students/${classroomId}`)
-                .then(response => response.json())
+            studentSelect.disabled = true;
+            examSelect.disabled = true;
+            
+            // Fetch classroom data (students + exams)
+            fetch(`/ajax/get-classroom-data/${classroomId}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.json();
+                })
                 .then(data => {
                     studentsLoading.classList.add('hidden');
+                    examsLoading.classList.add('hidden');
                     
-                    if (data.success && data.students.length > 0) {
-                        // Clear and populate student select
-                        studentSelect.innerHTML = '<option value="">اختر التلميذ...</option>';
+                    if (data.success) {
+                        // Handle students
+                        if (data.students && data.students.length > 0) {
+                            populateSelect(studentSelect, data.students, 'اختر التلميذ...');
+                            studentSelect.disabled = false;
+                        } else {
+                            studentSelect.innerHTML = '<option value="">لا يوجد طلاب</option>';
+                            studentSelect.disabled = true;
+                            noStudents.classList.remove('hidden');
+                        }
                         
-                        data.students.forEach(student => {
-                            const option = document.createElement('option');
-                            option.value = student.id;
-                            option.textContent = student.name;
-                            studentSelect.appendChild(option);
-                        });
-                        
-                        studentSelect.disabled = false;
+                        // Handle exams
+                        if (data.exams && data.exams.length > 0) {
+                            populateSelect(examSelect, data.exams, 'اختر الاختبار...', 'id', 'title');
+                            examSelect.disabled = false;
+                        } else {
+                            examSelect.innerHTML = '<option value="">لا يوجد اختبارات</option>';
+                            examSelect.disabled = true;
+                            noExams.classList.remove('hidden');
+                        }
                     } else {
-                        studentSelect.innerHTML = '<option value="">لا يوجد طلاب في هذا الصف</option>';
-                        studentSelect.disabled = false;
-                        noStudents.classList.remove('hidden');
+                        showError('حدث خطأ في تحميل البيانات');
                     }
                 })
                 .catch(error => {
                     studentsLoading.classList.add('hidden');
-                    studentSelect.innerHTML = '<option value="">حدث خطأ في تحميل الطلاب</option>';
-                    studentSelect.disabled = false;
-                    console.error('Error loading students:', error);
+                    examsLoading.classList.add('hidden');
+                    showError('فشل في تحميل البيانات');
+                    console.error('Error:', error);
                 });
         });
+
+        // Helper function to populate select
+        function populateSelect(select, data, defaultText, idField = 'id', nameField = 'name') {
+            select.innerHTML = `<option value="">${defaultText}</option>`;
+            
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item[idField];
+                option.textContent = item[nameField];
+                select.appendChild(option);
+            });
+        }
+
+        // Helper function to reset selects
+        function resetSelects() {
+            studentSelect.innerHTML = '<option value="">اختر الصف أولاً...</option>';
+            examSelect.innerHTML = '<option value="">اختر الصف أولاً...</option>';
+            
+            studentSelect.disabled = true;
+            examSelect.disabled = true;
+            
+            noStudents.classList.add('hidden');
+            noExams.classList.add('hidden');
+        }
+
+        // Helper function to show error
+        function showError(message) {
+            studentSelect.innerHTML = `<option value="">${message}</option>`;
+            examSelect.innerHTML = `<option value="">${message}</option>`;
+            
+            studentSelect.disabled = true;
+            examSelect.disabled = true;
+        }
 
         // Form validation
         const form = document.getElementById('createExamForm');
         form.addEventListener('submit', function(e) {
             const studentId = studentSelect.value;
-            const examId = document.getElementById('exam_weecklies_id').value;
+            const examId = examSelect.value;
             const score = document.getElementById('exam_total_point').value;
             
-            if (!studentId || studentId === '' || studentSelect.disabled) {
+            // Validate student
+            if (!studentId || studentSelect.disabled) {
                 e.preventDefault();
                 alert('يرجى اختيار تلميذ صحيح');
                 studentSelect.focus();
                 return false;
             }
             
-            if (!examId) {
+            // Validate exam
+            if (!examId || examSelect.disabled) {
                 e.preventDefault();
                 alert('يرجى اختيار اختبار');
-                document.getElementById('exam_weecklies_id').focus();
+                examSelect.focus();
                 return false;
             }
             
+            // Validate score
             if (!score || score < 0 || score > 100) {
                 e.preventDefault();
                 alert('يرجى إدخال درجة صحيحة بين 0 و 100');
                 document.getElementById('exam_total_point').focus();
+                return false;
+            }
+            
+            // Additional validation if needed
+            const classroomId = classroomSelect.value;
+            if (!classroomId) {
+                e.preventDefault();
+                alert('يرجى اختيار صف');
+                classroomSelect.focus();
                 return false;
             }
         });
@@ -313,6 +375,22 @@
     select:disabled {
         opacity: 0.6;
         cursor: not-allowed;
+        background-color: #f9fafb;
+    }
+    
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 </style>
 
