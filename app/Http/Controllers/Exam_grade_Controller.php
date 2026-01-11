@@ -115,6 +115,53 @@ public function getClassroomDataAjax($classroomId)
         'exams' => $exams
     ]);
 }
+public function getExamSkillsAjax($examId)
+{
+    // الحصول على المهارات والمستويات المرتبطة بالاختبار
+    $skillsData = DB::table('exams_weekly_skills as ews')
+        ->join('level_skills as ls', 'ews.id_level', '=', 'ls.id')
+        ->join('skills as s', 'ls.skill_id', '=', 's.id')
+        ->where('ews.exams_weekly_id', $examId)
+        ->select(
+            's.id as skill_id',
+            's.name as skill_name',
+          
+            'ls.id as level_id',
+            'ls.level_name',
+            'ls.level_description',
+            'ews.status as exam_skill_status'
+        )
+        ->orderBy('s.subject')
+        ->orderBy('s.name')
+        ->orderBy('ls.level_name')
+        ->get();
+    
+    // تجميع البيانات حسب المهارة
+    $groupedSkills = [];
+    foreach ($skillsData as $item) {
+        $skillId = $item->skill_id;
+        
+        if (!isset($groupedSkills[$skillId])) {
+            $groupedSkills[$skillId] = [
+                'skill_id' => $item->skill_id,
+                'skill_name' => $item->skill_name,
+              
+                'levels' => []
+            ];
+        }
+        
+        $groupedSkills[$skillId]['levels'][] = [
+            'level_id' => $item->level_id,
+            'level_name' => $item->level_name,
+            'level_description' => $item->level_description,
+            'exam_skill_status' => $item->exam_skill_status
+        ];
+    }
+    
+    return response()->json([
+        'success' => true,
+        'skills' => array_values($groupedSkills)
+    ]);}
     public function store (Request $request){
        
 

@@ -16,36 +16,7 @@
         <!-- Messages -->
         @if(session('success'))
         <div class="bg-green-100 border-r-4 border-green-500 text-green-700 p-4 mb-4 shadow-md rounded-lg" role="alert">
-            <div class="flex items-center">
-                <div class="py-1">
-                    <svg class="fill-current h-6 w-6 text-green-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
-                    </svg>
-                </div>
-                <div>
-                    <p class="font-bold">{{ session('success') }}</p>
-                </div>
-            </div>
-        </div>
-        @endif
-
-        @if ($errors->any())
-        <div class="bg-red-100 border-r-4 border-red-500 text-red-700 p-4 mb-4 shadow-md rounded-lg" role="alert">
-            <div class="flex items-center">
-                <div class="py-1">
-                    <svg class="fill-current h-6 w-6 text-red-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"/>
-                    </svg>
-                </div>
-                <div>
-                    <p class="font-bold mb-1">حدثت الأخطاء التالية:</p>
-                    <ul class="list-disc list-inside text-sm space-y-1">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
+            <!-- ... نفس كود النجاح ... -->
         </div>
         @endif
 
@@ -67,7 +38,6 @@
                             </option>
                         @endforeach
                     </select>
-                    <p class="text-xs text-gray-500 mt-1">اختر الصف أولاً لعرض الطلاب والاختبارات الخاصة به</p>
                 </div>
 
                 <!-- Student and Exam Selection -->
@@ -84,9 +54,6 @@
                         <div id="students_loading" class="hidden text-xs text-blue-500 mt-1">
                             جاري تحميل الطلاب...
                         </div>
-                        <div id="no_students" class="hidden text-xs text-red-500 mt-1">
-                            لا يوجد طلاب في هذا الصف
-                        </div>
                     </div>
 
                     <!-- Exam Selection -->
@@ -101,9 +68,39 @@
                         <div id="exams_loading" class="hidden text-xs text-blue-500 mt-1">
                             جاري تحميل الاختبارات...
                         </div>
-                        <div id="no_exams" class="hidden text-xs text-red-500 mt-1">
-                            لا يوجد اختبارات لهذا الصف
+                    </div>
+                </div>
+
+                <!-- Skills and Levels Section -->
+                <div class="mb-6" id="skills_section" style="display: none;">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">المهارات والمستويات</h3>
+                        <div class="flex items-center space-x-4">
+                            <button type="button" id="select_all_skills" 
+                                    class="text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded">
+                                تحديد الكل
+                            </button>
+                            <button type="button" id="deselect_all_skills" 
+                                    class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded">
+                                إلغاء التحديد
+                            </button>
                         </div>
+                    </div>
+                    
+                    <div id="skills_loading" class="hidden text-center py-4">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                        <p class="text-blue-500 mt-2">جاري تحميل المهارات...</p>
+                    </div>
+                    
+                    <div id="skills_container" class="space-y-6">
+                        <!-- سيتم تعبئة المهارات هنا عبر AJAX -->
+                    </div>
+                    
+                    <div id="no_skills" class="hidden text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <p class="mt-2 text-gray-500">لا توجد مهارات لهذا الاختبار</p>
                     </div>
                 </div>
 
@@ -128,28 +125,9 @@
                               placeholder="أضف ملاحظاتك حول أداء التلميذ في هذا الاختبار..."></textarea>
                 </div>
 
-                <!-- Status Selection -->
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-3">حالة التقرير</label>
-                    <div class="flex gap-6">
-                        <label class="flex items-center space-x-3 cursor-pointer">
-                            <input type="radio" name="status" value="مسودة" checked
-                                   class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
-                            <span class="text-sm font-medium text-gray-700">
-                                حفظ كمسودة
-                                <span class="text-xs text-gray-500 block">(يمكنك التعديل لاحقاً)</span>
-                            </span>
-                        </label>
-                        
-                        <label class="flex items-center space-x-3 cursor-pointer">
-                            <input type="radio" name="status" value="مرسل_للإدارة"
-                                   class="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500">
-                            <span class="text-sm font-medium text-gray-700">
-                                إرسال للإدارة
-                                <span class="text-xs text-gray-500 block">(لا يمكن التعديل بعد الإرسال)</span>
-                            </span>
-                        </label>
-                    </div>
+                <!-- Hidden Inputs for Selected Skills -->
+                <div id="selected_skills_inputs">
+                    <!-- سيتم إضافة inputs مخفية هنا -->
                 </div>
 
                 <!-- Action Buttons -->
@@ -180,217 +158,370 @@
         const classroomSelect = document.getElementById('classroom_id');
         const studentSelect = document.getElementById('student_id');
         const examSelect = document.getElementById('exam_weecklies_id');
-        const studentsLoading = document.getElementById('students_loading');
-        const examsLoading = document.getElementById('exams_loading');
-        const noStudents = document.getElementById('no_students');
-        const noExams = document.getElementById('no_exams');
+        const skillsSection = document.getElementById('skills_section');
+        const skillsContainer = document.getElementById('skills_container');
+        const skillsLoading = document.getElementById('skills_loading');
+        const noSkills = document.getElementById('no_skills');
+        const selectedSkillsInputs = document.getElementById('selected_skills_inputs');
         
-        // Auto-resize textarea
-        const textarea = document.getElementById('exam_note');
-        textarea.style.height = 'auto';
-        textarea.style.height = (textarea.scrollHeight) + 'px';
+        // Arrays to store data
+        let classroomData = {};
+        let selectedSkills = new Set(); // لتخزين المهارات المختارة
         
-        textarea.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-        });
-
-        // Confirm before sending to management
-        const sendRadio = document.querySelector('input[value="مرسل_للإدارة"]');
-        if (sendRadio) {
-            sendRadio.addEventListener('change', function() {
-                if (this.checked && !confirm('هل أنت متأكد من إرسال التقرير للإدارة؟ بعد الإرسال لا يمكنك تعديل التقرير.')) {
-                    document.querySelector('input[value="مسودة"]').checked = true;
-                }
-            });
-        }
-
-        // Validate score input
-        const scoreInput = document.getElementById('exam_total_point');
-        scoreInput.addEventListener('input', function() {
-            let value = parseFloat(this.value);
-            if (value < 0) {
-                this.value = 0;
-            } else if (value > 100) {
-                this.value = 100;
-            }
-        });
-
-        // Load classroom data when classroom changes
+        // Load classroom data (students + exams)
         classroomSelect.addEventListener('change', function() {
             const classroomId = this.value;
             
             if (!classroomId) {
-                // Reset everything
                 resetSelects();
+                hideSkillsSection();
                 return;
             }
             
-            // Show loading
-            studentsLoading.classList.remove('hidden');
-            examsLoading.classList.remove('hidden');
-            noStudents.classList.add('hidden');
-            noExams.classList.add('hidden');
+            // Show loading for students and exams
+            showLoading(studentSelect, 'students');
+            showLoading(examSelect, 'exams');
             
-            studentSelect.disabled = true;
-            examSelect.disabled = true;
-            
-            // Fetch classroom data (students + exams)
+            // Fetch classroom data
             fetch(`/ajax/get-classroom-data/${classroomId}`)
-                .then(response => {
-                    if (!response.ok) throw new Error('Network error');
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
-                    studentsLoading.classList.add('hidden');
-                    examsLoading.classList.add('hidden');
+                    hideLoading('students');
+                    hideLoading('exams');
                     
                     if (data.success) {
-                        // Handle students
-                        if (data.students && data.students.length > 0) {
-                            populateSelect(studentSelect, data.students, 'اختر التلميذ...');
-                            studentSelect.disabled = false;
-                        } else {
-                            studentSelect.innerHTML = '<option value="">لا يوجد طلاب</option>';
-                            studentSelect.disabled = true;
-                            noStudents.classList.remove('hidden');
-                        }
+                        classroomData[classroomId] = data;
                         
-                        // Handle exams
-                        if (data.exams && data.exams.length > 0) {
-                            populateSelect(examSelect, data.exams, 'اختر الاختبار...', 'id', 'title');
-                            examSelect.disabled = false;
-                        } else {
-                            examSelect.innerHTML = '<option value="">لا يوجد اختبارات</option>';
-                            examSelect.disabled = true;
-                            noExams.classList.remove('hidden');
-                        }
+                        // Populate students
+                        populateSelect(studentSelect, data.students, 'اختر التلميذ...');
+                        
+                        // Populate exams
+                        populateSelect(examSelect, data.exams, 'اختر الاختبار...', 'id', 'title');
                     } else {
                         showError('حدث خطأ في تحميل البيانات');
                     }
                 })
                 .catch(error => {
-                    studentsLoading.classList.add('hidden');
-                    examsLoading.classList.add('hidden');
+                    hideLoading('students');
+                    hideLoading('exams');
                     showError('فشل في تحميل البيانات');
                     console.error('Error:', error);
                 });
         });
-
-        // Helper function to populate select
+        
+        // Load skills when exam changes
+        examSelect.addEventListener('change', function() {
+            const examId = this.value;
+            
+            if (!examId) {
+                hideSkillsSection();
+                return;
+            }
+            
+            // Show skills section
+            skillsSection.style.display = 'block';
+            skillsLoading.classList.remove('hidden');
+            skillsContainer.innerHTML = '';
+            noSkills.classList.add('hidden');
+            selectedSkills.clear();
+            updateSelectedSkillsInputs();
+            
+            // Fetch skills for this exam
+            fetch(`/ajax/get-exam-skills/${examId}`)
+                .then(response => response.json())
+                .then(data => {
+                    skillsLoading.classList.add('hidden');
+                    
+                    if (data.success && data.skills && data.skills.length > 0) {
+                        renderSkills(data.skills);
+                    } else {
+                        noSkills.classList.remove('hidden');
+                    }
+                })
+                .catch(error => {
+                    skillsLoading.classList.add('hidden');
+                    skillsContainer.innerHTML = `
+                        <div class="text-center py-4 text-red-500">
+                            <p>حدث خطأ في تحميل المهارات</p>
+                        </div>
+                    `;
+                    console.error('Error:', error);
+                });
+        });
+        
+        // Render skills with checkboxes
+        function renderSkills(skills) {
+            skillsContainer.innerHTML = '';
+            
+            skills.forEach(skill => {
+                const skillCard = document.createElement('div');
+                skillCard.className = 'border border-gray-200 rounded-lg p-4 bg-gray-50';
+                
+                // Skill header
+                skillCard.innerHTML = `
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <h4 class="font-bold text-gray-800">${skill.skill_name}</h4>
+                          
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" 
+                                   id="skill_${skill.skill_id}" 
+                                   class="skill-group-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                   data-skill-id="${skill.skill_id}">
+                            <label for="skill_${skill.skill_id}" class="text-sm text-gray-700">
+                                تحديد جميع مستويات هذه المهارة
+                            </label>
+                        </div>
+                    </div>
+                    <div class="space-y-2" id="levels_${skill.skill_id}">
+                        <!-- Levels will be added here -->
+                    </div>
+                `;
+                
+                skillsContainer.appendChild(skillCard);
+                
+                // Add levels for this skill
+                const levelsContainer = document.getElementById(`levels_${skill.skill_id}`);
+                skill.levels.forEach(level => {
+                    const levelDiv = document.createElement('div');
+                    levelDiv.className = 'flex items-center space-x-3 p-2 bg-white rounded border';
+                    
+                    levelDiv.innerHTML = `
+                        <input type="checkbox" 
+                               id="level_${level.level_id}" 
+                               name="level_ids[]" 
+                               value="${level.level_id}"
+                               class="level-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                               data-skill-id="${skill.skill_id}"
+                               data-level-id="${level.level_id}">
+                        <div class="flex-1">
+                            <label for="level_${level.level_id}" class="font-medium text-gray-700 cursor-pointer">
+                                ${level.level_name}
+                            </label>
+                            <p class="text-sm text-gray-500">${level.level_description}</p>
+                        </div>
+                        <span class="px-2 py-1 text-xs rounded-full ${level.exam_skill_status === 'send' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                            ${level.exam_skill_status === 'send' ? 'مرسل' : 'قيد التقدم'}
+                        </span>
+                    `;
+                    
+                    levelsContainer.appendChild(levelDiv);
+                });
+            });
+            
+            // Add event listeners for checkboxes
+            addCheckboxListeners();
+        }
+        
+        // Add event listeners to checkboxes
+        function addCheckboxListeners() {
+            // Skill group checkboxes (select all levels in skill)
+            document.querySelectorAll('.skill-group-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const skillId = this.dataset.skillId;
+                    const levelCheckboxes = document.querySelectorAll(`.level-checkbox[data-skill-id="${skillId}"]`);
+                    
+                    levelCheckboxes.forEach(levelCheckbox => {
+                        levelCheckbox.checked = this.checked;
+                        updateSelectedSkill(levelCheckbox.dataset.levelId, this.checked);
+                    });
+                    
+                    updateSelectedSkillsInputs();
+                });
+            });
+            
+            // Individual level checkboxes
+            document.querySelectorAll('.level-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const skillId = this.dataset.skillId;
+                    updateSelectedSkill(this.dataset.levelId, this.checked);
+                    updateSkillGroupCheckbox(skillId);
+                    updateSelectedSkillsInputs();
+                });
+            });
+        }
+        
+        // Update selected skills set
+        function updateSelectedSkill(levelId, isChecked) {
+            if (isChecked) {
+                selectedSkills.add(levelId);
+            } else {
+                selectedSkills.delete(levelId);
+            }
+        }
+        
+        // Update skill group checkbox based on level selections
+        function updateSkillGroupCheckbox(skillId) {
+            const levelCheckboxes = document.querySelectorAll(`.level-checkbox[data-skill-id="${skillId}"]`);
+            const skillCheckbox = document.querySelector(`.skill-group-checkbox[data-skill-id="${skillId}"]`);
+            
+            if (levelCheckboxes.length > 0) {
+                const allChecked = Array.from(levelCheckboxes).every(cb => cb.checked);
+                const someChecked = Array.from(levelCheckboxes).some(cb => cb.checked);
+                
+                skillCheckbox.checked = allChecked;
+                skillCheckbox.indeterminate = someChecked && !allChecked;
+            }
+        }
+        
+        // Update hidden inputs for selected skills
+        function updateSelectedSkillsInputs() {
+            selectedSkillsInputs.innerHTML = '';
+            
+            selectedSkills.forEach(levelId => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'selected_levels[]';
+                input.value = levelId;
+                selectedSkillsInputs.appendChild(input);
+            });
+            
+            // Also add a count input
+            const countInput = document.createElement('input');
+            countInput.type = 'hidden';
+            countInput.name = 'selected_levels_count';
+            countInput.value = selectedSkills.size;
+            selectedSkillsInputs.appendChild(countInput);
+        }
+        
+        // Select all skills
+        document.getElementById('select_all_skills').addEventListener('click', function() {
+            document.querySelectorAll('.level-checkbox').forEach(checkbox => {
+                checkbox.checked = true;
+                updateSelectedSkill(checkbox.dataset.levelId, true);
+            });
+            
+            document.querySelectorAll('.skill-group-checkbox').forEach(checkbox => {
+                checkbox.checked = true;
+                checkbox.indeterminate = false;
+            });
+            
+            updateSelectedSkillsInputs();
+        });
+        
+        // Deselect all skills
+        document.getElementById('deselect_all_skills').addEventListener('click', function() {
+            document.querySelectorAll('.level-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+                updateSelectedSkill(checkbox.dataset.levelId, false);
+            });
+            
+            document.querySelectorAll('.skill-group-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+                checkbox.indeterminate = false;
+            });
+            
+            updateSelectedSkillsInputs();
+        });
+        
+        // Helper functions
         function populateSelect(select, data, defaultText, idField = 'id', nameField = 'name') {
             select.innerHTML = `<option value="">${defaultText}</option>`;
             
-            data.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item[idField];
-                option.textContent = item[nameField];
-                select.appendChild(option);
-            });
+            if (data && data.length > 0) {
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item[idField];
+                    option.textContent = item[nameField];
+                    select.appendChild(option);
+                });
+                select.disabled = false;
+            } else {
+                select.innerHTML = `<option value="">لا توجد بيانات</option>`;
+                select.disabled = true;
+            }
         }
-
-        // Helper function to reset selects
+        
+        function showLoading(select, type) {
+            const loadingDiv = document.getElementById(`${type}_loading`);
+            if (loadingDiv) loadingDiv.classList.remove('hidden');
+            select.disabled = true;
+        }
+        
+        function hideLoading(type) {
+            const loadingDiv = document.getElementById(`${type}_loading`);
+            if (loadingDiv) loadingDiv.classList.add('hidden');
+        }
+        
         function resetSelects() {
             studentSelect.innerHTML = '<option value="">اختر الصف أولاً...</option>';
             examSelect.innerHTML = '<option value="">اختر الصف أولاً...</option>';
-            
             studentSelect.disabled = true;
             examSelect.disabled = true;
-            
-            noStudents.classList.add('hidden');
-            noExams.classList.add('hidden');
         }
-
-        // Helper function to show error
+        
+        function hideSkillsSection() {
+            skillsSection.style.display = 'none';
+            skillsContainer.innerHTML = '';
+            selectedSkills.clear();
+            updateSelectedSkillsInputs();
+        }
+        
         function showError(message) {
             studentSelect.innerHTML = `<option value="">${message}</option>`;
             examSelect.innerHTML = `<option value="">${message}</option>`;
-            
             studentSelect.disabled = true;
             examSelect.disabled = true;
         }
-
+        
         // Form validation
-        const form = document.getElementById('createExamForm');
-        form.addEventListener('submit', function(e) {
+        document.getElementById('createExamForm').addEventListener('submit', function(e) {
             const studentId = studentSelect.value;
             const examId = examSelect.value;
             const score = document.getElementById('exam_total_point').value;
             
-            // Validate student
             if (!studentId || studentSelect.disabled) {
                 e.preventDefault();
                 alert('يرجى اختيار تلميذ صحيح');
-                studentSelect.focus();
                 return false;
             }
             
-            // Validate exam
             if (!examId || examSelect.disabled) {
                 e.preventDefault();
                 alert('يرجى اختيار اختبار');
-                examSelect.focus();
                 return false;
             }
             
-            // Validate score
-            if (!score || score < 0 || score > 100) {
-                e.preventDefault();
-                alert('يرجى إدخال درجة صحيحة بين 0 و 100');
-                document.getElementById('exam_total_point').focus();
-                return false;
-            }
-            
-            // Additional validation if needed
-            const classroomId = classroomSelect.value;
-            if (!classroomId) {
-                e.preventDefault();
-                alert('يرجى اختيار صف');
-                classroomSelect.focus();
-                return false;
+            // Optional: Validate that at least one skill is selected
+            if (selectedSkills.size === 0) {
+                const confirmSubmit = confirm('لم يتم تحديد أي مهارات. هل تريد المتابعة دون تحديد مهارات؟');
+                if (!confirmSubmit) {
+                    e.preventDefault();
+                    return false;
+                }
             }
         });
     });
 </script>
 
 <style>
-    input[type="radio"]:checked + span {
-        font-weight: bold;
-    }
-    
-    textarea {
-        resize: none;
-        min-height: 100px;
-    }
-    
-    select, input, textarea {
-        transition: all 0.15s ease-in-out;
-    }
-    
-    select:focus, input:focus, textarea:focus {
+    .skill-group-checkbox:indeterminate {
+        background-color: #3b82f6;
         border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
     
-    select:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        background-color: #f9fafb;
+    .level-checkbox:checked {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
     }
     
-    .loading {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        border: 2px solid #f3f3f3;
-        border-top: 2px solid #3b82f6;
-        border-radius: 50%;
+    input[type="checkbox"]:focus {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+    }
+    
+    .animate-spin {
         animation: spin 1s linear infinite;
     }
     
     @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    .bg-gray-50 {
+        background-color: #f9fafb;
     }
 </style>
 

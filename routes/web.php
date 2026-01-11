@@ -137,7 +137,9 @@ Route::get('/ajax/get-classroom-data/{classroomId}',
     [App\Http\Controllers\Exam_grade_Controller::class, 'getClassroomDataAjax'])
     ->name('ajax.classroom-data');
 
-
+Route::get('/ajax/get-exam-skills/{examId}', 
+    [App\Http\Controllers\Exam_grade_Controller::class, 'getExamSkillsAjax'])
+    ->name('ajax.exam-skills');
 Route::get('/StudentPsychology',[StudentPsychologyController::class,'index'])->name('StudentPsychology.index');
 Route::get('/StudentPsychology/{student_psychology}', [StudentPsychologyController::class, 'show'])
      ->name('StudentPsychology.show');
