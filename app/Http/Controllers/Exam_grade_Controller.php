@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\exam_weeckly;
 use App\Models\exams;
 use App\Models\exam_schol_weeckly_report;
+use App\Models\skills;
 use Illuminate\Support\Facades\DB;
 
 class Exam_grade_Controller extends Controller
@@ -117,52 +118,87 @@ public function getClassroomDataAjax($classroomId)
 }
 public function getExamSkillsAjax($examId)
 {
-    // الحصول على المهارات والمستويات المرتبطة بالاختبار
-    $skillsData = DB::table('exams_weekly_skills as ews')
-        ->join('level_skills as ls', 'ews.id_level', '=', 'ls.id')
-        ->join('skills as s', 'ls.skill_id', '=', 's.id')
-        ->where('ews.exams_weekly_id', $examId)
-        ->select(
-            's.id as skill_id',
-            's.name as skill_name',
-          
-            'ls.id as level_id',
-            'ls.level_name',
-            'ls.level_description',
-            'ews.status as exam_skill_status'
-        )
-        ->orderBy('s.subject')
-        ->orderBy('s.name')
-        ->orderBy('ls.level_name')
-        ->get();
+    // استعلام أبسط للتحقق من صحة البيانات
+    $examExists = DB::table('exam_weecklies')->where('id', $examId)->exists();
     
-    // تجميع البيانات حسب المهارة
+    if (!$examExists) {
+        return response()->json([
+            'success' => false,
+            'message' => 'الاختبار غير موجود'
+        ]);
+    }
+
+    // جلب البيانات خطوة بخطوة
+    $examsWeeklySkills = DB::table('exams_weekly_skills')
+        ->where('exams_weekly_id', $examId)
+        ->get();
+
+    if ($examsWeeklySkills->isEmpty()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'لا توجد مستويات مرتبطة بهذا الاختبار'
+        ]);
+    }
+
+    // جلب المستويات
+    $levelIds = $examsWeeklySkills->pluck('id_level');
+    $levels = DB::table('level_skills')
+        ->whereIn('id', $levelIds)
+        ->get();
+
+    if ($levels->isEmpty()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'المستويات المرتبطة غير موجودة'
+        ]);
+    }
+
+    // جلب المهارات
+    $skillIds = $levels->pluck('skill_id');
+    $skills = DB::table('skills')
+        ->whereIn('id', $skillIds)
+        ->get();
+
+    // تجميع البيانات
     $groupedSkills = [];
-    foreach ($skillsData as $item) {
-        $skillId = $item->skill_id;
-        
-        if (!isset($groupedSkills[$skillId])) {
-            $groupedSkills[$skillId] = [
-                'skill_id' => $item->skill_id,
-                'skill_name' => $item->skill_name,
-              
-                'levels' => []
-            ];
-        }
-        
-        $groupedSkills[$skillId]['levels'][] = [
-            'level_id' => $item->level_id,
-            'level_name' => $item->level_name,
-            'level_description' => $item->level_description,
-            'exam_skill_status' => $item->exam_skill_status
+    
+    foreach ($skills as $skill) {
+        $groupedSkills[$skill->id] = [
+            'skill_id' => $skill->id,
+            'skill_name' => $skill->name,
+            'skill_description' => $skill->description,
+            'levels' => []
         ];
     }
-    
+
+    foreach ($levels as $level) {
+        if (isset($groupedSkills[$level->skill_id])) {
+            $examSkillStatus = $examsWeeklySkills
+                ->where('id_level', $level->id)
+                ->first()
+                ->status ?? 'unknown';
+
+            $groupedSkills[$level->skill_id]['levels'][] = [
+                'level_id' => $level->id,
+                'level_name' => $level->level_name,
+                'level_description' => $level->level_description,
+                'exam_skill_status' => $examSkillStatus
+            ];
+        }
+    }
+
     return response()->json([
         'success' => true,
+        'debug_info' => [
+            'exam_exists' => $examExists,
+            'exam_skills_count' => $examsWeeklySkills->count(),
+            'levels_count' => $levels->count(),
+            'skills_count' => $skills->count(),
+            'grouped_skills_count' => count($groupedSkills)
+        ],
         'skills' => array_values($groupedSkills)
-    ]);}
-    public function store (Request $request){
+    ]);
+}  public function store (Request $request){
        
 
         $validatedData = $request->validate([
