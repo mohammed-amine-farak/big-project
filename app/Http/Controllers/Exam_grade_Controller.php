@@ -9,6 +9,7 @@ use App\Models\exam_weeckly;
 use App\Models\exams;
 use App\Models\exam_schol_weeckly_report;
 use App\Models\skills;
+use App\Models\student_level;
 use Illuminate\Support\Facades\DB;
 
 class Exam_grade_Controller extends Controller
@@ -198,35 +199,57 @@ public function getExamSkillsAjax($examId)
         ],
         'skills' => array_values($groupedSkills)
     ]);
-}  public function store (Request $request){
-       
-
+}  public function store(Request $request)
+{
+    try {
         $validatedData = $request->validate([
             'student_id' => 'required|exists:students,id',
             'exam_weecklies_id' => 'required|exists:exam_weecklies,id',
             'exam_total_point' => 'required|integer|min:0|max:20',
             'exam_note' => 'required|string|max:255',
+            'selected_levels' => 'nullable|array',
+            'selected_levels.*' => 'exists:level_skills,id'
         ]);
 
-        // 2. Create a new report instance
-        $report = new exam_schol_weeckly_report();
+        // حفظ التقرير
+        $report = exam_schol_weeckly_report::create([
+            'student_id' => $validatedData['student_id'],
+            'exam_weecklies_id' => $validatedData['exam_weecklies_id'],
+            'exam_total_point' => $validatedData['exam_total_point'],
+            'exam_note' => $validatedData['exam_note'],
+            'teacher_id' =>  12,
+        ]);
 
-        // 3. Assign the validated data to the model
-        $report->student_id = $validatedData['student_id'];
-        $report->exam_weecklies_id = $validatedData['exam_weecklies_id'];
-        $report->exam_total_point = $validatedData['exam_total_point'];
-        $report->exam_note = $validatedData['exam_note'];
-        
-        // Assign the currently authenticated teacher's ID
-        $report->teacher_id = 12;
+        // حفظ المستويات
+        $levelsCount = 0;
+        if (!empty($validatedData['selected_levels'])) {
+            $levelsCount = count($validatedData['selected_levels']);
+            
+            $levelsData = [];
+            foreach ($validatedData['selected_levels'] as $levelId) {
+                $levelsData[] = [
+                    'student_id' => $validatedData['student_id'],
+                    'teacher_id' => $report->teacher_id,
+                    'level_id' => $levelId,
+                    'status' => 'valid',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+            }
+            
+            // استخدام insertOrIgnore لتجنب الأخطاء عند التكرار
+            student_level::insertOrIgnore($levelsData);
+        }
 
-        // 4. Save the new report to the database
-        $report->save();
+        return redirect()->route('Exam_Grade.index')
+            ->with('success', "تم حفظ التقرير بنجاح! ($levelsCount مستوى تم التحقق منه)");
 
-        // 5. Redirect back with a success message
-        return redirect()->route('Exam_Grade.index')->with('success', 'تم حفظ التقرير بنجاح!');    
+    } catch (\Exception $e) {
+        return redirect()->back()
+            ->withInput()
+            ->with('error', 'حدث خطأ: ' . $e->getMessage());
     }
-
+}
 
 
     public function edit(exam_schol_weeckly_report $Exam_Grade){
