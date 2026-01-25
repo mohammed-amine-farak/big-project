@@ -555,4 +555,122 @@ class Exam_grade_Controller extends Controller
         $Exam_Grade->delete();
         return redirect()->back()->with('success', 'تم حذف الملاحظة بنجاح.');
     }
+    public function show($id)
+{
+    $teacherId = 12;
+    
+    // Find the exam report by ID
+    $Exam_Grade = exam_schol_weeckly_report::findOrFail($id);
+    
+    // Get the exam report with all details
+    $exam_grade = DB::table('exam_schol_weeckly_reports')
+        ->join('students', 'exam_schol_weeckly_reports.student_id', '=', 'students.id')
+        ->join('users as student_users', 'students.id', '=', 'student_users.id')
+        ->join('teachers', 'exam_schol_weeckly_reports.teacher_id', '=', 'teachers.id')
+        ->join('users as teacher_users', 'teachers.id', '=', 'teacher_users.id')
+        ->join('exam_weecklies', 'exam_schol_weeckly_reports.exam_weecklies_id', '=', 'exam_weecklies.id')
+        ->join('classrooms', 'exam_weecklies.classroom_id', '=', 'classrooms.id')
+        ->where('exam_schol_weeckly_reports.id', $id)
+        ->select(
+            'student_users.name AS student_name',
+            'student_users.id AS student_id',
+            'teacher_users.name AS teacher_name',
+            'exam_weecklies.title AS exam_weeckly_title',
+            'exam_weecklies.id AS exam_weeckly_id',
+            'exam_weecklies.classroom_id AS classroom_id',
+            'classrooms.class_name AS classroom_name',
+            'exam_schol_weeckly_reports.exam_total_point AS exam_weeckly_total_point',
+            'exam_schol_weeckly_reports.exam_note AS exam_weeckly_note',
+            'exam_schol_weeckly_reports.created_at AS created_at',
+            'exam_schol_weeckly_reports.updated_at AS updated_at',
+            'exam_schol_weeckly_reports.id AS exam_schol_weeckly_reports_id',
+            'exam_schol_weeckly_reports.status AS status'
+        )
+        ->first();
+    
+    if (!$exam_grade) {
+        abort(404, 'التقرير غير موجود');
+    }
+    
+    // Get validated levels for this report
+    $validatedLevels = DB::table('student_levels')
+        ->join('level_skills', 'student_levels.level_id', '=', 'level_skills.id')
+        ->join('skills', 'level_skills.skill_id', '=', 'skills.id')
+        ->where('student_levels.student_id', $exam_grade->student_id)
+        ->where('student_levels.teacher_id', $teacherId)
+        ->where('student_levels.status', 'valid')
+        ->select(
+            'skills.id as skill_id',
+            'skills.name as skill_name',
+            'skills.description as skill_description',
+            'level_skills.id as level_id',
+            'level_skills.level_name',
+            'level_skills.level_description',
+            'level_skills.level as level_type',
+            'student_levels.created_at as validated_at'
+        )
+        ->orderBy('skills.id')
+        ->orderByRaw("FIELD(level_skills.level, 'level_3', 'level_2', 'level_1')")
+        ->get();
+    
+    // Group levels by skill
+    $groupedSkills = [];
+    foreach ($validatedLevels as $level) {
+        $skillId = $level->skill_id;
+        
+        if (!isset($groupedSkills[$skillId])) {
+            $groupedSkills[$skillId] = [
+                'skill_id' => $level->skill_id,
+                'skill_name' => $level->skill_name,
+                'skill_description' => $level->skill_description,
+                'levels' => []
+            ];
+        }
+        
+        $groupedSkills[$skillId]['levels'][] = [
+            'level_id' => $level->level_id,
+            'level_name' => $level->level_name,
+            'level_description' => $level->level_description,
+            'level_type' => $level->level_type,
+            'validated_at' => $level->validated_at
+        ];
+    }
+    
+    // Convert to indexed array
+    $groupedSkills = array_values($groupedSkills);
+    
+    // Calculate statistics
+    $totalSkills = count($groupedSkills);
+    $totalLevels = $validatedLevels->count();
+    
+    // Count levels by type
+    $level1Count = $validatedLevels->where('level_type', 'level_1')->count();
+    $level2Count = $validatedLevels->where('level_type', 'level_2')->count();
+    $level3Count = $validatedLevels->where('level_type', 'level_3')->count();
+    
+    // Get previous report for comparison (if any)
+    $previousReport = DB::table('exam_schol_weeckly_reports')
+        ->join('exam_weecklies', 'exam_schol_weeckly_reports.exam_weecklies_id', '=', 'exam_weecklies.id')
+        ->where('exam_schol_weeckly_reports.student_id', $exam_grade->student_id)
+        ->where('exam_schol_weeckly_reports.id', '<', $id)
+        ->where('exam_schol_weeckly_reports.teacher_id', $teacherId)
+        ->orderBy('exam_schol_weeckly_reports.created_at', 'desc')
+        ->select(
+            'exam_weecklies.title',
+            'exam_schol_weeckly_reports.exam_total_point',
+            'exam_schol_weeckly_reports.created_at'
+        )
+        ->first();
+    
+    return view('teacher-dashboard.Academic_Reports.Exam_Grades.show', compact(
+        'exam_grade',
+        'groupedSkills',
+        'totalSkills',
+        'totalLevels',
+        'level1Count',
+        'level2Count',
+        'level3Count',
+        'previousReport'
+    ));
+}
 }

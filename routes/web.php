@@ -138,7 +138,11 @@ Route::prefix('ajax')->group(function () {
     Route::get('/get-classroom-data/{classroomId}', [Exam_grade_Controller::class, 'getClassroomDataAjax']);
     Route::get('/get-student-exams/{classroomId}/{studentId}', [Exam_grade_Controller::class, 'getStudentExamsAjax']);
     Route::get('/get-exam-skills/{examId}/{studentId}', [Exam_grade_Controller::class, 'getExamSkillsAjax']);
-});Route::get('/StudentPsychology',[StudentPsychologyController::class,'index'])->name('StudentPsychology.index');
+});
+Route::get('/Exam_Grade/show/{Exam_Grade}',[Exam_grade_Controller::class,'show'])->name('Exam_Grade.show');
+
+
+Route::get('/StudentPsychology',[StudentPsychologyController::class,'index'])->name('StudentPsychology.index');
 Route::get('/StudentPsychology/{student_psychology}', [StudentPsychologyController::class, 'show'])
      ->name('StudentPsychology.show');
 Route::put('/StudentPsychology/{student_psychology}/status', [StudentPsychologyController::class, 'updateStatus'])
