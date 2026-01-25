@@ -124,7 +124,8 @@ Route::put('/Interaction_Notes_student/{send}',[Interaction_Notes_student::class
 Route::delete('/Interaction_Notes_student/{delete}',[Interaction_Notes_student::class,'delete'])->name('Interaction_Notes_student.delete');
 Route::get('/Interaction_Notes_student/{Interaction_Notes_students}',[Interaction_Notes_student::class,'update'])->name('Interaction_Notes_student.update');
 Route::put('/Interaction_Notes_student/edit/{edit}',[Interaction_Notes_student::class,'edit'])->name('Interaction_Notes_student.edit');
-
+// Interaction Notes AJAX Routes
+Route::get('/ajax/get-classroom-students/{classroomId}', [Interaction_Notes_student::class, 'getClassroomStudentsAjax'])->name('ajax.get-classroom-students');
 
 Route::get('/Exam_Grade/index',[Exam_grade_Controller::class,'index'])->name('Exam_Grade.index');
 Route::get('/Exam_Grade/create',[Exam_grade_Controller::class,'create'])->name('Exam_Grade.create');
