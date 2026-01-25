@@ -28,6 +28,17 @@
         </div>
         @endif
 
+        @if(session('error'))
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-red-700">{{ session('error') }}</span>
+            </div>
+        </div>
+        @endif
+
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <!-- Form Header -->
             <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
@@ -35,16 +46,16 @@
             </div>
             
             <form action="{{ route('Exam_Grade.store') }}" method="POST" id="createExamForm" class="p-6">
-                @csrf    
+                @csrf
                 
                 <!-- Classroom Selection -->
                 <div class="mb-6">
                     <label for="classroom_id" class="block text-sm font-medium text-gray-700 mb-2">
-                        الصف الدراسي
+                        الصف الدراسي *
                     </label>
                     <select id="classroom_id" name="classroom_id" required 
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150">
-                        <option value="">اختر الصف...</option>
+                            class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                        <option value="">اختر الصف الدراسي...</option>
                         @foreach ($classrooms as $classroom)
                             <option value="{{ $classroom->id }}">
                                 {{ $classroom->class_name }}
@@ -58,15 +69,15 @@
                     <!-- Student -->
                     <div>
                         <label for="student_id" class="block text-sm font-medium text-gray-700 mb-2">
-                            الطالب
+                            الطالب *
                         </label>
                         <div class="relative">
                             <select id="student_id" name="student_id" required disabled
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                                    class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 bg-gray-50">
                                 <option value="">اختر الصف أولاً...</option>
                             </select>
-                            <div id="students_loading" class="hidden absolute right-3 top-2.5">
-                                <div class="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                            <div id="students_loading" class="hidden absolute right-3 top-3">
+                                <div class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                             </div>
                         </div>
                     </div>
@@ -74,15 +85,15 @@
                     <!-- Exam -->
                     <div>
                         <label for="exam_weecklies_id" class="block text-sm font-medium text-gray-700 mb-2">
-                            الاختبار
+                            الاختبار *
                         </label>
                         <div class="relative">
                             <select id="exam_weecklies_id" name="exam_weecklies_id" required disabled
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150">
-                                <option value="">اختر الصف أولاً...</option>
+                                    class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 bg-gray-50">
+                                <option value="">اختر التلميذ أولاً...</option>
                             </select>
-                            <div id="exams_loading" class="hidden absolute right-3 top-2.5">
-                                <div class="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                            <div id="exams_loading" class="hidden absolute right-3 top-3">
+                                <div class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                             </div>
                         </div>
                     </div>
@@ -96,7 +107,7 @@
                             <p class="text-sm text-gray-500">حدد المهارات التي حققها الطالب في هذا الاختبار</p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span id="selected_count" class="text-sm text-gray-600 px-3 py-1 bg-gray-100 rounded-full">
+                            <span id="selected_count" class="text-sm px-3 py-1 bg-gray-100 rounded-full">
                                 0 مستويات محددة
                             </span>
                         </div>
@@ -105,14 +116,14 @@
                     <!-- Action Buttons -->
                     <div class="flex flex-wrap gap-2 mb-4">
                         <button type="button" id="select_all_skills" 
-                                class="text-sm bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg border border-blue-200 flex items-center gap-1">
+                                class="text-sm bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg border border-blue-200 flex items-center gap-1 transition duration-150">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
                             تحديد الكل
                         </button>
                         <button type="button" id="deselect_all_skills" 
-                                class="text-sm bg-gray-50 hover:bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg border border-gray-200 flex items-center gap-1">
+                                class="text-sm bg-gray-50 hover:bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg border border-gray-200 flex items-center gap-1 transition duration-150">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
@@ -130,7 +141,7 @@
                     
                     <!-- Skills Container -->
                     <div id="skills_container" class="space-y-3">
-                        <!-- سيتم تعبئة المهارات هنا -->
+                        <!-- Skills will be loaded here -->
                     </div>
                     
                     <!-- Empty State -->
@@ -149,12 +160,12 @@
                     <!-- Score -->
                     <div>
                         <label for="exam_total_point" class="block text-sm font-medium text-gray-700 mb-2">
-                            النقاط / 20
+                            النقاط / 20 *
                         </label>
                         <div class="relative">
                             <input type="number" name="exam_total_point" id="exam_total_point" 
                                    min="0" max="20" step="0.5" required 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150" 
+                                   class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150" 
                                    placeholder="0 - 20">
                         </div>
                     </div>
@@ -162,10 +173,10 @@
                     <!-- Notes -->
                     <div class="md:col-span-2">
                         <label for="exam_note" class="block text-sm font-medium text-gray-700 mb-2">
-                            ملاحظات المعلم
+                            ملاحظات المعلم *
                         </label>
                         <textarea id="exam_note" name="exam_note" rows="3" required 
-                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150" 
+                                  class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150" 
                                   placeholder="اكتب ملاحظاتك هنا..."></textarea>
                     </div>
                 </div>
@@ -180,11 +191,11 @@
                         إلغاء
                     </a>
                     <button type="submit" 
-                            class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 flex items-center gap-2">
+                            class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
                         </svg>
-                        حفظ التقرير
+                        <span id="submit_text">حفظ التقرير</span>
                     </button>
                 </div>
             </form>
@@ -204,56 +215,102 @@
         const noSkills = document.getElementById('no_skills');
         const selectedSkillsInputs = document.getElementById('selected_skills_inputs');
         const selectedCount = document.getElementById('selected_count');
+        const submitBtn = document.querySelector('button[type="submit"]');
+        const submitText = document.getElementById('submit_text');
         
         // State
         let selectedLevels = new Set();
-        let classroomCache = {};
+        let currentClassroomId = null;
+        let currentStudentId = null;
 
         // Classroom Change
         classroomSelect.addEventListener('change', async function() {
             const classroomId = this.value;
+            currentClassroomId = classroomId;
             
             if (!classroomId) {
                 resetForm();
                 return;
             }
             
-            // Reset selects
+            // Reset student and exam selects
             resetStudentAndExam();
             
-            // Show loading
+            // Show loading for students
             showLoading('students', true);
-            showLoading('exams', true);
             
             try {
-                // Check cache first
-                if (!classroomCache[classroomId]) {
-                    const response = await fetch(`/ajax/get-classroom-data/${classroomId}`);
-                    const data = await response.json();
+                // Fetch students for this classroom
+                const response = await fetch(`/ajax/get-classroom-data/${classroomId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Populate students dropdown
+                    populateSelect(studentSelect, data.students, 'اختر التلميذ...');
                     
-                    if (data.success) {
-                        classroomCache[classroomId] = data;
-                    } else {
-                        throw new Error('Failed to load classroom data');
-                    }
+                    // Keep exam select disabled
+                    examSelect.innerHTML = '<option value="">اختر التلميذ أولاً...</option>';
+                    examSelect.disabled = true;
+                    
+                    // Hide skills section
+                    hideSkillsSection();
+                } else {
+                    throw new Error('فشل في تحميل بيانات الصف');
                 }
-                
-                const data = classroomCache[classroomId];
-                
-                // Populate students
-                populateSelect(studentSelect, data.students, 'اختر التلميذ...');
-                
-                // Populate exams
-                populateSelect(examSelect, data.exams, 'اختر الاختبار...', 'id', 'title');
                 
             } catch (error) {
                 console.error('Error:', error);
                 studentSelect.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
-                examSelect.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
+                studentSelect.disabled = true;
             } finally {
                 showLoading('students', false);
+            }
+        });
+
+        // Student Change - Load Available Exams
+        studentSelect.addEventListener('change', async function() {
+            const studentId = this.value;
+            currentStudentId = studentId;
+            
+            if (!studentId || !currentClassroomId) {
+                examSelect.innerHTML = '<option value="">اختر التلميذ أولاً...</option>';
+                examSelect.disabled = true;
+                hideSkillsSection();
+                return;
+            }
+            
+            // Show loading for exams
+            showLoading('exams', true);
+            examSelect.disabled = true;
+            examSelect.innerHTML = '<option value="">جاري تحميل الاختبارات...</option>';
+            
+            try {
+                // Fetch available exams for this student
+                const response = await fetch(`/ajax/get-student-exams/${currentClassroomId}/${studentId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.exams && data.exams.length > 0) {
+                        // Populate exams dropdown
+                        populateSelect(examSelect, data.exams, 'اختر الاختبار...', 'id', 'title');
+                    } else {
+                        examSelect.innerHTML = '<option value="">لا توجد اختبارات متاحة لهذا التلميذ</option>';
+                        examSelect.disabled = true;
+                    }
+                } else {
+                    throw new Error('فشل في تحميل الاختبارات');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                examSelect.innerHTML = '<option value="">خطأ في تحميل الاختبارات</option>';
+                examSelect.disabled = true;
+            } finally {
                 showLoading('exams', false);
             }
+            
+            // Hide skills section when student changes
+            hideSkillsSection();
         });
 
         // Exam Change - Load Skills
@@ -277,6 +334,7 @@
             updateSelectedInputs();
             
             try {
+                // Fetch skills for this exam
                 const response = await fetch(`/ajax/get-exam-skills/${examId}`);
                 const data = await response.json();
                 
@@ -302,7 +360,7 @@
             }
         });
 
-        // Render Skills with beautiful UI
+        // Render Skills
         function renderSkills(skills) {
             skillsContainer.innerHTML = '';
             
@@ -531,16 +589,14 @@
             
             if (show) {
                 loadingDiv.classList.remove('hidden');
-                select.disabled = true;
             } else {
                 loadingDiv.classList.add('hidden');
-                select.disabled = false;
             }
         }
 
         function resetStudentAndExam() {
             studentSelect.innerHTML = '<option value="">اختر الصف أولاً...</option>';
-            examSelect.innerHTML = '<option value="">اختر الصف أولاً...</option>';
+            examSelect.innerHTML = '<option value="">اختر التلميذ أولاً...</option>';
             studentSelect.disabled = true;
             examSelect.disabled = true;
             hideSkillsSection();
@@ -561,6 +617,7 @@
 
         // Form Validation
         document.getElementById('createExamForm').addEventListener('submit', function(e) {
+            // Validate score
             const scoreInput = document.getElementById('exam_total_point');
             const score = parseFloat(scoreInput.value);
             
@@ -571,6 +628,7 @@
                 return false;
             }
             
+            // Ask for confirmation if no skills selected
             if (selectedLevels.size === 0) {
                 const proceed = confirm('لم يتم تحديد أي مهارات. هل تريد المتابعة بدون تحديد مهارات؟');
                 if (!proceed) {
@@ -579,10 +637,9 @@
                 }
             }
             
-            // Add loading state
-            const submitBtn = this.querySelector('button[type="submit"]');
+            // Add loading state to submit button
             submitBtn.disabled = true;
-            submitBtn.innerHTML = `
+            submitText.innerHTML = `
                 <div class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
                 جاري الحفظ...
             `;
@@ -613,6 +670,11 @@
     
     .level-item:hover {
         transform: translateX(2px);
+    }
+    
+    select:disabled {
+        background-color: #f9fafb;
+        cursor: not-allowed;
     }
 </style>
 

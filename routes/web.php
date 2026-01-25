@@ -133,13 +133,10 @@ Route::get('/Exam_Grade/edit/{Exam_Grade}',[Exam_grade_Controller::class,'edit']
 Route::put('/Exam_Grade/update/{Exam_Grade}',[Exam_grade_Controller::class,'update'])->name('Exam_Grade.update');
 Route::put('/Exam_Grade/update_status/{Exam_Grade}',[Exam_grade_Controller::class,'update_status'])->name('Exam_Grade.update_status');
 Route::delete('/Exam_Grade/destroy/{Exam_Grade}',[Exam_grade_Controller::class,'destroy'])->name('Exam_Grade.destroy');
-Route::get('/ajax/get-classroom-data/{classroomId}', 
-    [App\Http\Controllers\Exam_grade_Controller::class, 'getClassroomDataAjax'])
-    ->name('ajax.classroom-data');
+Route::get('/ajax/get-classroom-data/{classroomId}', [Exam_grade_Controller::class, 'getClassroomDataAjax'])->name('ajax.get-classroom-data');
+Route::get('/ajax/get-student-exams/{classroomId}/{studentId}', [Exam_grade_Controller::class, 'getStudentExamsAjax'])->name('ajax.get-student-exams');
+Route::get('/ajax/get-exam-skills/{examId}', [Exam_grade_Controller::class, 'getExamSkillsAjax'])->name('ajax.get-exam-skills');
 
-Route::get('/ajax/get-exam-skills/{examId}', 
-    [App\Http\Controllers\Exam_grade_Controller::class, 'getExamSkillsAjax'])
-    ->name('ajax.exam-skills');
 Route::get('/StudentPsychology',[StudentPsychologyController::class,'index'])->name('StudentPsychology.index');
 Route::get('/StudentPsychology/{student_psychology}', [StudentPsychologyController::class, 'show'])
      ->name('StudentPsychology.show');

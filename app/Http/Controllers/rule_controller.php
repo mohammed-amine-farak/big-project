@@ -13,7 +13,7 @@ class rule_controller extends Controller
         return view('researchers-dashboard.rules.create',compact('lessons'));
     }
 
-
+   
 
 
     public function store(Request $request){

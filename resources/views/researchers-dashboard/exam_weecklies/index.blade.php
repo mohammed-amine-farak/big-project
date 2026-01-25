@@ -296,7 +296,7 @@
                                             </td>
                                            
                                             <td class="px-3 py-3 whitespace-nowrap text-gray-500 text-sm hidden lg:table-cell">
-                                                {{ $exam->created_at->format('Y-m-d') }}
+                                                {{ $exam->created_at}}
                                             </td>
                                             <td class="px-3 py-3 whitespace-nowrap">
                                                 <div class="flex items-center justify-end gap-1">
