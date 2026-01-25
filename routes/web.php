@@ -133,11 +133,12 @@ Route::get('/Exam_Grade/edit/{Exam_Grade}',[Exam_grade_Controller::class,'edit']
 Route::put('/Exam_Grade/update/{Exam_Grade}',[Exam_grade_Controller::class,'update'])->name('Exam_Grade.update');
 Route::put('/Exam_Grade/update_status/{Exam_Grade}',[Exam_grade_Controller::class,'update_status'])->name('Exam_Grade.update_status');
 Route::delete('/Exam_Grade/destroy/{Exam_Grade}',[Exam_grade_Controller::class,'destroy'])->name('Exam_Grade.destroy');
-Route::get('/ajax/get-classroom-data/{classroomId}', [Exam_grade_Controller::class, 'getClassroomDataAjax'])->name('ajax.get-classroom-data');
-Route::get('/ajax/get-student-exams/{classroomId}/{studentId}', [Exam_grade_Controller::class, 'getStudentExamsAjax'])->name('ajax.get-student-exams');
-Route::get('/ajax/get-exam-skills/{examId}', [Exam_grade_Controller::class, 'getExamSkillsAjax'])->name('ajax.get-exam-skills');
-
-Route::get('/StudentPsychology',[StudentPsychologyController::class,'index'])->name('StudentPsychology.index');
+// Make sure these are ABOVE any catch-all routes
+Route::prefix('ajax')->group(function () {
+    Route::get('/get-classroom-data/{classroomId}', [Exam_grade_Controller::class, 'getClassroomDataAjax']);
+    Route::get('/get-student-exams/{classroomId}/{studentId}', [Exam_grade_Controller::class, 'getStudentExamsAjax']);
+    Route::get('/get-exam-skills/{examId}/{studentId}', [Exam_grade_Controller::class, 'getExamSkillsAjax']);
+});Route::get('/StudentPsychology',[StudentPsychologyController::class,'index'])->name('StudentPsychology.index');
 Route::get('/StudentPsychology/{student_psychology}', [StudentPsychologyController::class, 'show'])
      ->name('StudentPsychology.show');
 Route::put('/StudentPsychology/{student_psychology}/status', [StudentPsychologyController::class, 'updateStatus'])

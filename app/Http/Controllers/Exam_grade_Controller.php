@@ -103,16 +103,13 @@ class Exam_grade_Controller extends Controller
     {
         $teacherId = 12;
         
-        // Get all exams for this classroom
         $allExams = exam_weeckly::where('classroom_id', $classroomId)->get();
         
-        // Get exams that already have reports for this student
         $reportedExams = exam_schol_weeckly_report::where('student_id', $studentId)
             ->where('teacher_id', $teacherId)
             ->pluck('exam_weecklies_id')
             ->toArray();
         
-        // Exclude exams that already have reports for this student
         $availableExams = $allExams->whereNotIn('id', $reportedExams)->values();
         
         return response()->json([
@@ -121,7 +118,7 @@ class Exam_grade_Controller extends Controller
         ]);
     }
 
-    public function getExamSkillsAjax($examId)
+    public function getExamSkillsAjax($examId, $studentId = null)
     {
         $examExists = DB::table('exam_weecklies')->where('id', $examId)->exists();
         
@@ -132,64 +129,79 @@ class Exam_grade_Controller extends Controller
             ]);
         }
 
-        $examsWeeklySkills = DB::table('exams_weekly_skills')
-            ->where('exams_weekly_id', $examId)
+        // Get skills with their levels including level type
+        $examSkills = DB::table('exams_weekly_skills')
+            ->join('level_skills', 'exams_weekly_skills.id_level', '=', 'level_skills.id')
+            ->join('skills', 'level_skills.skill_id', '=', 'skills.id')
+            ->where('exams_weekly_skills.exams_weekly_id', $examId)
+            ->select(
+                'skills.id as skill_id',
+                'skills.name as skill_name',
+                'skills.description as skill_description',
+                'level_skills.id as level_id',
+                'level_skills.level_name',
+                'level_skills.level_description',
+                'level_skills.level as level_type',
+                'exams_weekly_skills.status as exam_skill_status'
+            )
+            ->orderBy('skills.id')
+            ->orderByRaw("FIELD(level_skills.level, 'level_3', 'level_2', 'level_1')")
             ->get();
 
-        if ($examsWeeklySkills->isEmpty()) {
+        if ($examSkills->isEmpty()) {
             return response()->json([
                 'success' => false,
-                'message' => 'لا توجد مستويات مرتبطة بهذا الاختبار'
+                'message' => 'لا توجد مهارات مرتبطة بهذا الاختبار'
             ]);
         }
 
-        $levelIds = $examsWeeklySkills->pluck('id_level');
-        $levels = DB::table('level_skills')
-            ->whereIn('id', $levelIds)
-            ->get();
-
-        if ($levels->isEmpty()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'المستويات المرتبطة غير موجودة'
-            ]);
+        // Get already validated levels for this student
+        $alreadyValidatedLevels = [];
+        if ($studentId) {
+            $alreadyValidatedLevels = DB::table('student_levels')
+                ->where('student_id', $studentId)
+                ->where('status', 'valid')
+                ->pluck('level_id')
+                ->toArray();
         }
 
-        $skillIds = $levels->pluck('skill_id');
-        $skills = DB::table('skills')
-            ->whereIn('id', $skillIds)
-            ->get();
-
+        // Group by skill
         $groupedSkills = [];
         
-        foreach ($skills as $skill) {
-            $groupedSkills[$skill->id] = [
-                'skill_id' => $skill->id,
-                'skill_name' => $skill->name,
-                'skill_description' => $skill->description,
-                'levels' => []
+        foreach ($examSkills as $examSkill) {
+            $skillId = $examSkill->skill_id;
+            
+            // Check if this level is already validated
+            $isAlreadyValidated = in_array($examSkill->level_id, $alreadyValidatedLevels);
+            
+            if (!isset($groupedSkills[$skillId])) {
+                $groupedSkills[$skillId] = [
+                    'skill_id' => $examSkill->skill_id,
+                    'skill_name' => $examSkill->skill_name,
+                    'skill_description' => $examSkill->skill_description,
+                    'levels' => []
+                ];
+            }
+            
+            // Add level with validation status
+            $groupedSkills[$skillId]['levels'][] = [
+                'level_id' => $examSkill->level_id,
+                'level_name' => $examSkill->level_name,
+                'level_description' => $examSkill->level_description,
+                'level_type' => $examSkill->level_type,
+                'exam_skill_status' => $examSkill->exam_skill_status,
+                'already_validated' => $isAlreadyValidated  // We'll use this for UI only
             ];
         }
 
-        foreach ($levels as $level) {
-            if (isset($groupedSkills[$level->skill_id])) {
-                $examSkillStatus = $examsWeeklySkills
-                    ->where('id_level', $level->id)
-                    ->first()
-                    ->status ?? 'unknown';
-
-                $groupedSkills[$level->skill_id]['levels'][] = [
-                    'level_id' => $level->id,
-                    'level_name' => $level->level_name,
-                    'level_description' => $level->level_description,
-                    'exam_skill_status' => $examSkillStatus
-                ];
-            }
-        }
+        // Convert to indexed array
+        $groupedSkills = array_values($groupedSkills);
 
         return response()->json([
             'success' => true,
-            'skills' => array_values($groupedSkills)
+            'skills' => $groupedSkills,
+            'already_validated_levels' => $alreadyValidatedLevels,
+            'already_validated_count' => count($alreadyValidatedLevels)
         ]);
     }
 
@@ -205,6 +217,7 @@ class Exam_grade_Controller extends Controller
                 'selected_levels.*' => 'exists:level_skills,id'
             ]);
 
+            // Save the report
             $report = exam_schol_weeckly_report::create([
                 'student_id' => $validatedData['student_id'],
                 'exam_weecklies_id' => $validatedData['exam_weecklies_id'],
@@ -214,26 +227,115 @@ class Exam_grade_Controller extends Controller
             ]);
 
             $levelsCount = 0;
+            $newLevelsCount = 0;
+            
             if (!empty($validatedData['selected_levels'])) {
-                $levelsCount = count($validatedData['selected_levels']);
+                // Get selected levels
+                $selectedLevelIds = $validatedData['selected_levels'];
                 
-                $levelsData = [];
-                foreach ($validatedData['selected_levels'] as $levelId) {
-                    $levelsData[] = [
-                        'student_id' => $validatedData['student_id'],
-                        'teacher_id' => $report->teacher_id,
-                        'level_id' => $levelId,
-                        'status' => 'valid',
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ];
+                // Get already validated levels for this student
+                $alreadyValidatedLevels = DB::table('student_levels')
+                    ->where('student_id', $validatedData['student_id'])
+                    ->where('status', 'valid')
+                    ->pluck('level_id')
+                    ->toArray();
+                
+                // Filter out levels that are already validated
+                $newLevelsToValidate = array_diff($selectedLevelIds, $alreadyValidatedLevels);
+                
+                // Apply hierarchical logic for NEW levels only
+                if (!empty($newLevelsToValidate)) {
+                    // Get level details including skill_id and level type
+                    $newLevelsDetails = DB::table('level_skills')
+                        ->whereIn('id', $newLevelsToValidate)
+                        ->get(['id', 'skill_id', 'level']);
+                    
+                    // Group by skill
+                    $skillsLevels = [];
+                    foreach ($newLevelsDetails as $level) {
+                        $skillId = $level->skill_id;
+                        if (!isset($skillsLevels[$skillId])) {
+                            $skillsLevels[$skillId] = [];
+                        }
+                        $skillsLevels[$skillId][] = $level;
+                    }
+                    
+                    // Apply hierarchical logic for new levels
+                    $allNewLevelsToValidate = [];
+                    
+                    foreach ($skillsLevels as $skillId => $levels) {
+                        // Find the highest level selected for this skill
+                        $highestLevel = null;
+                        $highestLevelOrder = 0;
+                        $levelOrder = ['level_1' => 1, 'level_2' => 2, 'level_3' => 3];
+                        
+                        foreach ($levels as $level) {
+                            $order = $levelOrder[$level->level] ?? 0;
+                            if ($order > $highestLevelOrder) {
+                                $highestLevelOrder = $order;
+                                $highestLevel = $level;
+                            }
+                        }
+                        
+                        if ($highestLevel) {
+                            // Get all lower levels for this skill based on the highest selected level
+                            $levelsToAdd = DB::table('level_skills')
+                                ->where('skill_id', $skillId)
+                                ->where(function($query) use ($levelOrder, $highestLevelOrder) {
+                                    foreach ($levelOrder as $level => $order) {
+                                        if ($order <= $highestLevelOrder) {
+                                            $query->orWhere('level', $level);
+                                        }
+                                    }
+                                })
+                                ->pluck('id')
+                                ->toArray();
+                            
+                            // Filter out levels that are already validated
+                            $levelsToAdd = array_diff($levelsToAdd, $alreadyValidatedLevels);
+                            
+                            $allNewLevelsToValidate = array_merge($allNewLevelsToValidate, $levelsToAdd);
+                        }
+                    }
+                    
+                    // Remove duplicates
+                    $allNewLevelsToValidate = array_unique($allNewLevelsToValidate);
+                    $newLevelsCount = count($allNewLevelsToValidate);
+                    
+                    // Prepare data for insertion
+                    $levelsData = [];
+                    foreach ($allNewLevelsToValidate as $levelId) {
+                        $levelsData[] = [
+                            'student_id' => $validatedData['student_id'],
+                            'teacher_id' => $report->teacher_id,
+                            'level_id' => $levelId,
+                            'status' => 'valid',
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ];
+                    }
+                    
+                    // Insert only new levels
+                    if (!empty($levelsData)) {
+                        student_level::insertOrIgnore($levelsData);
+                    }
                 }
                 
-                student_level::insertOrIgnore($levelsData);
+                // Total levels count (including already validated ones)
+                $levelsCount = count($selectedLevelIds);
+            }
+
+            $message = "تم حفظ التقرير بنجاح!";
+            if ($levelsCount > 0) {
+                if ($newLevelsCount > 0) {
+                    $message .= " ($newLevelsCount مستوى جديد تم التحقق منه)";
+                } else {
+                    $message .= " (جميع المستويات المحددة محققة مسبقاً)";
+                }
             }
 
             return redirect()->route('Exam_Grade.index')
-                ->with('success', "تم حفظ التقرير بنجاح! ($levelsCount مستوى تم التحقق منه)");
+                ->with('success', $message);
 
         } catch (\Exception $e) {
             return redirect()->back()
@@ -242,56 +344,199 @@ class Exam_grade_Controller extends Controller
         }
     }
 
-    public function edit(exam_schol_weeckly_report $Exam_Grade)
-    {
-        $exam_grade = DB::table('exam_schol_weeckly_reports')
-            ->join('students', 'exam_schol_weeckly_reports.student_id', '=', 'students.id')
-            ->join('users as student_users', 'students.id', '=', 'student_users.id')
-            ->join('teachers', 'exam_schol_weeckly_reports.teacher_id', '=', 'teachers.id')
-            ->join('users as teacher_users', 'teachers.id', '=', 'teacher_users.id')
-            ->join('exam_weecklies', 'exam_schol_weeckly_reports.exam_weecklies_id', '=', 'exam_weecklies.id')
-            ->where('exam_schol_weeckly_reports.id', $Exam_Grade->id)
-            ->select(
-                'student_users.name AS student_name',
-                'student_users.id AS student_id',
-                'teacher_users.name AS teacher_name',
-                'exam_weecklies.title AS exam_weeckly_title',
-                'exam_weecklies.id AS exam_weeckly_id',
-                'exam_schol_weeckly_reports.exam_total_point AS exam_weeckly_total_point',
-                'exam_schol_weeckly_reports.exam_note AS exam_weeckly_note',
-                'exam_schol_weeckly_reports.created_at AS created_at',
-                'exam_schol_weeckly_reports.id AS exam_schol_weeckly_reports_id'
-            )
-            ->first();
-        
-        $exam_weeckly = exam_weeckly::all();
-        $results = User::join('students', 'users.id', '=', 'students.id')
-            ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
-            ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
-            ->where('classrooms.teacher_id', 12)
-            ->select('users.name', 'students.*')
-            ->get();
-        
-        return view('teacher-dashboard.Academic_Reports.Exam_Grades.update', compact('exam_grade', 'exam_weeckly', 'results'));
-    }
 
-    public function update(exam_schol_weeckly_report $Exam_Grade, Request $request)
-    {
+   public function edit(exam_schol_weeckly_report $Exam_Grade)
+{
+    $teacherId = 12;
+    
+    // Get the current exam grade with student and exam details
+    $exam_grade = DB::table('exam_schol_weeckly_reports')
+        ->join('students', 'exam_schol_weeckly_reports.student_id', '=', 'students.id')
+        ->join('users as student_users', 'students.id', '=', 'student_users.id')
+        ->join('teachers', 'exam_schol_weeckly_reports.teacher_id', '=', 'teachers.id')
+        ->join('users as teacher_users', 'teachers.id', '=', 'teacher_users.id')
+        ->join('exam_weecklies', 'exam_schol_weeckly_reports.exam_weecklies_id', '=', 'exam_weecklies.id')
+        ->join('classrooms', 'exam_weecklies.classroom_id', '=', 'classrooms.id')
+        ->where('exam_schol_weeckly_reports.id', $Exam_Grade->id)
+        ->select(
+            'student_users.name AS student_name',
+            'student_users.id AS student_id',
+            'teacher_users.name AS teacher_name',
+            'exam_weecklies.title AS exam_weeckly_title',
+            'exam_weecklies.id AS exam_weeckly_id',
+            'exam_weecklies.classroom_id AS classroom_id',
+            'classrooms.class_name AS classroom_name',
+            'exam_schol_weeckly_reports.exam_total_point AS exam_weeckly_total_point',
+            'exam_schol_weeckly_reports.exam_note AS exam_weeckly_note',
+            'exam_schol_weeckly_reports.created_at AS created_at',
+            'exam_schol_weeckly_reports.id AS exam_schol_weeckly_reports_id'
+        )
+        ->first();
+    
+    if (!$exam_grade) {
+        abort(404, 'التقرير غير موجود');
+    }
+    
+    // Get already validated levels for this student in this report
+    $alreadyValidatedLevels = DB::table('student_levels')
+        ->where('student_id', $exam_grade->student_id)
+        ->where('teacher_id', $teacherId)
+        ->where('status', 'valid')
+        ->pluck('level_id')
+        ->toArray();
+    
+    // Get classrooms for dropdown
+    $classrooms = classroom::where('teacher_id', $teacherId)->get();
+    
+    return view('teacher-dashboard.Academic_Reports.Exam_Grades.update', compact(
+        'exam_grade', 
+        'classrooms',
+        'alreadyValidatedLevels'
+    ));
+}
+
+   public function update(exam_schol_weeckly_report $Exam_Grade, Request $request)
+{
+    try {
         $validatedData = $request->validate([
             'student_id' => 'required|exists:students,id',
             'exam_weecklies_id' => 'required|exists:exam_weecklies,id',
-            'exam_total_point' => 'required|integer|min:0|max:20',
+            'exam_total_point' => 'required|numeric|min:0|max:20',
             'exam_note' => 'required|string|max:255',
+            'selected_levels' => 'nullable|array',
+            'selected_levels.*' => 'exists:level_skills,id'
         ]);
 
+        $teacherId = 12;
+        
+        // Update the report
         $Exam_Grade->student_id = $validatedData['student_id'];
         $Exam_Grade->exam_weecklies_id = $validatedData['exam_weecklies_id'];
         $Exam_Grade->exam_total_point = $validatedData['exam_total_point'];
         $Exam_Grade->exam_note = $validatedData['exam_note'];
         $Exam_Grade->save();
 
-        return redirect()->route('Exam_Grade.index')->with('success', 'تم تحديث التقرير بنجاح!');
+        // Handle levels update
+        $levelsCount = 0;
+        $newLevelsCount = 0;
+        
+        // Get current validated levels for this student from this teacher
+        $currentValidatedLevels = DB::table('student_levels')
+            ->where('student_id', $validatedData['student_id'])
+            ->where('teacher_id', $teacherId)
+            ->where('status', 'valid')
+            ->pluck('level_id')
+            ->toArray();
+        
+        if (!empty($validatedData['selected_levels'])) {
+            $selectedLevelIds = $validatedData['selected_levels'];
+            
+            // Filter out levels that are already validated
+            $newLevelsToValidate = array_diff($selectedLevelIds, $currentValidatedLevels);
+            
+            // Apply hierarchical logic for NEW levels only
+            if (!empty($newLevelsToValidate)) {
+                // Get level details including skill_id and level type
+                $newLevelsDetails = DB::table('level_skills')
+                    ->whereIn('id', $newLevelsToValidate)
+                    ->get(['id', 'skill_id', 'level']);
+                
+                // Group by skill
+                $skillsLevels = [];
+                foreach ($newLevelsDetails as $level) {
+                    $skillId = $level->skill_id;
+                    if (!isset($skillsLevels[$skillId])) {
+                        $skillsLevels[$skillId] = [];
+                    }
+                    $skillsLevels[$skillId][] = $level;
+                }
+                
+                // Apply hierarchical logic for new levels
+                $allNewLevelsToValidate = [];
+                
+                foreach ($skillsLevels as $skillId => $levels) {
+                    // Find the highest level selected for this skill
+                    $highestLevel = null;
+                    $highestLevelOrder = 0;
+                    $levelOrder = ['level_1' => 1, 'level_2' => 2, 'level_3' => 3];
+                    
+                    foreach ($levels as $level) {
+                        $order = $levelOrder[$level->level] ?? 0;
+                        if ($order > $highestLevelOrder) {
+                            $highestLevelOrder = $order;
+                            $highestLevel = $level;
+                        }
+                    }
+                    
+                    if ($highestLevel) {
+                        // Get all lower levels for this skill based on the highest selected level
+                        $levelsToAdd = DB::table('level_skills')
+                            ->where('skill_id', $skillId)
+                            ->where(function($query) use ($levelOrder, $highestLevelOrder) {
+                                foreach ($levelOrder as $level => $order) {
+                                    if ($order <= $highestLevelOrder) {
+                                        $query->orWhere('level', $level);
+                                    }
+                                }
+                            })
+                            ->pluck('id')
+                            ->toArray();
+                        
+                        // Filter out levels that are already validated
+                        $levelsToAdd = array_diff($levelsToAdd, $currentValidatedLevels);
+                        
+                        $allNewLevelsToValidate = array_merge($allNewLevelsToValidate, $levelsToAdd);
+                    }
+                }
+                
+                // Remove duplicates
+                $allNewLevelsToValidate = array_unique($allNewLevelsToValidate);
+                $newLevelsCount = count($allNewLevelsToValidate);
+                
+                // Prepare data for insertion
+                $levelsData = [];
+                foreach ($allNewLevelsToValidate as $levelId) {
+                    $levelsData[] = [
+                        'student_id' => $validatedData['student_id'],
+                        'teacher_id' => $teacherId,
+                        'level_id' => $levelId,
+                        'status' => 'valid',
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
+                }
+                
+                // Insert only new levels
+                if (!empty($levelsData)) {
+                    student_level::insertOrIgnore($levelsData);
+                }
+            }
+            
+            // Total levels count (including already validated ones)
+            $levelsCount = count($selectedLevelIds);
+        } else {
+            // If no levels selected, keep existing validated levels
+            $levelsCount = count($currentValidatedLevels);
+        }
+
+        $message = "تم تحديث التقرير بنجاح!";
+        if ($levelsCount > 0) {
+            if ($newLevelsCount > 0) {
+                $message .= " ($newLevelsCount مستوى جديد تم التحقق منه)";
+            } else {
+                $message .= " (تم الاحتفاظ بالمستويات المحققة مسبقاً)";
+            }
+        }
+
+        return redirect()->route('Exam_Grade.index')
+            ->with('success', $message);
+
+    } catch (\Exception $e) {
+        return redirect()->back()
+            ->withInput()
+            ->with('error', 'حدث خطأ: ' . $e->getMessage());
     }
+}
 
     public function update_status(exam_schol_weeckly_report $Exam_Grade)
     {

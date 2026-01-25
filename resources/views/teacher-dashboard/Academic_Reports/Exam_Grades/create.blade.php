@@ -105,29 +105,53 @@
                         <div>
                             <h3 class="text-lg font-semibold text-gray-800">المهارات المحققة</h3>
                             <p class="text-sm text-gray-500">حدد المهارات التي حققها الطالب في هذا الاختبار</p>
+                            <p class="text-xs text-blue-600 mt-1">
+                                <span class="font-semibold">ملاحظة:</span> عند تحديد مستوى أعلى (مثل مستوى 3)، يتم تلقائيًا تحديد المستويات الأدنى (2 و 1)
+                            </p>
+                            <p class="text-xs text-green-600 mt-1">
+                                <span class="font-semibold">✓ المستويات المحققة مسبقاً:</span> معلمة بنجاح ولا يمكن إلغاء تحديدها
+                            </p>
                         </div>
                         <div class="flex items-center gap-2">
                             <span id="selected_count" class="text-sm px-3 py-1 bg-gray-100 rounded-full">
                                 0 مستويات محددة
                             </span>
+                            <span id="new_levels_count" class="text-sm px-3 py-1 bg-blue-100 text-blue-700 rounded-full hidden">
+                                0 جديدة
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Already Validated Notification -->
+                    <div id="already_validated_notification" class="hidden mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-blue-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <p class="text-blue-800 font-medium">معلومات</p>
+                                <p class="text-blue-700 text-sm mt-1" id="already_validated_text">
+                                    <!-- Will be filled by JavaScript -->
+                                </p>
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Action Buttons -->
                     <div class="flex flex-wrap gap-2 mb-4">
-                        <button type="button" id="select_all_skills" 
+                        <button type="button" id="select_all_new" 
                                 class="text-sm bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg border border-blue-200 flex items-center gap-1 transition duration-150">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                             </svg>
-                            تحديد الكل
+                            تحديد جميع الجديدة
                         </button>
-                        <button type="button" id="deselect_all_skills" 
+                        <button type="button" id="deselect_all_new" 
                                 class="text-sm bg-gray-50 hover:bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg border border-gray-200 flex items-center gap-1 transition duration-150">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
-                            إلغاء الكل
+                            إلغاء جميع الجديدة
                         </button>
                     </div>
                     
@@ -213,15 +237,20 @@
         const skillsContainer = document.getElementById('skills_container');
         const skillsLoading = document.getElementById('skills_loading');
         const noSkills = document.getElementById('no_skills');
+        const alreadyValidatedNotification = document.getElementById('already_validated_notification');
+        const alreadyValidatedText = document.getElementById('already_validated_text');
         const selectedSkillsInputs = document.getElementById('selected_skills_inputs');
         const selectedCount = document.getElementById('selected_count');
+        const newLevelsCount = document.getElementById('new_levels_count');
         const submitBtn = document.querySelector('button[type="submit"]');
         const submitText = document.getElementById('submit_text');
         
         // State
         let selectedLevels = new Set();
+        let alreadyValidatedLevels = new Set();
         let currentClassroomId = null;
         let currentStudentId = null;
+        let skillLevelsData = {};
 
         // Classroom Change
         classroomSelect.addEventListener('change', async function() {
@@ -317,7 +346,7 @@
         examSelect.addEventListener('change', async function() {
             const examId = this.value;
             
-            if (!examId) {
+            if (!examId || !currentStudentId) {
                 hideSkillsSection();
                 return;
             }
@@ -327,21 +356,49 @@
             skillsLoading.classList.remove('hidden');
             skillsContainer.innerHTML = '';
             noSkills.classList.add('hidden');
+            alreadyValidatedNotification.classList.add('hidden');
             
             // Reset selection
             selectedLevels.clear();
+            alreadyValidatedLevels.clear();
+            skillLevelsData = {};
             updateSelectedCount();
             updateSelectedInputs();
             
             try {
-                // Fetch skills for this exam
-                const response = await fetch(`/ajax/get-exam-skills/${examId}`);
+                // Fetch skills for this exam, passing student ID
+                const response = await fetch(`/ajax/get-exam-skills/${examId}/${currentStudentId}`);
                 const data = await response.json();
                 
                 skillsLoading.classList.add('hidden');
                 
                 if (data.success && data.skills && data.skills.length > 0) {
+                    // Store already validated levels
+                    if (data.already_validated_levels) {
+                        data.already_validated_levels.forEach(levelId => {
+                            alreadyValidatedLevels.add(levelId.toString());
+                        });
+                    }
+                    
+                    // Store skill hierarchy data
+                    data.skills.forEach(skill => {
+                        skillLevelsData[skill.skill_id] = {
+                            levels: skill.levels.map(level => ({
+                                id: level.level_id.toString(),
+                                type: level.level_type,
+                                order: getLevelOrder(level.level_type),
+                                already_validated: level.already_validated
+                            }))
+                        };
+                    });
+                    
                     renderSkills(data.skills);
+                    
+                    // Show notification about already validated levels
+                    if (data.already_validated_count > 0) {
+                        alreadyValidatedNotification.classList.remove('hidden');
+                        alreadyValidatedText.textContent = `هناك ${data.already_validated_count} مستوى محقق مسبقاً. هذه المستويات معلمة ولا يمكن إلغاء تحديدها.`;
+                    }
                 } else {
                     noSkills.classList.remove('hidden');
                 }
@@ -355,12 +412,23 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                         <p>حدث خطأ في تحميل المهارات</p>
+                        <p class="text-sm text-red-400 mt-1">${error.message}</p>
                     </div>
                 `;
             }
         });
 
-        // Render Skills
+        // Get level order for hierarchy
+        function getLevelOrder(levelType) {
+            const order = {
+                'level_1': 1,
+                'level_2': 2,
+                'level_3': 3
+            };
+            return order[levelType] || 0;
+        }
+
+        // Render Skills - Show ALL levels
         function renderSkills(skills) {
             skillsContainer.innerHTML = '';
             
@@ -398,27 +466,52 @@
                         
                         <!-- Levels -->
                         <div class="space-y-2 pl-2 border-l-2 border-gray-200 ml-4">
-                            ${skill.levels.map(level => `
-                                <div class="level-item flex items-center gap-3 p-2 bg-white rounded border border-gray-100 hover:bg-blue-50 transition duration-150">
-                                    <input type="checkbox" 
-                                           id="level_${level.level_id}" 
-                                           name="level_ids[]" 
-                                           value="${level.level_id}"
-                                           class="level-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                                           data-skill-id="${skill.skill_id}">
-                                    
-                                    <div class="flex-1">
-                                        <label for="level_${level.level_id}" class="cursor-pointer block">
-                                            <div class="font-medium text-gray-700">${level.level_name}</div>
-                                            ${level.level_description ? 
-                                                `<div class="text-sm text-gray-500 mt-1">${level.level_description}</div>` 
-                                                : ''}
-                                        </label>
+                            ${skill.levels.map(level => {
+                                const isAlreadyValidated = alreadyValidatedLevels.has(level.level_id.toString());
+                                const isChecked = isAlreadyValidated || selectedLevels.has(level.level_id.toString());
+                                const isDisabled = isAlreadyValidated;
+                                
+                                return `
+                                    <div class="level-item flex items-center gap-3 p-2 ${isAlreadyValidated ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100'} rounded border hover:bg-blue-50 transition duration-150">
+                                        <input type="checkbox" 
+                                               id="level_${level.level_id}" 
+                                               name="level_ids[]" 
+                                               value="${level.level_id}"
+                                               ${isChecked ? 'checked' : ''}
+                                               ${isDisabled ? 'disabled' : ''}
+                                               class="level-checkbox h-4 w-4 ${isAlreadyValidated ? 'text-green-600 cursor-not-allowed' : 'text-blue-600'} rounded border-gray-300 focus:ring-blue-500"
+                                               data-skill-id="${skill.skill_id}"
+                                               data-level-type="${level.level_type}"
+                                               data-level-order="${getLevelOrder(level.level_type)}"
+                                               data-already-validated="${isAlreadyValidated}">
+                                        
+                                        <div class="flex-1">
+                                            <label for="level_${level.level_id}" class="cursor-pointer block">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="font-medium ${isAlreadyValidated ? 'text-green-700' : 'text-gray-700'}">${level.level_name}</span>
+                                                    <span class="text-xs px-2 py-0.5 rounded-full ${
+                                                        level.level_type === 'level_3' ? 'bg-purple-100 text-purple-800' :
+                                                        level.level_type === 'level_2' ? 'bg-blue-100 text-blue-800' :
+                                                        'bg-green-100 text-green-800'
+                                                    }">
+                                                        ${level.level_type.replace('level_', 'مستوى ')}
+                                                    </span>
+                                                    ${isAlreadyValidated ? `
+                                                        <span class="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-800">
+                                                            ✓ محقق سابقاً
+                                                        </span>
+                                                    ` : ''}
+                                                </div>
+                                                ${level.level_description ? 
+                                                    `<div class="text-sm ${isAlreadyValidated ? 'text-green-600' : 'text-gray-500'} mt-1">${level.level_description}</div>` 
+                                                    : ''}
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="w-3 h-3 rounded-full ${isAlreadyValidated ? 'bg-green-500' : isChecked ? 'bg-blue-500' : 'bg-gray-200'} level-status"></div>
                                     </div>
-                                    
-                                    <div class="w-3 h-3 rounded-full bg-gray-200 level-status"></div>
-                                </div>
-                            `).join('')}
+                                `;
+                            }).join('')}
                         </div>
                     </div>
                 `;
@@ -428,6 +521,7 @@
             
             // Add event listeners
             addCheckboxListeners();
+            updateSelectedCount();
         }
 
         // Add Event Listeners to Checkboxes
@@ -436,12 +530,38 @@
             document.querySelectorAll('.skill-group-checkbox').forEach(checkbox => {
                 checkbox.addEventListener('change', function() {
                     const skillId = this.dataset.skillId;
-                    const levelCheckboxes = document.querySelectorAll(`.level-checkbox[data-skill-id="${skillId}"]`);
+                    const levelCheckboxes = document.querySelectorAll(`.level-checkbox[data-skill-id="${skillId}"]:not([disabled])`);
                     
-                    levelCheckboxes.forEach(cb => {
-                        cb.checked = this.checked;
-                        handleLevelSelection(cb.dataset.skillId, cb.value, this.checked);
-                    });
+                    // Apply hierarchical selection when selecting all
+                    if (this.checked) {
+                        // Find the highest level to select (only from enabled checkboxes)
+                        let highestLevelOrder = 0;
+                        levelCheckboxes.forEach(cb => {
+                            const order = parseInt(cb.dataset.levelOrder);
+                            if (order > highestLevelOrder) {
+                                highestLevelOrder = order;
+                            }
+                        });
+                        
+                        // Select all levels up to the highest (only enabled ones)
+                        levelCheckboxes.forEach(cb => {
+                            const order = parseInt(cb.dataset.levelOrder);
+                            if (order <= highestLevelOrder) {
+                                if (!cb.checked) {
+                                    cb.checked = true;
+                                    selectedLevels.add(cb.value);
+                                }
+                            }
+                        });
+                    } else {
+                        // Deselect all (only enabled ones)
+                        levelCheckboxes.forEach(cb => {
+                            if (cb.checked) {
+                                cb.checked = false;
+                                selectedLevels.delete(cb.value);
+                            }
+                        });
+                    }
                     
                     updateLevelStatus(skillId);
                     updateSelectedCount();
@@ -450,32 +570,69 @@
             });
             
             // Individual Level Checkboxes
-            document.querySelectorAll('.level-checkbox').forEach(checkbox => {
+            document.querySelectorAll('.level-checkbox:not([disabled])').forEach(checkbox => {
                 checkbox.addEventListener('change', function() {
-                    handleLevelSelection(this.dataset.skillId, this.value, this.checked);
-                    updateSkillGroupCheckbox(this.dataset.skillId);
-                    updateLevelStatus(this.dataset.skillId);
+                    const skillId = this.dataset.skillId;
+                    const levelOrder = parseInt(this.dataset.levelOrder);
+                    const isChecked = this.checked;
+                    
+                    if (isChecked) {
+                        // Select this level
+                        selectedLevels.add(this.value);
+                        
+                        // Get all levels for this skill (only enabled ones)
+                        const allLevelsInSkill = document.querySelectorAll(`.level-checkbox[data-skill-id="${skillId}"]:not([disabled])`);
+                        
+                        // Select all lower levels
+                        allLevelsInSkill.forEach(cb => {
+                            const cbOrder = parseInt(cb.dataset.levelOrder);
+                            if (cbOrder < levelOrder && !cb.checked) {
+                                cb.checked = true;
+                                selectedLevels.add(cb.value);
+                            }
+                        });
+                    } else {
+                        // Deselect this level
+                        selectedLevels.delete(this.value);
+                        
+                        // Check if we need to deselect higher levels
+                        const allLevelsInSkill = document.querySelectorAll(`.level-checkbox[data-skill-id="${skillId}"]:not([disabled])`);
+                        let higherLevelSelected = false;
+                        
+                        // Check if any higher level is selected
+                        allLevelsInSkill.forEach(cb => {
+                            const cbOrder = parseInt(cb.dataset.levelOrder);
+                            if (cbOrder > levelOrder && cb.checked) {
+                                higherLevelSelected = true;
+                            }
+                        });
+                        
+                        // If no higher level is selected, deselect all lower levels
+                        if (!higherLevelSelected) {
+                            allLevelsInSkill.forEach(cb => {
+                                const cbOrder = parseInt(cb.dataset.levelOrder);
+                                if (cbOrder <= levelOrder && cb.checked) {
+                                    cb.checked = false;
+                                    selectedLevels.delete(cb.value);
+                                }
+                            });
+                        }
+                    }
+                    
+                    updateSkillGroupCheckbox(skillId);
+                    updateLevelStatus(skillId);
                     updateSelectedCount();
                     updateSelectedInputs();
                 });
             });
         }
 
-        // Handle Level Selection
-        function handleLevelSelection(skillId, levelId, isChecked) {
-            if (isChecked) {
-                selectedLevels.add(levelId);
-            } else {
-                selectedLevels.delete(levelId);
-            }
-        }
-
         // Update Skill Group Checkbox State
         function updateSkillGroupCheckbox(skillId) {
-            const levelCheckboxes = document.querySelectorAll(`.level-checkbox[data-skill-id="${skillId}"]`);
+            const levelCheckboxes = document.querySelectorAll(`.level-checkbox[data-skill-id="${skillId}"]:not([disabled])`);
             const skillCheckbox = document.querySelector(`.skill-group-checkbox[data-skill-id="${skillId}"]`);
             
-            if (levelCheckboxes.length === 0) return;
+            if (!skillCheckbox || levelCheckboxes.length === 0) return;
             
             const checkedCount = Array.from(levelCheckboxes).filter(cb => cb.checked).length;
             
@@ -494,25 +651,39 @@
         // Update Level Status Dots
         function updateLevelStatus(skillId) {
             const levelItems = document.querySelectorAll(`.level-checkbox[data-skill-id="${skillId}"]`);
-            levelItems.forEach((checkbox, index) => {
+            levelItems.forEach((checkbox) => {
                 const statusDot = checkbox.closest('.level-item').querySelector('.level-status');
-                if (checkbox.checked) {
-                    statusDot.className = 'w-3 h-3 rounded-full bg-green-500 level-status';
-                } else {
-                    statusDot.className = 'w-3 h-3 rounded-full bg-gray-200 level-status';
+                if (statusDot) {
+                    if (checkbox.disabled) {
+                        statusDot.className = 'w-3 h-3 rounded-full bg-green-500 level-status';
+                    } else if (checkbox.checked) {
+                        statusDot.className = 'w-3 h-3 rounded-full bg-blue-500 level-status';
+                    } else {
+                        statusDot.className = 'w-3 h-3 rounded-full bg-gray-200 level-status';
+                    }
                 }
             });
         }
 
         // Update Selected Count
         function updateSelectedCount() {
-            selectedCount.textContent = `${selectedLevels.size} مستويات محددة`;
+            const totalSelected = selectedLevels.size + alreadyValidatedLevels.size;
+            const newSelectedCount = selectedLevels.size;
             
-            // Update count badge color
-            if (selectedLevels.size > 0) {
+            selectedCount.textContent = `${totalSelected} مستويات محددة`;
+            newLevelsCount.textContent = `${newSelectedCount} جديدة`;
+            
+            // Update count badge colors
+            if (totalSelected > 0) {
                 selectedCount.className = 'text-sm text-green-700 px-3 py-1 bg-green-100 rounded-full';
             } else {
                 selectedCount.className = 'text-sm text-gray-600 px-3 py-1 bg-gray-100 rounded-full';
+            }
+            
+            if (newSelectedCount > 0) {
+                newLevelsCount.classList.remove('hidden');
+            } else {
+                newLevelsCount.classList.add('hidden');
             }
         }
 
@@ -520,7 +691,10 @@
         function updateSelectedInputs() {
             selectedSkillsInputs.innerHTML = '';
             
-            selectedLevels.forEach(levelId => {
+            // Add all selected levels (including already validated ones)
+            const allSelected = [...selectedLevels];
+            
+            allSelected.forEach(levelId => {
                 const input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = 'selected_levels[]';
@@ -529,36 +703,40 @@
             });
         }
 
-        // Select All Button
-        document.getElementById('select_all_skills').addEventListener('click', function() {
-            document.querySelectorAll('.level-checkbox').forEach(checkbox => {
-                checkbox.checked = true;
-                handleLevelSelection(checkbox.dataset.skillId, checkbox.value, true);
-                updateSkillGroupCheckbox(checkbox.dataset.skillId);
-                updateLevelStatus(checkbox.dataset.skillId);
+        // Select All NEW Button
+        document.getElementById('select_all_new').addEventListener('click', function() {
+            document.querySelectorAll('.level-checkbox:not([disabled])').forEach(checkbox => {
+                if (!checkbox.checked) {
+                    checkbox.checked = true;
+                    selectedLevels.add(checkbox.value);
+                }
             });
             
+            // Update skill group checkboxes
             document.querySelectorAll('.skill-group-checkbox').forEach(cb => {
-                cb.checked = true;
-                cb.indeterminate = false;
+                const skillId = cb.dataset.skillId;
+                updateSkillGroupCheckbox(skillId);
+                updateLevelStatus(skillId);
             });
             
             updateSelectedCount();
             updateSelectedInputs();
         });
 
-        // Deselect All Button
-        document.getElementById('deselect_all_skills').addEventListener('click', function() {
-            document.querySelectorAll('.level-checkbox').forEach(checkbox => {
-                checkbox.checked = false;
-                handleLevelSelection(checkbox.dataset.skillId, checkbox.value, false);
-                updateSkillGroupCheckbox(checkbox.dataset.skillId);
-                updateLevelStatus(checkbox.dataset.skillId);
+        // Deselect All NEW Button
+        document.getElementById('deselect_all_new').addEventListener('click', function() {
+            document.querySelectorAll('.level-checkbox:not([disabled])').forEach(checkbox => {
+                if (checkbox.checked) {
+                    checkbox.checked = false;
+                    selectedLevels.delete(checkbox.value);
+                }
             });
             
+            // Update skill group checkboxes
             document.querySelectorAll('.skill-group-checkbox').forEach(cb => {
-                cb.checked = false;
-                cb.indeterminate = false;
+                const skillId = cb.dataset.skillId;
+                updateSkillGroupCheckbox(skillId);
+                updateLevelStatus(skillId);
             });
             
             updateSelectedCount();
@@ -585,7 +763,6 @@
 
         function showLoading(type, show) {
             const loadingDiv = document.getElementById(`${type}_loading`);
-            const select = type === 'students' ? studentSelect : examSelect;
             
             if (show) {
                 loadingDiv.classList.remove('hidden');
@@ -606,8 +783,12 @@
             skillsSection.style.display = 'none';
             skillsContainer.innerHTML = '';
             selectedLevels.clear();
+            alreadyValidatedLevels.clear();
+            skillLevelsData = {};
             updateSelectedCount();
             updateSelectedInputs();
+            alreadyValidatedNotification.classList.add('hidden');
+            newLevelsCount.classList.add('hidden');
         }
 
         function resetForm() {
@@ -628,9 +809,17 @@
                 return false;
             }
             
-            // Ask for confirmation if no skills selected
-            if (selectedLevels.size === 0) {
+            // Calculate new levels count
+            const newLevelsCountValue = selectedLevels.size;
+            
+            if (newLevelsCountValue === 0 && alreadyValidatedLevels.size === 0) {
                 const proceed = confirm('لم يتم تحديد أي مهارات. هل تريد المتابعة بدون تحديد مهارات؟');
+                if (!proceed) {
+                    e.preventDefault();
+                    return false;
+                }
+            } else if (newLevelsCountValue === 0 && alreadyValidatedLevels.size > 0) {
+                const proceed = confirm('جميع المستويات المحددة محققة مسبقاً. هل تريد المتابعة؟');
                 if (!proceed) {
                     e.preventDefault();
                     return false;
@@ -660,6 +849,16 @@
     input[type="checkbox"]:checked {
         background-color: #2563eb;
         border-color: #2563eb;
+    }
+    
+    input[type="checkbox"]:disabled {
+        background-color: #10b981;
+        border-color: #10b981;
+    }
+    
+    input[type="checkbox"]:disabled:checked {
+        background-color: #10b981;
+        border-color: #10b981;
     }
     
     .skill-group-checkbox:indeterminate {
