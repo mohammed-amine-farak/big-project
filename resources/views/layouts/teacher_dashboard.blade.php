@@ -284,6 +284,14 @@
                                 </span>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{route('teacher.exams.list')}}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                     الامتحانات
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 

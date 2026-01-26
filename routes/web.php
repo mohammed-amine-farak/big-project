@@ -141,6 +141,11 @@ Route::prefix('ajax')->group(function () {
     Route::get('/get-exam-skills/{examId}/{studentId}', [Exam_grade_Controller::class, 'getExamSkillsAjax']);
 });
 Route::get('/Exam_Grade/show/{Exam_Grade}',[Exam_grade_Controller::class,'show'])->name('Exam_Grade.show');
+Route::get('/teacher/exams', [Exam_grade_Controller::class, 'examsList'])->name('teacher.exams.list');
+ Route::get('/exams/{id}/view', [Exam_grade_Controller::class, 'viewExam'])->name('teacher.exams.view');
+ Route::get('/exams/{id}/print', [Exam_grade_Controller::class, 'printExam'])->name('teacher.exams.print');
+
+
 
 
 Route::get('/StudentPsychology',[StudentPsychologyController::class,'index'])->name('StudentPsychology.index');

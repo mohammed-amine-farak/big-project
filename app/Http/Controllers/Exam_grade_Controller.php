@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\exam_weeckly;
 use App\Models\exam_schol_weeckly_report;
 use App\Models\student_level;
+use App\Models\subject;
 use Illuminate\Support\Facades\DB;
 
 class Exam_grade_Controller extends Controller
@@ -672,5 +673,55 @@ class Exam_grade_Controller extends Controller
         'level3Count',
         'previousReport'
     ));
+}
+// In your controller
+public function examsList(Request $request)
+{
+    // Start query with relationships
+    $query = exam_weeckly::with([
+        'classroom',
+        'subject',
+        'weeklySkills.levelSkill.skill'
+    ]);
+
+    // Apply classroom filter
+    if ($request->filled('classroom')) {
+        $query->where('classroom_id', $request->classroom);
+    }
+
+    // Paginate results
+    $exams = $query->orderBy('created_at', 'desc')
+                  ->paginate(15)
+                  ->withQueryString();
+
+    // Get classrooms for filter dropdown
+    $classrooms = Classroom::all();
+
+    return view('teacher-dashboard.Academic_Reports.Exam_Grades.exam', compact('exams', 'classrooms'));
+}
+// View single exam
+public function viewExam($id)
+{
+    $exam = exam_weeckly::with([
+        'classroom',
+        'subject',
+        'researcher',
+        'weeklySkills.levelSkill.skill'
+    ])->findOrFail($id);
+
+    return view('teacher-dashboard.Academic_Reports.Exam_Grades.view', compact('exam'));
+}
+
+// Print exam page
+public function printExam($id)
+{
+    $exam = exam_weeckly::with([
+        'classroom',
+        'subject',
+        'researcher',
+        'weeklySkills.levelSkill.skill'
+    ])->findOrFail($id);
+
+    return view('teacher-dashboard.Academic_Reports.Exam_Grades.print', compact('exam'));
 }
 }

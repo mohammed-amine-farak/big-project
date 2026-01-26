@@ -27,6 +27,10 @@ class exam_weeckly extends Model
       
         return $this->belongsTo(Subject::class, 'subject_id');
     }
+    public function researcher()
+    {
+        return $this->belongsTo(Researchers::class, 'researcher_id');
+    }
     public function weeklySkills()
     {
         return $this->hasMany(exams_weekly_skills::class, 'exams_weekly_id');

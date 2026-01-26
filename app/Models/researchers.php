@@ -18,7 +18,11 @@ class Researchers extends Model
     {
         return $this->hasMany(lesson_report::class);
     }
-
+   public function exam_weecly()
+    {
+        return $this->hasMany(exam_weeckly::class);
+    }
+    
     public function adminReport()
     {
         return $this->hasMany(admine_report::class);
