@@ -95,60 +95,93 @@
         </div>
 
         <!-- File Section -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
-            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-gray-800">ملف الاختبار</h3>
-                    @if($exam->file_path)
-                    <span class="text-sm bg-green-100 text-green-600 px-3 py-1 rounded-full">
-                        ✓ يوجد ملف
-                    </span>
-                    @else
-                    <span class="text-sm bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full">
-                        ⚠ لا يوجد ملف
-                    </span>
-                    @endif
-                </div>
-            </div>
+        <!-- File Section - Fixed -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-800">ملف الاختبار</h3>
+            @php
+                // Try multiple paths
+                $filePath = $exam->file_path;
+                $fileExists = false;
+                $fileUrl = null;
+                
+                if ($filePath) {
+                    // Try direct public path
+                    if (file_exists(public_path($filePath))) {
+                        $fileExists = true;
+                        $fileUrl = asset($filePath);
+                    }
+                    // Try storage path
+                    elseif (file_exists(storage_path('app/public/' . $filePath))) {
+                        $fileExists = true;
+                        $fileUrl = asset('storage/' . $filePath);
+                    }
+                    // Try removing leading slash
+                    elseif (str_starts_with($filePath, '/')) {
+                        $cleanPath = ltrim($filePath, '/');
+                        if (file_exists(public_path($cleanPath))) {
+                            $fileExists = true;
+                            $fileUrl = asset($cleanPath);
+                        }
+                    }
+                }
+            @endphp
             
-            @if($exam->file_path && file_exists(public_path($exam->file_path)))
-            <div class="p-6">
-                <div class="text-center py-8 bg-blue-50 rounded-xl border-2 border-dashed border-blue-200">
-                    <div class="text-6xl mb-4 text-blue-500">📄</div>
-                    <p class="text-gray-600 mb-2">الاختبار متوفر كملف مرفق</p>
-                    <p class="text-sm text-gray-500 mb-6">يمكنك فتح أو تحميل الملف لعرض محتوى الاختبار</p>
-                    <div class="flex justify-center gap-4">
-                        <a href="{{ asset($exam->file_path) }}" 
-                           target="_blank"
-                           class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg text-sm flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
-                            فتح الملف
-                        </a>
-                        <a href="{{ asset($exam->file_path) }}" 
-                           download
-                           class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                            تحميل الملف
-                        </a>
-                    </div>
-                </div>
-            </div>
+            @if($fileExists)
+            <span class="text-sm bg-green-100 text-green-600 px-3 py-1 rounded-full">
+                ✓ يوجد ملف
+            </span>
             @else
-            <div class="p-6">
-                <div class="text-center py-12 bg-gray-50 rounded-xl">
-                    <div class="text-6xl mb-4 text-gray-400">📝</div>
-                    <p class="text-gray-600 mb-2">لا يوجد ملف للاختبار</p>
-                    <p class="text-sm text-gray-500">يمكنك طباعة هذه الصفحة كنسخة من الاختبار</p>
-                </div>
-            </div>
+            <span class="text-sm bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full">
+                ⚠ لا يوجد ملف
+            </span>
             @endif
         </div>
-
+    </div>
+    
+    @if($fileExists)
+    <div class="p-6">
+        <div class="text-center py-8 bg-blue-50 rounded-xl border-2 border-dashed border-blue-200">
+            <div class="text-6xl mb-4 text-blue-500">📄</div>
+            <p class="text-gray-600 mb-2">الاختبار متوفر كملف مرفق</p>
+            <div class="flex justify-center gap-4">
+                <a href="{{ $fileUrl }}" 
+                   target="_blank"
+                   class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg text-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    فتح الملف
+                </a>
+                <a href="{{ $fileUrl }}" 
+                   download
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    تحميل الملف
+                </a>
+            </div>
+        </div>
+    </div>
+    @else
+    <div class="p-6">
+        <div class="text-center py-12 bg-gray-50 rounded-xl">
+            <div class="text-6xl mb-4 text-gray-400">📝</div>
+            <p class="text-gray-600 mb-2">لا يوجد ملف للاختبار</p>
+            @if($exam->file_path)
+            <div class="bg-red-50 p-3 rounded-lg mt-4 mb-4">
+                <p class="text-sm text-red-600">مسار الملف في قاعدة البيانات:</p>
+                <p class="text-xs font-mono bg-gray-100 p-2 rounded mt-1">{{ $exam->file_path }}</p>
+            </div>
+            @endif
+            <p class="text-sm text-gray-500">يمكنك طباعة هذه الصفحة كنسخة من الاختبار</p>
+        </div>
+    </div>
+    @endif
+</div>
         <!-- Skills & Levels Section -->
         @if($exam->weeklySkills && $exam->weeklySkills->count() > 0)
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">

@@ -714,19 +714,20 @@ public function examsList(Request $request)
 }// View single exam
 public function viewExam($id)
 {
-     $exam = exam_weeckly::with([
+    $exam = exam_weeckly::with([
         'classroom',
         'subject',
         'researcher',
-        'weeklySkills' => function($query) {
-            $query->with([
-                'levelSkill.skill',
-                'levelSkill' => function($q) {
-                    $q->select('id', 'skill_id', 'level_name', 'level_description', 'level');
-                }
-            ]);
-        }
+        'weeklySkills.levelSkill.skill'
     ])->findOrFail($id);
+
+    // Debug file path
+    if ($exam->file_path) {
+        $publicPath = public_path($exam->file_path);
+        $storagePath = storage_path('app/public/' . $exam->file_path);
+        
+      
+    }
 
     return view('teacher-dashboard.Academic_Reports.Exam_Grades.view', compact('exam'));
 }
