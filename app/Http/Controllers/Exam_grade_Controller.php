@@ -678,12 +678,21 @@ class Exam_grade_Controller extends Controller
 public function examsList(Request $request)
 {
     // Start query with relationships
-    $query = exam_weeckly::with([
-        'classroom',
-        'subject',
-        'weeklySkills.levelSkill.skill'
-    ]);
+  $teacherId = 12; // Or get from auth: auth()->id()
 
+$query = exam_weeckly::with([
+    'weeklySkills',
+    'classroom',
+    'subject',
+    'weeklySkills.levelSkill.skill'
+])->whereHas('classroom', function($q) use ($teacherId) {
+    $q->where('teacher_id', $teacherId);
+})->whereHas('weeklySkills', function($q) {
+   $q->where('status', '=', 'send');
+})->get();
+
+// Execute the query
+dd($query);
     // Apply classroom filter
     if ($request->filled('classroom')) {
         $query->where('classroom_id', $request->classroom);
@@ -702,11 +711,18 @@ public function examsList(Request $request)
 // View single exam
 public function viewExam($id)
 {
-    $exam = exam_weeckly::with([
+     $exam = exam_weeckly::with([
         'classroom',
         'subject',
         'researcher',
-        'weeklySkills.levelSkill.skill'
+        'weeklySkills' => function($query) {
+            $query->with([
+                'levelSkill.skill',
+                'levelSkill' => function($q) {
+                    $q->select('id', 'skill_id', 'level_name', 'level_description', 'level');
+                }
+            ]);
+        }
     ])->findOrFail($id);
 
     return view('teacher-dashboard.Academic_Reports.Exam_Grades.view', compact('exam'));
