@@ -677,38 +677,41 @@ class Exam_grade_Controller extends Controller
 // In your controller
 public function examsList(Request $request)
 {
-    // Start query with relationships
-  $teacherId = 12; // Or get from auth: auth()->id()
+    $teacherId = 12; // Or get from auth: auth()->id()
 
-$query = exam_weeckly::with([
-    'weeklySkills',
-    'classroom',
-    'subject',
-    'weeklySkills.levelSkill.skill'
-])->whereHas('classroom', function($q) use ($teacherId) {
-    $q->where('teacher_id', $teacherId);
-})->whereHas('weeklySkills', function($q) {
-   $q->where('status', '=', 'send');
-})->get();
+    $query = exam_weeckly::with([
+        'weeklySkills',
+        'classroom',
+        'subject',
+        'weeklySkills.levelSkill.skill'
+    ])->whereHas('classroom', function($q) use ($teacherId) {
+        $q->where('teacher_id', $teacherId);
+    })->whereHas('weeklySkills', function($q) {
+        $q->where('status', '=', 'send');
+    });
 
-// Execute the query
-dd($query);
     // Apply classroom filter
     if ($request->filled('classroom')) {
         $query->where('classroom_id', $request->classroom);
     }
 
-    // Paginate results
+    // Paginate results - REMOVED ->get() from here
     $exams = $query->orderBy('created_at', 'desc')
                   ->paginate(15)
                   ->withQueryString();
 
-    // Get classrooms for filter dropdown
-    $classrooms = Classroom::all();
+    // Get classrooms for filter dropdown - only teacher's classrooms
+    $classrooms = Classroom::where('teacher_id', $teacherId)->get();
 
-    return view('teacher-dashboard.Academic_Reports.Exam_Grades.exam', compact('exams', 'classrooms'));
-}
-// View single exam
+    // Calculate monthly count for stats
+    $monthlyCount = exam_weeckly::whereHas('classroom', function($q) use ($teacherId) {
+        $q->where('teacher_id', $teacherId);
+    })->whereHas('weeklySkills', function($q) {
+        $q->where('status', '=', 'send');
+    })->whereMonth('created_at', now()->month)->count();
+
+    return view('teacher-dashboard.Academic_Reports.Exam_Grades.exam', compact('exams', 'classrooms', 'monthlyCount'));
+}// View single exam
 public function viewExam($id)
 {
      $exam = exam_weeckly::with([
