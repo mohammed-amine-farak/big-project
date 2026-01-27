@@ -680,6 +680,7 @@ public function examsList(Request $request)
     $teacherId = 12; // Or get from auth: auth()->id()
 
     $query = exam_weeckly::with([
+        'researcher.user',
         'weeklySkills',
         'classroom',
         'subject',
@@ -733,15 +734,5 @@ public function viewExam($id)
 }
 
 // Print exam page
-public function printExam($id)
-{
-    $exam = exam_weeckly::with([
-        'classroom',
-        'subject',
-        'researcher',
-        'weeklySkills.levelSkill.skill'
-    ])->findOrFail($id);
 
-    return view('teacher-dashboard.Academic_Reports.Exam_Grades.print', compact('exam'));
-}
 }

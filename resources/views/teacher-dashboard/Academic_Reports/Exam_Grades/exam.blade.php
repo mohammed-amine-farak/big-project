@@ -242,11 +242,7 @@
                                                    class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-2 py-1 rounded text-xs font-medium transition-colors duration-200 whitespace-nowrap">
                                                     عرض
                                                 </a>
-                                                <a href="{{ route('teacher.exams.print', $exam->id) }}" 
-                                                   target="_blank"
-                                                   class="bg-gray-50 text-gray-600 hover:bg-gray-100 px-2 py-1 rounded text-xs font-medium transition-colors duration-200 whitespace-nowrap">
-                                                    طباعة
-                                                </a>
+                                                
                                             </div>
                                         </td>
                                     </tr>
