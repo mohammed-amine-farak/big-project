@@ -14,6 +14,7 @@ use App\Http\Controllers\exam_weeckly_Controller;
 use App\Http\Controllers\teacher_report;
 use App\Http\Controllers\admine_report_controller;
 use App\Http\Controllers\StudentPsychologyController;
+use App\Http\Controllers\teacher_lesson_report_controller;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 
 Route::get('/exam/create', [exam_Controller::class, 'create'])->name('exam.create');
@@ -166,6 +167,16 @@ Route::delete('/StudentPsychology/{student_psychology}', [StudentPsychologyContr
 
 Route::get('/psychology-responses', [StudentPsychologyController::class, 'student_psychology_response'])->name('student_psychology_response');
 Route::get('/psychology-responses/show/{response_admine}', [StudentPsychologyController::class, 'student_psychology_response_show'])->name('student_psychology_response_show');
+
+
+
+
+Route::get('/teacher/lesson/report/index',[teacher_lesson_report_controller::class,'index'])->name('lesson_report');
+
+
+
+
+
 
 
      Route::get('class', function () {
