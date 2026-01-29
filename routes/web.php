@@ -172,7 +172,9 @@ Route::get('/psychology-responses/show/{response_admine}', [StudentPsychologyCon
 
 
 Route::get('/teacher/lesson/report/index',[teacher_lesson_report_controller::class,'index'])->name('lesson_report');
-
+Route::get('/teacher/lesson/report/create',[teacher_lesson_report_controller::class,'create'])->name('lesson_report.create');
+Route::get('/ajax/get-researcher-by-lesson/{lessonId}', [teacher_lesson_report_controller::class, 'getResearcherByLesson'])
+    ->name('ajax.researcher.by.lesson');
 
 
 

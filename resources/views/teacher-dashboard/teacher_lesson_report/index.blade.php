@@ -10,7 +10,7 @@
                     <h1 class="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">📋 تقاريري حول مشاكل الدروس</h1>
                     <p class="text-gray-600 text-sm">جميع التقارير التي قمتُ بإرسالها بخصوص الدروس</p>
                 </div>
-                <a href=""
+                <a href="{{route('lesson_report.create')}}"
                    class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg shadow transition duration-200 flex items-center gap-2 text-sm whitespace-nowrap flex-shrink-0">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>

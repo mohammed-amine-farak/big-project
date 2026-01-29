@@ -76,5 +76,48 @@ class teacher_lesson_report_controller extends Controller
             'lessons',
             'problemTypes'
         ));
+        
     }
+    public function create()
+{
+    // Get teacher ID
+    $teacherId = Auth::user()->teacher->id ?? 2;
+    
+    // Get lessons taught by this teacher
+    $lessons = lessonss::all(); // Or filter by teacher if you have that relationship
+    
+    // Get classrooms taught by this teacher
+    $classrooms = classroom::all(); // Or filter by teacher if you have that relationship
+    
+    // Get all researchers for dropdown (will be filtered by JavaScript based on lesson selection)
+    $researchers = Researchers::with('user')->get();
+    
+    return view('teacher-dashboard.teacher_lesson_report.create', compact(
+        'lessons',
+        'classrooms',
+        'researchers'
+    ));
+}
+
+// Add this method to get researcher by lesson (for AJAX)
+public function getResearcherByLesson($lessonId)
+{
+    $lesson = lessonss::with('researcher.user')->find($lessonId);
+    
+    if ($lesson && $lesson->researcher) {
+        return response()->json([
+            'success' => true,
+            'researcher' => [
+                'id' => $lesson->researcher->id,
+                'name' => $lesson->researcher->user->name ?? 'باحث',
+                'email' => $lesson->researcher->user->email ?? ''
+            ]
+        ]);
+    }
+    
+    return response()->json([
+        'success' => false,
+        'message' => 'لا يوجد باحث مسؤول عن هذا الدرس'
+    ]);
+}
 }
