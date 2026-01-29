@@ -30,4 +30,9 @@ class classroom extends Model
     {
         return $this->hasMany(student_classroom::class, 'classroom_id');
     }
+ public function lessonReports()
+    {
+        return $this->hasMany(lesson_report::class,'lesson_id');
+    } 
+
 }

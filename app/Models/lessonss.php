@@ -38,7 +38,7 @@ class lessonss extends Model
     }
     public function lessonReports()
     {
-        return $this->hasMany(lesson_report::class);
+        return $this->hasMany(lesson_report::class,'lesson_id');
     } 
 
 
