@@ -130,4 +130,20 @@ public function store(Request $request)
     return redirect()->route('lesson_report')
         ->with('success', 'تم إرسال التقرير بنجاح');
 }
+public function show($id)
+{
+    // Get teacher ID
+    $teacherId = Auth::user()->teacher->id ?? 12;
+    
+    // Get the report with all relationships
+    $report = lesson_report::with([
+        'lesson',
+        'teacher.user',
+        'researcher.user',
+        'classroom'
+    ])->where('teacher_id', $teacherId)
+      ->findOrFail($id);
+    
+    return view('teacher-dashboard.teacher_lesson_report.show', compact('report'));
+}
 }

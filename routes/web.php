@@ -177,7 +177,8 @@ Route::get('/ajax/get-researcher-by-lesson/{lessonId}', [teacher_lesson_report_c
     ->name('ajax.researcher.by.lesson');
  Route::post('/lesson-reports', [teacher_lesson_report_controller::class, 'store'])
         ->name('lesson_reports.store');
-
+Route::get('/teacher/lesson/report/{id}', [teacher_lesson_report_controller::class, 'show'])
+        ->name('teacher_lesson_reports.show');
 
 
 
