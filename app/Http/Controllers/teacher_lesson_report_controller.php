@@ -16,7 +16,7 @@ class teacher_lesson_report_controller extends Controller
     public function index(Request $request)
     {
         // Get teacher ID from authenticated user
-        $teacherId = Auth::user()->teacher->id ?? 2; // Fallback for testing
+        $teacherId = Auth::user()->teacher->id ?? 12; // Fallback for testing
         
         // Start query - get reports for this teacher
         $query = lesson_report::with(['lesson', 'teacher.user', 'classroom', 'researcher.user'])
@@ -81,43 +81,53 @@ class teacher_lesson_report_controller extends Controller
     public function create()
 {
     // Get teacher ID
-    $teacherId = Auth::user()->teacher->id ?? 2;
+    $teacherId = Auth::user()->teacher->id ?? 12;
     
-    // Get lessons taught by this teacher
-    $lessons = lessonss::all(); // Or filter by teacher if you have that relationship
+    // Get lessons with their researchers
+    $lessons = lessonss::with('researcher')->get();
     
-    // Get classrooms taught by this teacher
-    $classrooms = classroom::all(); // Or filter by teacher if you have that relationship
-    
-    // Get all researchers for dropdown (will be filtered by JavaScript based on lesson selection)
-    $researchers = Researchers::with('user')->get();
+    // Get classrooms
+    $classrooms = classroom::all();
     
     return view('teacher-dashboard.teacher_lesson_report.create', compact(
         'lessons',
-        'classrooms',
-        'researchers'
+        'classrooms'
     ));
 }
 
-// Add this method to get researcher by lesson (for AJAX)
-public function getResearcherByLesson($lessonId)
+public function store(Request $request)
 {
-    $lesson = lessonss::with('researcher.user')->find($lessonId);
-    
-    if ($lesson && $lesson->researcher) {
-        return response()->json([
-            'success' => true,
-            'researcher' => [
-                'id' => $lesson->researcher->id,
-                'name' => $lesson->researcher->user->name ?? 'باحث',
-                'email' => $lesson->researcher->user->email ?? ''
-            ]
-        ]);
-    }
-    
-    return response()->json([
-        'success' => false,
-        'message' => 'لا يوجد باحث مسؤول عن هذا الدرس'
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
+        'lesson_id' => 'required|exists:lessonss,id',
+        'classroom_id' => 'nullable|exists:classrooms,id',
+       'problem_type' => 'required|in:content_issue,difficulty_level,technical_issue,language_issue,other',
+        'priority' => 'required|in:low,medium,high,critical',
+        'suggested_solution' => 'nullable|string',
     ]);
+
+    $teacherId = Auth::user()->teacher->id ?? 12;
+
+    // Get researcher_id from the selected lesson
+    $lesson = lessonss::find($validated['lesson_id']);
+    $researcherId = $lesson->researcher_id ?? null;
+
+    lesson_report::create([
+        'title' => $validated['title'],
+        'description' => $validated['description'],
+        'lesson_id' => $validated['lesson_id'],
+        'classroom_id' => $validated['classroom_id'] ?? null,
+        'researcher_id' => $researcherId,
+        'teacher_id' => $teacherId,
+        'problem_type' => $validated['problem_type'],
+        'priority' => $validated['priority'],
+        'suggested_solution' => $validated['suggested_solution'] ?? null,
+        'status' => 'pending',
+        'reported_at' => now(),
+    ]);
+
+    return redirect()->route('lesson_report')
+        ->with('success', 'تم إرسال التقرير بنجاح');
 }
 }
