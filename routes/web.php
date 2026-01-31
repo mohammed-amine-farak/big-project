@@ -182,7 +182,14 @@ Route::get('/teacher/lesson/report/{id}', [teacher_lesson_report_controller::cla
 Route::delete('/teacher/lesson-reports/delete/{id}', 
     [teacher_lesson_report_controller::class, 'destroy'])
     ->name('lesson_reports.destroy');
+// Edit and Update routes
+Route::get('/teacher/lesson-reports/{id}/edit', 
+    [teacher_lesson_report_controller::class, 'edit'])
+    ->name('teacher.lesson_reports.edit');
 
+Route::put('/teacher/lesson-reports/{id}', 
+    [teacher_lesson_report_controller::class, 'update'])
+    ->name('teacher.lesson_reports.update');
 
 
 

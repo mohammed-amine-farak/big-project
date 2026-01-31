@@ -162,4 +162,73 @@ public function destroy($id)
     return redirect()->route('lesson_report')
         ->with('success', 'تم حذف التقرير بنجاح');
 }
+public function edit($id)
+{
+    // Get teacher ID
+    $teacherId = Auth::user()->teacher->id ?? 12;
+    
+    // Get the report with all relationships
+    $report = lesson_report::with(['lesson', 'classroom'])
+        ->where('teacher_id', $teacherId)
+        ->findOrFail($id);
+    
+    // Check if report can be edited (only pending reports)
+    if ($report->status != 'pending') {
+        return redirect()->route('teacher_lesson_reports.show', $report->id)
+            ->with('error', 'لا يمكن تعديل التقرير لأنه ليس في حالة قيد الانتظار');
+    }
+    
+    // Get lessons with their researchers
+    $lessons = lessonss::with('researcher')->get();
+    
+    // Get classrooms
+    $classrooms = classroom::all();
+    
+    return view('teacher-dashboard.teacher_lesson_report.edit', compact(
+        'report',
+        'lessons',
+        'classrooms'
+    ));
+}
+
+public function update(Request $request, $id)
+{
+    // Get teacher ID
+    $teacherId = Auth::user()->teacher->id ?? 12;
+    
+    // Find the report
+    $report = lesson_report::where('teacher_id', $teacherId)
+        ->findOrFail($id);
+    
+    // Check if report can be edited
+    if ($report->status != 'pending') {
+        return redirect()->route('teacher_lesson_reports.show', $report->id)
+            ->with('error', 'لا يمكن تعديل التقرير لأنه ليس في حالة قيد الانتظار');
+    }
+    
+    // Validation
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
+        'lesson_id' => 'required|exists:lessonss,id',
+        'classroom_id' => 'nullable|exists:classrooms,id',
+        'problem_type' => 'required|in:content_issue,difficulty_level,technical_issue,language_issue,other',
+        'priority' => 'required|in:low,medium,high,critical',
+        'suggested_solution' => 'nullable|string',
+    ]);
+    
+    // Update the report
+    $report->update([
+        'title' => $validated['title'],
+        'description' => $validated['description'],
+        'lesson_id' => $validated['lesson_id'],
+        'classroom_id' => $validated['classroom_id'] ?? null,
+        'problem_type' => $validated['problem_type'],
+        'priority' => $validated['priority'],
+        'suggested_solution' => $validated['suggested_solution'] ?? null,
+    ]);
+    
+    return redirect()->route('teacher_lesson_reports.show', $report->id)
+        ->with('success', 'تم تحديث التقرير بنجاح');
+}
 }
