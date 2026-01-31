@@ -179,6 +179,9 @@ Route::get('/ajax/get-researcher-by-lesson/{lessonId}', [teacher_lesson_report_c
         ->name('lesson_reports.store');
 Route::get('/teacher/lesson/report/{id}', [teacher_lesson_report_controller::class, 'show'])
         ->name('teacher_lesson_reports.show');
+Route::delete('/teacher/lesson-reports/delete/{id}', 
+    [teacher_lesson_report_controller::class, 'destroy'])
+    ->name('lesson_reports.destroy');
 
 
 

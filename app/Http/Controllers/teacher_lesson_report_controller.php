@@ -146,4 +146,20 @@ public function show($id)
     
     return view('teacher-dashboard.teacher_lesson_report.show', compact('report'));
 }
+// In your controller
+public function destroy($id)
+{
+     
+    $teacherId = Auth::user()->teacher->id ?? 12;
+    
+    $report = lesson_report::where('teacher_id', $teacherId)
+        ->findOrFail($id);
+   
+    $report->delete();
+    
+   
+    
+    return redirect()->route('lesson_report')
+        ->with('success', 'تم حذف التقرير بنجاح');
+}
 }
