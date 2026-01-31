@@ -389,7 +389,7 @@
                        
                         
                         @if($report->status == 'pending')
-                        <form action="" method="POST" class="inline">
+                        <form action="{{ route('teacher.lesson_reports.destroy', $report->id) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" 
