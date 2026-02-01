@@ -344,21 +344,14 @@
                     </button>
                     <ul class="sidebar-submenu hidden space-y-1 pt-2 pl-8 border-r-2 border-indigo-500 mr-4">
                         <li>
-                            <a href="#" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                            <a href="{{route('')}}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
                                 <span class="relative">
                                     رسائل الإدارة
                                     <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-indigo-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
                                 </span>
                             </a>
                         </li>
-                        <li>
-                            <a href="#" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
-                                <span class="relative">
-                                    رسائل الأخصائي
-                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-indigo-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                                </span>
-                            </a>
-                        </li>
+                       
                         <li>
                             <a href="{{route('lesson_report')}}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
                                 <span class="relative">

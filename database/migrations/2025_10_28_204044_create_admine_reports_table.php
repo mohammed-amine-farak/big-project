@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('admine_reports', function (Blueprint $table) {
+            
             $table->id();
             $table->unsignedBigInteger('admin_id'); // User who sends the report
           
