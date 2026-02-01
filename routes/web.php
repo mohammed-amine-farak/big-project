@@ -14,6 +14,7 @@ use App\Http\Controllers\exam_weeckly_Controller;
 use App\Http\Controllers\teacher_report;
 use App\Http\Controllers\admine_report_controller;
 use App\Http\Controllers\StudentPsychologyController;
+use App\Http\Controllers\teacher_admine_reports_view_Controller;
 use App\Http\Controllers\teacher_lesson_report_controller;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 
@@ -190,6 +191,17 @@ Route::get('/teacher/lesson-reports/{id}/edit',
 Route::put('/teacher/lesson-reports/{id}', 
     [teacher_lesson_report_controller::class, 'update'])
     ->name('teacher.lesson_reports.update');
+
+
+
+
+   Route::get('/teacher/admine/report/index',[teacher_admine_reports_view_Controller::class,'index'])->name('teacher_admine_reports.index');
+
+   Route::get('/teacher/admine/report/show/{id}',[teacher_admine_reports_view_Controller::class,'show'])->name('teacher_admin_reports.show');
+
+
+
+
 
 
 

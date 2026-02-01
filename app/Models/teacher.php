@@ -36,4 +36,9 @@ class teacher extends Model
      public function psychology_report_response_admine(){
         return $this->hasMany(psychology_report_response_admine::class, 'teacher_id');
      }
+     public function reports()
+{
+    return $this->hasMany(teacher::class);
+}
+
 }
