@@ -15,6 +15,7 @@ use App\Http\Controllers\teacher_report;
 use App\Http\Controllers\admine_report_controller;
 use App\Http\Controllers\StudentPsychologyController;
 use App\Http\Controllers\teacher_admine_reports_view_Controller;
+use App\Http\Controllers\teacher_lesson_controller;
 use App\Http\Controllers\teacher_lesson_report_controller;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 
@@ -200,6 +201,8 @@ Route::put('/teacher/lesson-reports/{id}',
    Route::get('/teacher/admine/report/show/{id}',[teacher_admine_reports_view_Controller::class,'show'])->name('teacher_admin_reports.show');
 
 
+   Route::get('/teacher/lesson/index',[teacher_lesson_controller::class,'index'])->name('teacher_lesson.index');
+  
 
 
 
