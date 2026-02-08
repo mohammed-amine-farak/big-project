@@ -10,15 +10,30 @@ use App\Models\rules;
 use App\Models\rule_examples;
 use App\Models\subject;
 use App\Models\Fields_Of_Study;
-
+use Illuminate\Support\Facades\DB;
 class teacher_lesson_controller extends Controller
 {
   
      public function index(Request $request)
     {
         // Start building the query - only show lessons created by current user
-        $query = Lessonss::with(['subject.fieldOfStudy', 'researcher']);
-        
+       $teacher = Teacher::find(2); // أو Teacher::find($id);
+       
+ // أو Teacher::find($id)
+// تحقق من هيكل البيانات
+
+// إذا كان جدول users ليس لديه حقل subject، قد يكون في جدول منفصل
+$query = Lessonss::select('lessonss.*')
+    ->join('researchers', 'lessonss.researcher_id', '=', 'researchers.id')
+    ->where('researchers.subject', $teacher->subject)
+    ->with(['subject.fieldOfStudy'])
+  ;
+
+
+
+
+
+
         // Apply title filter
         if ($request->filled('title')) {
             $query->where('title', 'like', '%' . $request->title . '%');
