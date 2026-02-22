@@ -169,12 +169,22 @@
                                         مثال {{ $loop->iteration }}
                                     </span>
                                     <div class="flex items-center gap-1">
+                                        <!-- زر الاستماع للمعادلة -->
+                                        <button onclick="readEquation('{{ $example->example_text }}')" 
+                                                class="text-purple-600 hover:text-purple-800 p-1 transition duration-200" 
+                                                title="استماع للمعادلة">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+                                            </svg>
+                                        </button>
+                                        
                                         <a href="{{ route('Example.edit', ['rule' => $rule->id, 'example' => $example->id]) }}" 
                                            class="text-blue-600 hover:text-blue-800 p-1 transition duration-200">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
                                         </a>
+                                        
                                         <form action="{{ route('Example.destroy', ['rule' => $rule->id, 'example' => $example->id]) }}" method="POST" class="inline">
                                             @csrf
                                             @method('DELETE')
@@ -195,14 +205,15 @@
 
                                 @if($example->example_description)
                                 <p class="text-gray-700 text-sm mb-4 leading-relaxed text-right">
-                                    {{ Str::limit($example->example_description, 120) }}
+                                    {{ $example->example_description }}
                                 </p>
                                 @endif
 
                                 @if($example->example_text)
-                                <div class="bg-gray-900 rounded-lg p-3 mb-4 overflow-x-auto">
-                                    <code class="text-green-400 text-xs whitespace-pre-wrap font-mono">
-                                        {{ Str::limit($example->example_text, 100) }}
+                                <!-- عرض المعادلة -->
+                                <div class="bg-gray-900 rounded-lg p-4 mb-4 overflow-x-auto">
+                                    <code class="text-green-400 text-sm whitespace-pre-wrap font-mono block text-left">
+                                        {{ $example->example_text }}
                                     </code>
                                 </div>
                                 @endif
@@ -214,11 +225,16 @@
                                          class="w-full h-32 object-cover rounded-lg shadow-sm">
                                     @if($example->image_caption_ar)
                                     <p class="text-xs text-gray-600 mt-2 text-center">
-                                        {{ Str::limit($example->image_caption_ar, 50) }}
+                                        {{$example->image_caption_ar }}
                                     </p>
                                     @endif
                                 </div>
                                 @endif
+
+                                <!-- مؤشر الصوت (يظهر عند التشغيل) -->
+                                <div id="audioStatus" class="hidden mt-3 p-2 bg-purple-100 text-purple-700 rounded-lg text-sm text-center">
+                                    🔊 جاري قراءة المعادلة...
+                                </div>
 
                                 <div class="flex items-center justify-between text-xs text-gray-500 pt-3 border-t border-gray-200">
                                     <span>آخر تحديث</span>
@@ -233,7 +249,97 @@
     </div>
 </div>
 
+<!-- MathJax لعرض المعادلات -->
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+<!-- نظام قراءة المعادلات -->
+<script>
+    // متغيرات الصوت
+    let speechSynthesis = window.speechSynthesis;
+    let currentUtterance = null;
+
+    // دالة قراءة المعادلة
+    function readEquation(equation) {
+        // إيقاف أي قراءة حالية
+        if (speechSynthesis.speaking) {
+            speechSynthesis.cancel();
+        }
+        
+        // إظهار مؤشر القراءة
+        document.getElementById('audioStatus').classList.remove('hidden');
+        
+        // تنظيف المعادلة من علامات LaTeX
+        let cleanEquation = equation
+            .replace(/\$\$/g, '')  // إزالة $$
+            .replace(/\$/g, '')     // إزالة $
+            .replace(/\\/g, '')     // إزالة \
+            .replace(/\{|\}/g, '')  // إزالة الأقواس
+            .replace(/_/g, ' تحت ') // تحويل _ إلى "تحت"
+            .replace(/\^/g, ' أس ') // تحويل ^ إلى "أس"
+            .replace(/sqrt/g, 'جذر') // تحويل sqrt إلى "جذر"
+            .replace(/frac/g, 'كسر') // تحويل frac إلى "كسر"
+            .replace(/int/g, 'تكامل') // تحويل int إلى "تكامل"
+            .replace(/sum/g, 'مجموع') // تحويل sum إلى "مجموع"
+            .replace(/lim/g, 'نهاية') // تحويل lim إلى "نهاية"
+            .replace(/alpha/g, 'ألفا') // تحويل alpha إلى "ألفا"
+            .replace(/beta/g, 'بيتا') // تحويل beta إلى "بيتا"
+            .replace(/gamma/g, 'جاما') // تحويل gamma إلى "جاما"
+            .replace(/pi/g, 'باي');    // تحويل pi إلى "باي"
+        
+        // إنشاء كائن القراءة
+        currentUtterance = new SpeechSynthesisUtterance(cleanEquation);
+        
+        // ضبط اللغة (العربية)
+        currentUtterance.lang = 'ar-SA';
+        
+        // ضبط سرعة القراءة
+        currentUtterance.rate = 0.9;
+        
+        // ضبط درجة الصوت
+        currentUtterance.pitch = 1;
+        
+        // عند انتهاء القراءة
+        currentUtterance.onend = function() {
+            document.getElementById('audioStatus').classList.add('hidden');
+        };
+        
+        // عند حدوث خطأ
+        currentUtterance.onerror = function() {
+            document.getElementById('audioStatus').classList.add('hidden');
+            alert('حدث خطأ في قراءة المعادلة');
+        };
+        
+        // بدء القراءة
+        speechSynthesis.speak(currentUtterance);
+    }
+
+    // دالة إيقاف القراءة
+    function stopReading() {
+        if (speechSynthesis.speaking) {
+            speechSynthesis.cancel();
+            document.getElementById('audioStatus').classList.add('hidden');
+        }
+    }
+</script>
+
+<!-- إضافة زر إيقاف عام (اختياري) -->
+<div class="fixed bottom-4 left-4">
+    <button onclick="stopReading()" 
+            class="bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 text-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/>
+        </svg>
+        إيقاف القراءة
+    </button>
+</div>
+
 <style>
+/* تنسيق المعادلات */
+code {
+    direction: ltr;
+    unicode-bidi: embed;
+}
 .bg-gradient-to-r {
     background-image: linear-gradient(to right, var(--tw-gradient-stops));
 }

@@ -19,7 +19,7 @@ class rule_controller extends Controller
     public function store(Request $request){
         $data = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            
             'lessons_id' => 'required|numeric',
         ]);
         rules::create($data);
@@ -31,7 +31,8 @@ class rule_controller extends Controller
 
     public function index(Request $request)
     {
-        $query = rules::with('lesson');
+        $query = rules::with('lesson')
+        ;
         
         // Apply filters
         if ($request->filled('title')) {
@@ -87,7 +88,7 @@ class rule_controller extends Controller
     public function edit(Request $request,rules $rule){
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
+          
             'lessons_id' => 'required|exists:lessonss,id',
         ]);
     
@@ -95,7 +96,7 @@ class rule_controller extends Controller
             // 2. Update the lesson with the validated data
             $rule->update([
                 'title'       => $validatedData['title'],
-                'description'     => $validatedData['description'],
+               
                 'lessons_id'     => $validatedData['lessons_id'],
             ]);
     
@@ -107,4 +108,7 @@ class rule_controller extends Controller
             return redirect()->back()->with('error', 'حدث خطأ أثناء تحديث الدرس. الرجاء المحاولة مرة أخرى.');
        
     }
+     public function content_block_show(){
+             
+     }
 }

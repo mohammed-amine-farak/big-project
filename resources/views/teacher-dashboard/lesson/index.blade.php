@@ -10,13 +10,7 @@
                     <h1 class="text-xl sm:text-2xl font-bold text-gray-900 mb-1 truncate">📚 جميع الدروس</h1>
                     <p class="text-gray-600 text-sm">نظرة شاملة على جميع الدروس والمحتوى التعليمي</p>
                 </div>
-                <a href="{{ route('lessons.create') }}"
-                   class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg shadow transition duration-200 flex items-center gap-2 text-sm whitespace-nowrap flex-shrink-0">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    إضافة درس
-                </a>
+                
             </div>
         </div>
 
@@ -271,7 +265,7 @@
                                                     <span class="text-gray-600 text-sm max-w-[120px] truncate">
                                                         {{ Str::limit($lesson->content, 25) }}
                                                     </span>
-                                                    <a href="{{ route('lessons.show', $lesson->id) }}" 
+                                                    <a href="{{ route('teacher_lesson.show', $lesson->id) }}" 
                                                        class="text-blue-600 hover:text-blue-800 text-xs font-medium whitespace-nowrap">
                                                         عرض
                                                     </a>
@@ -287,7 +281,7 @@
                                             </td>
                                             <td class="px-3 py-3 whitespace-nowrap">
                                                 <div class="flex items-center justify-end gap-1">
-                                                    <a href="" 
+                                                    <a href="{{ route('teacher_lesson.show', $lesson->id) }}" 
                                                        class="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 px-2 py-1 rounded text-xs font-medium transition-colors duration-200 whitespace-nowrap">
                                                         عرض
                                                     </a>

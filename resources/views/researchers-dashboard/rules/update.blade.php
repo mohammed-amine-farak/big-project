@@ -36,15 +36,7 @@
                 @enderror
             </div>
     
-            <div>
-                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">الوصف</label>
-                <textarea name="description" id="description" rows="4"
-                          class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 @error('description')  @enderror"
-                >{{ old('description', $rule->description) }}</textarea> {{-- Pre-fill with current description or old input --}}
-                @error('description')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+           
 
             <div>
                 <label for="lesson_id" class="block text-sm font-medium text-gray-700 mb-1">اختر الدرس</label>

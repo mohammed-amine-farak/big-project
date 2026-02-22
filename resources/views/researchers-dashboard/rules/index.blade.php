@@ -225,7 +225,6 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">العنوان</th>
-                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الوصف</th>
                                 <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الدرس المرتبط</th>
                                 <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإنشاء</th>
                                 <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
@@ -244,24 +243,13 @@
                                             <span class="font-medium text-gray-900 text-sm">{{ $rule->title }}</span>
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3">
-                                        <div class="flex items-center gap-1">
-                                            <span class="text-gray-600 text-sm max-w-xs truncate">
-                                                {{ Str::limit($rule->description, 30) }}
-                                            </span>
-                                            <a href="#"
-                                                class="text-blue-600 hover:text-blue-800 text-xs font-medium whitespace-nowrap open-description-modal"
-                                                data-rule-title="{{ $rule->title }}"
-                                                data-rule-description="{{ addslashes(nl2br($rule->description)) }}">
-                                                عرض
-                                            </a>
-                                        </div>
-                                    </td>
+                                    
                                     <td class="px-4 py-3 whitespace-nowrap">
                                         <span class="bg-emerald-50 text-emerald-700 px-2 py-1 rounded text-xs font-medium">
                                             {{ $rule->lesson->title ?? 'غير محدد' }}
                                         </span>
                                     </td>
+                                    
                                     <td class="px-4 py-3 whitespace-nowrap text-gray-500 text-sm">
                                         {{ $rule->created_at?->format('Y-m-d') ?? 'N/A' }}
                                     </td>

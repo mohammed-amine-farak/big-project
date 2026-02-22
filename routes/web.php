@@ -202,6 +202,7 @@ Route::put('/teacher/lesson-reports/{id}',
 
 
    Route::get('/teacher/lesson/index',[teacher_lesson_controller::class,'index'])->name('teacher_lesson.index');
+Route::get('/teacher/lessons/show/{lesson}',[teacher_lesson_controller::class, 'show'])->name('teacher_lesson.show');
   
 
 

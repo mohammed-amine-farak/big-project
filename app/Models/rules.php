@@ -23,12 +23,15 @@ class rules extends Model
         return $this->hasMany(rule_examples::class, 'rule_id'); // <--- Specify the foreign key
     
 }
+public function content_blocks(){
+     return $this->hasMany(content_blocks::class, 'rule_id');
+}
 
 
 protected $fillable = [
      'lessons_id',
     'title',
-    'description' ,
+    
    
     
 ];

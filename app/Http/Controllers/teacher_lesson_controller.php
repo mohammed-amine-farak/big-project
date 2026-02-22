@@ -17,7 +17,7 @@ class teacher_lesson_controller extends Controller
      public function index(Request $request)
     {
         // Start building the query - only show lessons created by current user
-       $teacher = Teacher::find(2); // أو Teacher::find($id);
+       $teacher = Teacher::find(12); // أو Teacher::find($id);
        
  // أو Teacher::find($id)
 // تحقق من هيكل البيانات
@@ -61,5 +61,17 @@ $query = Lessonss::select('lessonss.*')
         
         return view('teacher-dashboard.lesson.index', compact('lessons', 'subjects', 'fieldStudies', 'totalLessonsCount'));
     
-    }
+    } 
+    public function show(Lessonss $lesson){
+
+   
+      $lesson->load([
+        'researcher.researcherProfile', // Load user (researcher), then their specific researcher profile
+        'rules.examples',               // Load rules, and for each rule, load its examples
+                       // Load the next lesson object
+    ]);
+  
+   
+    return view('teacher-dashboard.lesson.show', compact('lesson'));
+}
 }
