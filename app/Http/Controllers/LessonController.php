@@ -127,16 +127,17 @@ public function edit(Request $request, Lessonss $lessonID)
     return redirect()->route('lessons.index')->with('success', 'تم حذف الدرس بنجاح.');
 }
 
-public function show(Lessonss $lesson){
+// app/Http/Controllers/LessonController.php
 
-   
-      $lesson->load([
-        'researcher.researcherProfile', // Load user (researcher), then their specific researcher profile
-        'rules.examples',               // Load rules, and for each rule, load its examples
-                       // Load the next lesson object
+public function show(Lessonss $lesson)
+{
+    $lesson->load([
+        'researcher.researcherProfile', // Load researcher and their profile
+        'rules.content_blocks' => function($query) {
+            $query->orderBy('block_order'); // Load content blocks for each rule in order
+        }
     ]);
-  
-   
+    
     return view('researchers-dashboard.lessons.show', compact('lesson'));
 }
 

@@ -225,6 +225,8 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">العنوان</th>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المحتوى</th>
+                                
                                 <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الدرس المرتبط</th>
                                 <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإنشاء</th>
                                 <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
@@ -249,16 +251,18 @@
                                             {{ $rule->lesson->title ?? 'غير محدد' }}
                                         </span>
                                     </td>
-                                    
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        <a href="{{ route('content_block.show', $rule->id) }}" 
+                                               class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-2 py-1 rounded text-xs font-medium transition-colors duration-200">
+                                                المحتوى
+                                            </a>
+                                    </td>
                                     <td class="px-4 py-3 whitespace-nowrap text-gray-500 text-sm">
-                                        {{ $rule->created_at?->format('Y-m-d') ?? 'N/A' }}
+                                        {{ $rule->created_at ?? 'N/A' }}
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap">
                                         <div class="flex items-center justify-end gap-1">
-                                            <a href="{{ route('Example.index', $rule->id) }}" 
-                                               class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-2 py-1 rounded text-xs font-medium transition-colors duration-200">
-                                                الأمثلة
-                                            </a>
+                                            
                                             <a href="{{ route('rules.edit', $rule->id) }}" 
                                                class="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 px-2 py-1 rounded text-xs font-medium transition-colors duration-200">
                                                 تعديل

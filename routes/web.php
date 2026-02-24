@@ -49,9 +49,13 @@ Route::get('/rules/index',[rule_controller::class, 'index'])->name('rules.index'
 Route::delete('/rules/destroy/{rule}',[rule_controller::class, 'destroy'])->name('rules.destroy');
 Route::get('/rules/update/{rule}',[rule_controller::class, 'update'])->name('rules.update');
 Route::put('/rules/edit/{rule}',[rule_controller::class, 'edit'])->name('rules.edit');
-
-
-
+Route::get('/rules/content/blocks/{rule}',[rule_controller::class, 'content_block_show'])->name('content_block.show');
+ Route::get('/rules/content/create/{rule}', [rule_controller::class, 'create_rule_content'])->name('rules.content.create');
+    Route::post('/rules/content/store/{rule}', [rule_controller::class, 'store_rule_content'])->name('rules.content.store');
+Route::get('/{rule}/content/{contentBlock}/edit', [rule_controller::class, 'content_blocks_edit'])->name('rules.content.edit');
+    Route::put('/{rule}/content/{contentBlock}/update', [rule_controller::class, 'content_blocks_update'])->name('rules.content.update');
+Route::delete('/rules/{rule}/content/{contentBlock}', [rule_controller::class, 'content_blocks_destroy'])
+     ->name('rules.content.destroy');
 
 
 
@@ -77,13 +81,6 @@ Route::post('/exam-skills/add_to_exam_skills/{exam_id}', [exam_skills_level_Cont
 
 
 
-
-Route::get('/rules_Example/{rule}',[ruleExampleController::class,'index'])->name('Example.index');
-Route::get('/rules_Example/{rule}/create',[ruleExampleController::class,'create'])->name('Example.create');
-Route::post('/rules_Example/{rule}/store',[ruleExampleController::class,'store'])->name('Example.store');
-Route::delete('/rules/{rule}/examples/{example}', [ruleExampleController::class, 'destroy'])->name('Example.destroy');
-Route::get('/rules_Example/{example}/rules/{rule}/edit',[ruleExampleController::class,'edit'])->name('Example.edit');
-Route::put('/rules_Example/{example}/rules/{rule}/update',[ruleExampleController::class,'update'])->name('Example.update');
 
 Route::get('/exam_weeckly',[exam_weeckly_Controller::class,'index'])->name('exam_weeckly.index');
 Route::get('exam_weeklies/create', [exam_weeckly_Controller::class, 'create'])->name('exam_weeklies.create');

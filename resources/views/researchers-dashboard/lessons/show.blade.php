@@ -14,7 +14,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
-                                <span>{{ $lesson->created_at->format('Y-m-d') }}</span>
+                                <span>{{ $lesson->created_at }}</span>
                             </div>
                             @if($lesson->subject)
                             <div class="flex items-center gap-2">
@@ -68,7 +68,7 @@
             </div>
         </div>
 
-        <!-- Rules Section -->
+        <!-- Rules Section with Content Blocks -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div class="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b border-gray-200">
                 <div class="flex items-center justify-between">
@@ -81,7 +81,7 @@
                         <div>
                             <h2 class="text-lg font-semibold text-gray-900">القواعد والمفاهيم</h2>
                             <p class="text-sm text-gray-600">
-                                {{ $lesson->rules->count() }} قاعدة مع الأمثلة التوضيحية
+                               $ قاعدة مع المحتوى التعليمي
                             </p>
                         </div>
                     </div>
@@ -102,68 +102,90 @@
                                         <h3 class="text-xl font-bold text-gray-900">{{ $rule->title }}</h3>
                                     </div>
                                     <div class="text-sm text-gray-500">
-                                        {{ $rule->examples->count() }} مثال
+                                        {{ $rule->content_blocks->count() }} عنصر
                                     </div>
                                 </div>
 
                                 <!-- Rule Description -->
-                                <div class="mb-6">
-                                    <p class="text-gray-700 leading-relaxed text-right bg-white p-4 rounded-lg border border-gray-200">
-                                        {!! nl2br(e($rule->description)) !!}
-                                    </p>
-                                </div>
+                                
 
-                                <!-- Examples -->
-                                @if($rule->examples->count() > 0)
+                                <!-- Content Blocks -->
+                                @if($rule->content_blocks->count() > 0)
                                     <div class="space-y-4">
                                         <h4 class="text-lg font-semibold text-gray-900 mb-4 border-b pb-2 border-gray-200 text-right">
-                                            أمثلة توضيحية
+                                            المحتوى التعليمي
                                         </h4>
-                                        @foreach($rule->examples as $example)
-                                            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                                                <div class="bg-blue-50 px-4 py-3 border-b border-gray-200">
-                                                    <h5 class="text-md font-bold text-blue-800 text-right">
-                                                        {{ $example->example_title }}
-                                                    </h5>
-                                                </div>
-                                                <div class="p-4">
-                                                    @if($example->example_description)
-                                                    <p class="text-gray-700 mb-4 text-right leading-relaxed">
-                                                        {!! nl2br(e($example->example_description)) !!}
-                                                    </p>
-                                                    @endif
-
-                                                    @if($example->example_text)
-                                                    <div class="bg-gray-900 rounded-lg p-4 mb-4 overflow-x-auto">
-                                                        <code class="text-green-400 text-sm whitespace-pre-wrap font-mono">
-                                                            {!! nl2br(e($example->example_text)) !!}
-                                                        </code>
-                                                    </div>
-                                                    @endif
-
-                                                    @if($example->example_explanation)
-                                                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                                                        <p class="text-amber-800 text-sm text-right leading-relaxed">
-                                                            {!! nl2br(e($example->example_explanation)) !!}
-                                                        </p>
-                                                    </div>
-                                                    @endif
-
-                                                    @if($example->image_url)
-                                                    <div class="mt-4">
-                                                        <div class="flex justify-center">
-                                                            <img src="{{ asset('storage/' . $example->image_url) }}" 
-                                                                 alt="{{ $example->image_alt_ar }}" 
-                                                                 class="rounded-lg shadow-md max-w-full h-auto max-h-64 object-contain">
-                                                        </div>
-                                                        @if($example->image_caption_ar)
-                                                        <p class="text-sm text-gray-600 text-center mt-2">
-                                                            {{ $example->image_caption_ar }}
-                                                        </p>
+                                        @foreach($rule->content_blocks as $block)
+                                            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                                                <!-- Block Header -->
+                                                <div class="px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
+                                                    <span class="w-5 h-5 bg-gray-200 rounded-full flex items-center justify-center text-xs font-medium text-gray-700">
+                                                        {{ $loop->iteration }}
+                                                    </span>
+                                                    <span class="px-2 py-0.5 text-xs font-medium rounded-full
+                                                        @if($block->type == 'text') bg-blue-100 text-blue-700
+                                                        @elseif($block->type == 'math') bg-purple-100 text-purple-700
+                                                        @elseif($block->type == 'image') bg-green-100 text-green-700
+                                                        @elseif($block->type == 'video') bg-red-100 text-red-700
+                                                        @else bg-orange-100 text-orange-700
+                                                        @endif">
+                                                        @if($block->type == 'text') 📝 نص
+                                                        @elseif($block->type == 'math') 📐 معادلة
+                                                        @elseif($block->type == 'image') 🖼️ صورة
+                                                        @elseif($block->type == 'video') 🎥 فيديو
+                                                        @else ✏️ تمرين
                                                         @endif
-                                                    </div>
+                                                    </span>
+                                                </div>
+
+                                                <!-- Block Content -->
+                                                <div class="p-4">
+                                                    @if($block->type == 'math')
+                                                        <!-- Math Equation -->
+                                                        <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                                                            <code class="text-green-400 text-sm font-mono block text-left" dir="ltr">
+                                                                {!! nl2br(e($block->content)) !!}
+                                                            </code>
+                                                        </div>
+                                                    @elseif($block->type == 'image')
+                                                        <!-- Image -->
+                                                        <div class="text-center">
+                                                            <img src="{{ asset('storage/' . $block->content) }}" 
+                                                                 alt="صورة توضيحية" 
+                                                                 class="rounded-lg max-h-48 mx-auto object-contain">
+                                                        </div>
+                                                    @elseif($block->type == 'video')
+                                                        <!-- Video -->
+                                                        <div class="aspect-w-16 aspect-h-9 bg-gray-100 rounded-lg overflow-hidden">
+                                                            <iframe src="{{ $block->content }}" 
+                                                                    frameborder="0" 
+                                                                    allowfullscreen
+                                                                    class="w-full h-48"></iframe>
+                                                        </div>
+                                                    @elseif($block->type == 'exercise')
+                                                        <!-- Exercise -->
+                                                        <div class="bg-orange-50 border-r-4 border-orange-500 p-4 rounded">
+                                                            <p class="text-gray-800 whitespace-pre-line text-right leading-relaxed">
+                                                                {{ $block->content }}
+                                                            </p>
+                                                        </div>
+                                                    @else
+                                                        <!-- Text -->
+                                                        <div class="text-gray-700 whitespace-pre-line text-right leading-relaxed">
+                                                            {{ $block->content }}
+                                                        </div>
                                                     @endif
                                                 </div>
+
+                                                <!-- Block Metadata (Optional) -->
+                                                @if($block->metadata)
+                                                    @php $metadata = json_decode($block->metadata, true); @endphp
+                                                    @if(isset($metadata['alt']) && $block->type == 'image')
+                                                        <div class="px-4 py-2 bg-gray-50 border-t border-gray-200 text-xs text-gray-500">
+                                                            {{ $metadata['alt'] }}
+                                                        </div>
+                                                    @endif
+                                                @endif
                                             </div>
                                         @endforeach
                                     </div>
@@ -172,7 +194,7 @@
                                         <svg class="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
                                         </svg>
-                                        <p class="mt-2 text-sm">لا توجد أمثلة لهذه القاعدة بعد</p>
+                                        <p class="mt-2 text-sm">لا يوجد محتوى تعليمي لهذه القاعدة بعد</p>
                                     </div>
                                 @endif
                             </div>
@@ -223,6 +245,21 @@
 }
 .bg-gradient-to-r {
     background-image: linear-gradient(to right, var(--tw-gradient-stops));
+}
+.aspect-w-16 {
+    position: relative;
+    padding-bottom: 56.25%;
+}
+.aspect-w-16 iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+code {
+    direction: ltr;
+    unicode-bidi: embed;
 }
 </style>
 @endsection
