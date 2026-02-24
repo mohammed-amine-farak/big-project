@@ -47,8 +47,8 @@ Route::get('/rules/create',[rule_controller::class, 'create'])->name('rules.crea
 Route::post('/rules/store',[rule_controller::class, 'store'])->name('rules.store');
 Route::get('/rules/index',[rule_controller::class, 'index'])->name('rules.index');
 Route::delete('/rules/destroy/{rule}',[rule_controller::class, 'destroy'])->name('rules.destroy');
-Route::get('/rules/update/{rule}',[rule_controller::class, 'update'])->name('rules.update');
-Route::put('/rules/edit/{rule}',[rule_controller::class, 'edit'])->name('rules.edit');
+Route::get('/rules/update/{rule}',[rule_controller::class, 'update'])->name('rules.rule_update');
+Route::put('/rules/edit/{rule}',[rule_controller::class, 'edit'])->name('rules.rule_edit');
 Route::get('/rules/content/blocks/{rule}',[rule_controller::class, 'content_block_show'])->name('content_block.show');
  Route::get('/rules/content/create/{rule}', [rule_controller::class, 'create_rule_content'])->name('rules.content.create');
     Route::post('/rules/content/store/{rule}', [rule_controller::class, 'store_rule_content'])->name('rules.content.store');

@@ -66,8 +66,11 @@ $query = Lessonss::select('lessonss.*')
 
    
       $lesson->load([
+        'subject',
         'researcher.researcherProfile', // Load user (researcher), then their specific researcher profile
-        'rules.examples',               // Load rules, and for each rule, load its examples
+        'rules.content_blocks' => function($query) {
+            $query->orderBy('block_order'); // Load content blocks for each rule in order
+        }              // Load rules, and for each rule, load its examples
                        // Load the next lesson object
     ]);
   

@@ -263,7 +263,7 @@
                                     <td class="px-4 py-3 whitespace-nowrap">
                                         <div class="flex items-center justify-end gap-1">
                                             
-                                            <a href="{{ route('rules.edit', $rule->id) }}" 
+                                            <a href="{{ route('rules.rule_update', $rule->id) }}" 
                                                class="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 px-2 py-1 rounded text-xs font-medium transition-colors duration-200">
                                                 تعديل
                                             </a>
