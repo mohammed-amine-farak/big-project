@@ -1,100 +1,108 @@
+{{-- resources/views/auth/login.blade.php --}}
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول - مدرستي نور</title>
-
-    <!-- Tailwind CSS CDN -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>تسجيل الدخول - المنصة التعليمية</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Google Fonts (Cairo for Arabic, Inter for Modern UI) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
     <style>
-        /* Apply Cairo font for Arabic and Inter as a fallback for general UI */
-        body {
-            font-family: 'Cairo', 'Inter', ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-            background-color: #f0f4f8; /* Light blue-gray background */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh; /* Full viewport height */
-            margin: 0;
-            padding: 1rem; /* Add some padding for small screens */
-            box-sizing: border-box; /* Ensures padding doesn't affect width calculations */
-        }
-        .font-black {
-            font-weight: 900;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+        body { font-family: 'Tajawal', sans-serif; }
     </style>
 </head>
-<body>
-    <div class="bg-white p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200">
-        <!-- Login Form Header -->
-        <div class="mb-8 text-center">
-            <h1 class="text-3xl md:text-4xl font-black text-blue-900 mb-2">تسجيل الدخول</h1>
-            <p class="text-gray-600 text-lg">أدخل بياناتك للمتابعة</p>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <div class="inline-block p-4 bg-white rounded-2xl shadow-lg">
+                <svg class="w-16 h-16 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mt-4">مرحباً بعودتك</h1>
+            <p class="text-gray-600 mt-2">سجل دخولك للوصول إلى المنصة التعليمية</p>
         </div>
 
-        <!-- Login Form -->
-        <form action="#" method="POST" class="space-y-6">
-            <!-- Email Input -->
-            <div>
-                <label for="email" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
-                    البريد الإلكتروني
-                </label>
-                <input type="email" id="email" name="email"
-                    class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-base text-right"
-                    placeholder="example@email.com" required>
-            </div>
+        <!-- Login Card -->
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+            @if ($errors->any())
+                <div class="bg-red-50 border-r-4 border-red-500 p-4 mb-6 rounded-lg">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="mr-3">
+                            <p class="text-sm text-red-700">{{ $errors->first() }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
-            <!-- Password Input -->
-            <div>
-                <label for="password" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
-                    كلمة المرور
-                </label>
-                <input type="password" id="password" name="password"
-                    class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-base text-right"
-                    placeholder="أدخل كلمة المرور الخاصة بك" required>
-            </div>
-
-            <!-- Remember Me & Forgot Password -->
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    <input id="remember-me" name="remember-me" type="checkbox"
-                        class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        style="transform: scale(1.2); margin-left: 0.5rem;"> <!-- Adjusted for RTL checkbox -->
-                    <label for="remember-me" class="mr-2 block text-base text-gray-900">
-                        تذكرني
+            <form method="POST" action="{{route('login')}}">
+                @csrf
+                
+                <!-- Email -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+                        البريد الإلكتروني
                     </label>
+                    <input type="email" 
+                           name="email" 
+                           id="email" 
+                           value="" 
+                           required 
+                           autofocus
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                           placeholder="أدخل بريدك الإلكتروني">
                 </div>
-                <div class="text-base">
-                    <a href="#" class="font-medium text-blue-600 hover:text-blue-500 hover:underline transition-colors">
-                        نسيت كلمة المرور؟
-                    </a>
-                </div>
-            </div>
 
-            <!-- Login Button -->
-            <div>
-                <button type="submit"
-                    class="w-full flex justify-center py-4 px-6 border border-transparent rounded-xl shadow-lg text-lg font-bold text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all transform hover:scale-[1.01] duration-200">
+                <!-- Password -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+                        كلمة المرور
+                    </label>
+                    <input type="password" 
+                           name="password" 
+                           id="password" 
+                           required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                           placeholder="أدخل كلمة المرور">
+                </div>
+
+                <!-- Remember Me -->
+                <div class="flex items-center justify-between mb-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="remember" class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500">
+                        <span class="mr-2 text-sm text-gray-600">تذكرني</span>
+                    </label>
+                    
+                    @if (Route::has('password.request'))
+                        <a href="" class="text-sm text-blue-600 hover:text-blue-800">
+                            نسيت كلمة المرور؟
+                        </a>
+                    @endif
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" 
+                        class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 transform hover:scale-105">
                     تسجيل الدخول
                 </button>
-            </div>
-        </form>
+            </form>
 
-        <!-- Sign Up Link -->
-        <div class="mt-8 text-center text-base">
-            <p class="text-gray-700">
-                ليس لديك حساب؟
-                <a href="#" class="font-medium text-blue-600 hover:text-blue-500 hover:underline transition-colors">
-                    سجل حساب جديد الآن!
-                </a>
-            </p>
+            <!-- Register Link -->
+            <div class="mt-6 text-center">
+                <p class="text-gray-600">
+                    ليس لديك حساب؟ 
+                    <a href="" class="text-blue-600 hover:text-blue-800 font-semibold">
+                        إنشاء حساب جديد
+                    </a>
+                </p>
+            </div>
         </div>
     </div>
 </body>

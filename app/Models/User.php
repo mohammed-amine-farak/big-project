@@ -71,4 +71,53 @@ class User extends Authenticatable
     {
         return $this->hasOne(Admin::class,'id');
     }
+    public function isTeacher()
+    {
+        return $this->user_type === 'teacher';
+    }
+    public function isStudent()
+    {
+        return $this->user_type === 'student';
+    }
+    public function isAdmin()
+    {
+        return $this->user_type === 'admin';
+    }
+
+    public function isVideoCreator()
+    {
+        return $this->user_type === 'video_creator';
+    }
+     public function isParent()
+    {
+        return $this->user_type === 'parent';
+    }
+    public function isResearcher()
+    {
+        return $this->user_type === 'researcher';
+    }
+ public function getUserTypeArabicAttribute()
+    {
+        return match($this->user_type) {
+            'teacher' => 'معلم',
+            'researcher' => 'باحث',
+            'parent' => 'ولي أمر',
+            'student' => 'طالب',
+            'admin' => 'مدير',
+            'video_creator' => 'منشئ فيديوهات',
+            default => 'غير محدد',
+        };
+    }
+     public function getDashboardRoute()
+    {
+        return match($this->user_type) {
+            'teacher' => route('teacher.dashboard'),
+            'researcher' => route('lessons.index'),
+           // 'parent' => route('parent.dashboard'),
+            //'student' => route('student.dashboard'),
+            //'admin' => route('admin.dashboard'),
+            //'video_creator' => route('video-creator.dashboard'),
+            default => route('dashboard'),
+        };
+    }
 }

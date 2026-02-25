@@ -8,7 +8,15 @@ class Researchers extends Model
 {
     protected $primaryKey = 'id'; // If researcher ID is also user ID
     protected $table = 'researchers'; // Explicitly define the table name
-
+protected $fillable = [
+        'id',
+        'field_of_study',
+        'institution',
+        'country',
+        'city',
+        'degree',
+        'certificate_path',
+    ];
     public function user()
     {
         return $this->belongsTo(User::class, 'id', 'id');

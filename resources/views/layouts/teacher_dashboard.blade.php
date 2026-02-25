@@ -240,7 +240,7 @@
             <!-- Navigation Menu -->
             <ul class="space-y-2">
                 <li>
-                    <a href="{{route('class')}}" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
+                    <a href="{{route('teacher.dashboard')}}" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
                         <div class="flex items-center space-x-3 space-x-reverse">
                             <div class="w-8 h-8 rounded-lg bg-blue-900/20 flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

@@ -18,6 +18,7 @@ use App\Http\Controllers\teacher_admine_reports_view_Controller;
 use App\Http\Controllers\teacher_lesson_controller;
 use App\Http\Controllers\teacher_lesson_report_controller;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
+use App\Http\Controllers\TeacherDashboardController;
 
 Route::get('/exam/create', [exam_Controller::class, 'create'])->name('exam.create');
 Route::post('/exam/store', [exam_Controller::class, 'store'])->name('exam.store');
@@ -200,10 +201,19 @@ Route::put('/teacher/lesson-reports/{id}',
 
    Route::get('/teacher/lesson/index',[teacher_lesson_controller::class,'index'])->name('teacher_lesson.index');
 Route::get('/teacher/lessons/show/{lesson}',[teacher_lesson_controller::class, 'show'])->name('teacher_lesson.show');
-  
+
+// routes/web.php
+
+Route::get('/teacher/dashboard', [TeacherDashboardController::class, 'index'])->name('teacher.dashboard');
 
 
+Route::get('login', function () {
+    return view('auth.login');
+})->name('login');
 
+Route::get('register', function () {
+    return view('auth.register');
+})->name('register');
 
 
      Route::get('class', function () {

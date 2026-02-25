@@ -265,10 +265,7 @@
                                                     <span class="text-gray-600 text-sm max-w-[120px] truncate">
                                                         {{ Str::limit($lesson->content, 25) }}
                                                     </span>
-                                                    <a href="{{ route('teacher_lesson.show', $lesson->id) }}" 
-                                                       class="text-blue-600 hover:text-blue-800 text-xs font-medium whitespace-nowrap">
-                                                        عرض
-                                                    </a>
+                                                   
                                                 </div>
                                             </td>
                                             <td class="px-3 py-3 whitespace-nowrap hidden xl:table-cell">
