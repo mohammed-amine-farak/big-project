@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\admine_report;
-
+use Illuminate\Support\Facades\Auth;
 use function Laravel\Prompts\select;
 
 class admine_report_controller extends Controller
 {
+
     public function index(Request $request){
-        $query = admine_report::where('admine_reports.researcher_id', 10)
+
+        $query = admine_report::where('admine_reports.researcher_id', Auth::user()->id)
             ->join('researchers', 'admine_reports.researcher_id', '=', 'researchers.id')
             ->join('users as researcher_users', 'researchers.id', '=', 'researcher_users.id')
             ->join('admins', 'admine_reports.admin_id', '=', 'admins.id')
@@ -86,7 +88,7 @@ class admine_report_controller extends Controller
     }
     public function show($id){
         $adminReport = admine_report::where('admine_reports.id', $id)
-        ->where('admine_reports.researcher_id', 10) // or remove this if you want any report
+        ->where('admine_reports.researcher_id', Auth::user()->id) // or remove this if you want any report
         ->join('researchers', 'admine_reports.researcher_id', '=', 'researchers.id')
         ->join('users as researcher_users', 'researchers.id', '=', 'researcher_users.id')
         ->join('admins', 'admine_reports.admin_id', '=', 'admins.id')
@@ -103,7 +105,7 @@ class admine_report_controller extends Controller
     }
     public function updateResponse(Request $request, $id)
     {
-        $researcherId = 10; // Replace with the actual authenticated researcher ID
+        $researcherId = Auth::user()->id; // Replace with the actual authenticated researcher ID
         
         $adminReport = admine_report::where('id', $id)
             ->where('researcher_id', $researcherId)

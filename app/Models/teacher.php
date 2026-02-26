@@ -8,6 +8,12 @@ class teacher extends Model
 {
     public $incrementing = false; // لأن المفتاح ليس auto-increment هنا
     protected $primaryKey = 'id';
+ protected $fillable = [
+        'id',
+        'school_level',
+        'school',
+        'subject',
+    ];
 
     public function Interaction_Notes_students()
     {

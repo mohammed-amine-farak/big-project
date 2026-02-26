@@ -11,7 +11,7 @@ use App\Models\student as ModelsStudent;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\psychology_report_response_admine;
-
+use Illuminate\Support\Facades\Auth;
 class StudentPsychologyController extends Controller
 {
   public function index(Request $request)
@@ -19,7 +19,7 @@ class StudentPsychologyController extends Controller
   
     
     $query = student_psychology::with(['student.user', 'classroom', 'teacher.user'])
-        ->where('teacher_id', 12);
+        ->where('teacher_id', Auth::user()->id);
     
     // Filters - no table prefixes needed in Eloquent
     if ($request->filled('student_id')) {
@@ -49,7 +49,7 @@ class StudentPsychologyController extends Controller
         ->whereIn('id', function($query)  {
             $query->select('student_id')
                   ->from('student_psychologies')
-                  ->where('teacher_id',12);
+                  ->where('teacher_id',Auth::user()->id);
         })
         ->get()
         ->map(function($student) {
@@ -62,7 +62,7 @@ class StudentPsychologyController extends Controller
     $classrooms = Classroom::whereIn('id', function($query) {
         $query->select('classroom_id')
               ->from('student_psychologies')
-              ->where('teacher_id', 12);
+              ->where('teacher_id', Auth::user()->id);
     })->get();
 
     return view('teacher-dashboard.StudentPsychology.index', 
@@ -71,7 +71,7 @@ class StudentPsychologyController extends Controller
      public function show(student_psychology $student_psychology)
     {
         // Check authorization
-        if ($student_psychology->teacher_id != 12) {
+        if ($student_psychology->teacher_id != Auth::user()->id) {
             abort(403, 'غير مصرح لك بعرض هذا التقرير النفسي.');
         }
 
@@ -84,7 +84,7 @@ class StudentPsychologyController extends Controller
     {
         // Check authorization
        
-        if ($student_psychology->teacher_id != 12) {
+        if ($student_psychology->teacher_id != Auth::user()->id) {
             abort(403, 'ليس لديك صلاحية لتغيير حالة هذا التقرير.');
         }
 
@@ -104,7 +104,7 @@ class StudentPsychologyController extends Controller
    public function edit(student_psychology $student_psychology)
 {
     // Check authorization and status
-    $teacherId = 12;
+    $teacherId = Auth::user()->id;
     
     if ($student_psychology->teacher_id != $teacherId) {
         abort(403, 'ليس لديك صلاحية لتعديل هذا التقرير.');
@@ -151,7 +151,7 @@ class StudentPsychologyController extends Controller
 public function update(Request $request, student_psychology $student_psychology)
 {
     // Check authorization and status
-    $teacherId =  12;
+    $teacherId =  Auth::user()->id;
     
     if ($student_psychology->teacher_id != $teacherId) {
         abort(403, 'ليس لديك صلاحية لتعديل هذا التقرير.');
@@ -222,7 +222,7 @@ public function update(Request $request, student_psychology $student_psychology)
 }
 public function create()
 {
-      $teacherId =  12;
+      $teacherId =  Auth::user()->id;
     $students = Student::select([
         'students.id',
         'users.name',
@@ -255,7 +255,7 @@ public function create()
 }
 public function store(Request $request)
 {
-    $teacherId =  12;
+    $teacherId =  Auth::user()->id;
     
     // Validate inputs
     $validated = $request->validate([
@@ -329,7 +329,7 @@ public function store(Request $request)
 public function destroy(student_psychology $student_psychology)
 {
     // Check authorization
-    $teacherId = 12;
+    $teacherId = Auth::user()->id;
     
     if ($student_psychology->teacher_id != $teacherId) {
         abort(403, 'ليس لديك صلاحية لحذف هذا التقرير.');

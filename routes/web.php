@@ -19,6 +19,82 @@ use App\Http\Controllers\teacher_lesson_controller;
 use App\Http\Controllers\teacher_lesson_report_controller;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use App\Http\Controllers\TeacherDashboardController;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Auth;
+
+
+
+
+Route::middleware(['auth'])->group(function () {
+    
+    Route::get('/waiting-approval', function () {
+        $user = auth::user();
+        if ($user->account_status === 'approved') {
+            return redirect()->route('dashboard');
+        }
+        return view('auth.waiting-approval');
+    })->name('waiting.approval');
+    
+    Route::get('/rejected', function () {
+        $user = auth::user();
+        if ($user->account_status === 'approved') {
+            return redirect()->route('dashboard');
+        }
+        return view('auth.rejected', [
+            'reason' => $user->rejection_reason ?? 'لم يتم تحديد سبب'
+        ]);
+    })->name('rejected.notice');
+});
+
+// ===== الصفحات المحمية (تتطلب موافقة) =====
+Route::middleware(['auth', 'check.status'])->group(function () {
+    
+    Route::get('/dashboard', function () {
+        $user = auth::user();
+        return redirect()->route($user->user_type . '.dashboard');
+    })->name('dashboard');
+    
+    // Routes المعلم
+     Route::prefix('teacher')->name('teacher.')->group(function () {
+        // ✅ هذا هو المسار الصحيح: teacher.dashboard
+        Route::get('/dashboard', [TeacherDashboardController::class, 'index'])
+             ->name('dashboard');
+        
+        // يمكنك إضافة المزيد من Routes المعلم هنا
+        // Route::get('/students', [TeacherController::class, 'students'])->name('students');
+        // Route::get('/classes', [TeacherController::class, 'classes'])->name('classes');
+    });
+    
+    // Routes الباحث
+    Route::prefix('researcher')->name('lessons.')->group(function () {
+       Route::get('/dashboard', [LessonController::class, 'index'])
+             ->name('index');
+    });
+    
+    // Routes أخرى...
+    
+   
+});
+ Route::get('/logout', function (Request $request) {
+        auth::logout();
+        request()->session()->invalidate();
+request()->session()->regenerateToken();
+        return redirect('/');
+    })->name('logout');
+// routes/web.php
+Route::get('/', function () {
+    return view('welcome');
+})->name('index');
+ // هذا يستدعي routes Fortify
+
+
+
+
+
+
+   Route::middleware(['user.type:researcher'])->group(function () {
+       
+
 
 Route::get('/exam/create', [exam_Controller::class, 'create'])->name('exam.create');
 Route::post('/exam/store', [exam_Controller::class, 'store'])->name('exam.store');
@@ -116,7 +192,14 @@ Route::delete('skills/{id}', [skille_level_Controller::class, 'destroy'])->name(
 
 
 
-//techer routes
+    });
+
+
+
+
+
+Route::middleware(['user.type:teacher'])->group(function () {
+
 
 Route::get('/Interaction_Notes_student',[Interaction_Notes_student::class,'index'])->name('Interaction_Notes_student.index');
 Route::get('/Interaction_Notes_student/create',[Interaction_Notes_student::class,'create'])->name('Interaction_Notes_student.create');
@@ -207,23 +290,29 @@ Route::get('/teacher/lessons/show/{lesson}',[teacher_lesson_controller::class, '
 Route::get('/teacher/dashboard', [TeacherDashboardController::class, 'index'])->name('teacher.dashboard');
 
 
-Route::get('login', function () {
-    return view('auth.login');
-})->name('login');
 
-Route::get('register', function () {
-    return view('auth.register');
-})->name('register');
+});
 
 
-     Route::get('class', function () {
-    return view('teacher-dashboard\class\index');
-})->name('class');
+//techer routes
 
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('index');
+
+
+// أضف هذا route مؤقتاً وسجل خروج
+
+
+
+
+
+   
+
+
+
+
+
+
+
 /*
 Route::get('about_us', function () {
     return view('about.about');

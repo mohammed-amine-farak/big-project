@@ -7,7 +7,7 @@ use App\Models\teacher_admin_reports;
 use App\Models\teacher;
 use App\Models\admin;
 use Illuminate\Support\Facades\Redirect;
-
+use Illuminate\Support\Facades\Auth;
 class teacher_admine_reports_view_Controller extends Controller
 {
    public function index(Request $request)
@@ -15,7 +15,7 @@ class teacher_admine_reports_view_Controller extends Controller
         // التحقق من أن المستخدم معلم
        
         // الحصول على المعلم الحالي
-        $teacher = 12;
+        $teacher = Auth::user()->id;
         
         // بناء الاستعلام مع العلاقات
         $query = teacher_admin_reports::with(['teacher.user', 'admin.user'])
@@ -85,7 +85,7 @@ class teacher_admine_reports_view_Controller extends Controller
 {
     $report = teacher_admin_reports::with(['teacher.user', 'admin.user'])
         ->where('id', $id)
-        ->where('teacher_id', 12)
+        ->where('teacher_id', Auth::user()->id)
         ->firstOrFail();
 
     // تحديث حالة القراءة
@@ -94,13 +94,13 @@ class teacher_admine_reports_view_Controller extends Controller
     }
 
     // الحصول على التقرير السابق
-    $previousReport = teacher_admin_reports::where('teacher_id', 12)
+    $previousReport = teacher_admin_reports::where('teacher_id', Auth::user()->id)
         ->where('id', '<', $id)
         ->orderBy('id', 'desc')
         ->first();
 
     // الحصول على التقرير التالي
-    $nextReport = teacher_admin_reports::where('teacher_id', 12)
+    $nextReport = teacher_admin_reports::where('teacher_id', Auth::user()->id)
         ->where('id', '>', $id)
         ->orderBy('id', 'asc')
         ->first();

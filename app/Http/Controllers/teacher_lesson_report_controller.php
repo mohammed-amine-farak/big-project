@@ -16,7 +16,7 @@ class teacher_lesson_report_controller extends Controller
     public function index(Request $request)
     {
         // Get teacher ID from authenticated user
-        $teacherId = Auth::user()->teacher->id ?? 12; // Fallback for testing
+        $teacherId = Auth::user()->id; // Fallback for testing
         
         // Start query - get reports for this teacher
         $query = lesson_report::with(['lesson', 'teacher.user', 'classroom', 'researcher.user'])
@@ -81,7 +81,7 @@ class teacher_lesson_report_controller extends Controller
     public function create()
 {
     // Get teacher ID
-    $teacherId = Auth::user()->teacher->id ?? 12;
+    $teacherId = Auth::user()->id;
     
     // Get lessons with their researchers
     $lessons = lessonss::with('researcher')->get();
@@ -107,7 +107,7 @@ public function store(Request $request)
         'suggested_solution' => 'nullable|string',
     ]);
 
-    $teacherId = Auth::user()->teacher->id ?? 12;
+    $teacherId = Auth::user()->id;
 
     // Get researcher_id from the selected lesson
     $lesson = lessonss::find($validated['lesson_id']);
@@ -133,7 +133,7 @@ public function store(Request $request)
 public function show($id)
 {
     // Get teacher ID
-    $teacherId = Auth::user()->teacher->id ?? 12;
+    $teacherId = Auth::user()->id;
     
     // Get the report with all relationships
     $report = lesson_report::with([
@@ -150,7 +150,7 @@ public function show($id)
 public function destroy($id)
 {
      
-    $teacherId = Auth::user()->teacher->id ?? 12;
+    $teacherId = Auth::user()->id;
     
     $report = lesson_report::where('teacher_id', $teacherId)
         ->findOrFail($id);
@@ -165,7 +165,7 @@ public function destroy($id)
 public function edit($id)
 {
     // Get teacher ID
-    $teacherId = Auth::user()->teacher->id ?? 12;
+    $teacherId = Auth::user()->id;
     
     // Get the report with all relationships
     $report = lesson_report::with(['lesson', 'classroom'])
@@ -194,7 +194,7 @@ public function edit($id)
 public function update(Request $request, $id)
 {
     // Get teacher ID
-    $teacherId = Auth::user()->teacher->id ?? 12;
+    $teacherId = Auth::user()->id;
     
     // Find the report
     $report = lesson_report::where('teacher_id', $teacherId)

@@ -11,13 +11,15 @@ use App\Models\rule_examples;
 use App\Models\subject;
 use App\Models\Fields_Of_Study;
 use Illuminate\Support\Facades\DB;
+ use Illuminate\Support\Facades\Auth;
+
 class teacher_lesson_controller extends Controller
 {
   
      public function index(Request $request)
     {
         // Start building the query - only show lessons created by current user
-       $teacher = Teacher::find(12); // أو Teacher::find($id);
+       $teacher = Teacher::find(Auth::user()->id); // أو Teacher::find($id);
        
  // أو Teacher::find($id)
 // تحقق من هيكل البيانات
@@ -57,8 +59,11 @@ $query = Lessonss::select('lessonss.*')
         $fieldStudies = Fields_Of_Study::all();
         
         // Get total lessons count for stats (without pagination)
-        $totalLessonsCount = Lessonss::where('researcher_id', 1)->count();
-        
+       $totalLessonsCount = Lessonss::join('researchers', 'lessonss.researcher_id', '=', 'researchers.id')
+    ->where('researchers.subject', $teacher->subject)
+    ->count();
+
+
         return view('teacher-dashboard.lesson.index', compact('lessons', 'subjects', 'fieldStudies', 'totalLessonsCount'));
     
     } 

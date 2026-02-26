@@ -22,6 +22,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'user_type',
+        'account_status',
+    'rejection_reason',
+    'approved_at',
+    'approved_by',
     ];
 
     /**
@@ -119,5 +124,50 @@ class User extends Authenticatable
             //'video_creator' => route('video-creator.dashboard'),
             default => route('dashboard'),
         };
+
     }
+    public function isPending()
+{
+    return $this->account_status === 'pending';
+}
+
+public function isApproved()
+{
+    return $this->account_status === 'approved';
+}
+
+public function isRejected()
+{
+    return $this->account_status === 'rejected';
+}
+
+public function approver()
+{
+    return $this->belongsTo(User::class, 'approved_by');
+}
+
+public function canAccessDashboard()
+{
+    return $this->isApproved() || $this->user_type === 'admin';
+}
+
+public function getAccountStatusArabicAttribute()
+{
+    return match($this->account_status) {
+        'pending' => '⏳ قيد المراجعة',
+        'approved' => '✅ مقبول',
+        'rejected' => '❌ مرفوض',
+        default => 'غير معروف',
+    };
+}
+
+public function getAccountStatusColorAttribute()
+{
+    return match($this->account_status) {
+        'pending' => 'yellow',
+        'approved' => 'green',
+        'rejected' => 'red',
+        default => 'gray',
+    };
+}
 }

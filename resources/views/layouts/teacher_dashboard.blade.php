@@ -410,7 +410,7 @@
 
             <!-- Logout Button -->
             <div class="mt-8 pt-6 border-t border-gray-700">
-                <a href="#" class="flex items-center justify-end w-full py-3 px-4 rounded-lg text-red-400 hover:bg-gray-700 hover:text-red-300 transition-all-custom focus-ring group">
+                <a href="{{ route('logout') }}" class="flex items-center justify-end w-full py-3 px-4 rounded-lg text-red-400 hover:bg-gray-700 hover:text-red-300 transition-all-custom focus-ring group">
                     <span class="text-base font-medium ml-3">تسجيل الخروج</span>
                     <div class="w-8 h-8 rounded-lg bg-red-900/20 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

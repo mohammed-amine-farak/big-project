@@ -72,8 +72,11 @@ return [
     | and the user is authenticated. You are free to change this value.
     |
     */
-
-    'home' => '/home',
+'home' => '/dashboard', // يجب أن يكون هذا المسار الذي تريده
+    
+    // ...
+    
+   
 
     /*
     |--------------------------------------------------------------------------
@@ -144,6 +147,7 @@ return [
     */
 
     'features' => [
+
         Features::registration(),
         Features::resetPasswords(),
         // Features::emailVerification(),

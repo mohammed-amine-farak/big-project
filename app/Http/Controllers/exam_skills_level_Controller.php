@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 class exam_skills_level_Controller extends Controller
 {
     public function create(){
-
+       
         $results = exam_weeckly::with('subject')
         ->whereDoesntHave('weeklySkills')
         ->get();

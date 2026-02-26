@@ -74,8 +74,8 @@
                 </div>
 
                 <div class="hidden md:flex items-center space-x-4 space-x-reverse">
-                    <a href="#" class="font-semibold text-gray-700 hover:text-blue-600 transition-colors">تسجيل الدخول</a>
-                    <a href="#" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-xl font-bold hover:from-blue-700 hover:to-purple-700 transition duration-300 shadow-lg hover:shadow-xl">
+                    <a href="{{route('login')}}" class="font-semibold text-gray-700 hover:text-blue-600 transition-colors">تسجيل الدخول</a>
+                    <a href="{{route('register')}}" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-xl font-bold hover:from-blue-700 hover:to-purple-700 transition duration-300 shadow-lg hover:shadow-xl">
                         إنشاء حساب مجاني
                     </a>
                 </div>

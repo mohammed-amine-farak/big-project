@@ -10,11 +10,17 @@ use App\Models\exam_schol_weeckly_report;
 use App\Models\student_level;
 use App\Models\subject;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Auth;
 class Exam_grade_Controller extends Controller
 {
     public function index(Request $request)
+
     {
+           
+        $teacherId = Auth::user()->id;
+        
+
+
         $query = DB::table('exam_schol_weeckly_reports')
             ->join('students', 'exam_schol_weeckly_reports.student_id', '=', 'students.id')
             ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
@@ -23,7 +29,7 @@ class Exam_grade_Controller extends Controller
             ->join('teachers', 'exam_schol_weeckly_reports.teacher_id', '=', 'teachers.id')
             ->join('users as teacher_users', 'teachers.id', '=', 'teacher_users.id')
             ->join('exam_weecklies', 'exam_schol_weeckly_reports.exam_weecklies_id', '=', 'exam_weecklies.id')
-            ->where('classrooms.teacher_id', 12)
+            ->where('classrooms.teacher_id', $teacherId)
             ->select(
                 'student_users.name AS student_name',
                 'student_users.id AS student_id',
@@ -57,7 +63,7 @@ class Exam_grade_Controller extends Controller
             ->join('users as student_users', 'students.id', '=', 'student_users.id')
             ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
             ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
-            ->where('classrooms.teacher_id', 12)
+            ->where('classrooms.teacher_id', $teacherId)
             ->select('student_users.name', 'students.id')
             ->distinct()
             ->get();
@@ -66,7 +72,7 @@ class Exam_grade_Controller extends Controller
             ->join('students', 'exam_schol_weeckly_reports.student_id', '=', 'students.id')
             ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
             ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
-            ->where('classrooms.teacher_id', 12)
+            ->where('classrooms.teacher_id', $teacherId)
             ->select('classrooms.id', 'classrooms.class_name')
             ->distinct()
             ->get();
@@ -76,7 +82,7 @@ class Exam_grade_Controller extends Controller
 
     public function create()
     {
-        $teacherId = 12;
+        $teacherId = Auth::user()->id;
         $classrooms = classroom::where('teacher_id', $teacherId)->get();
         
         return view('teacher-dashboard.Academic_Reports.Exam_Grades.create', compact('classrooms'));
@@ -84,7 +90,7 @@ class Exam_grade_Controller extends Controller
 
     public function getClassroomDataAjax($classroomId)
     {
-        $teacherId = 12;
+        $teacherId = Auth::user()->id;
         
         $students = DB::table('students')
             ->join('users', 'students.id', '=', 'users.id')
@@ -102,7 +108,7 @@ class Exam_grade_Controller extends Controller
 
     public function getStudentExamsAjax($classroomId, $studentId)
     {
-        $teacherId = 12;
+        $teacherId = Auth::user()->id;
         
         $allExams = exam_weeckly::where('classroom_id', $classroomId)->get();
         
@@ -224,7 +230,7 @@ class Exam_grade_Controller extends Controller
                 'exam_weecklies_id' => $validatedData['exam_weecklies_id'],
                 'exam_total_point' => $validatedData['exam_total_point'],
                 'exam_note' => $validatedData['exam_note'],
-                'teacher_id' => 12,
+                'teacher_id' => Auth::user()->id,
             ]);
 
             $levelsCount = 0;
@@ -348,7 +354,7 @@ class Exam_grade_Controller extends Controller
 
    public function edit(exam_schol_weeckly_report $Exam_Grade)
 {
-    $teacherId = 12;
+    $teacherId = Auth::user()->id;
     
     // Get the current exam grade with student and exam details
     $exam_grade = DB::table('exam_schol_weeckly_reports')
@@ -408,7 +414,7 @@ class Exam_grade_Controller extends Controller
             'selected_levels.*' => 'exists:level_skills,id'
         ]);
 
-        $teacherId = 12;
+        $teacherId = Auth::user()->id;
         
         // Update the report
         $Exam_Grade->student_id = $validatedData['student_id'];
@@ -558,7 +564,7 @@ class Exam_grade_Controller extends Controller
     }
     public function show($id)
 {
-    $teacherId = 12;
+    $teacherId = Auth::user()->id;
     
     // Find the exam report by ID
     $Exam_Grade = exam_schol_weeckly_report::findOrFail($id);
@@ -677,7 +683,7 @@ class Exam_grade_Controller extends Controller
 // In your controller
 public function examsList(Request $request)
 {
-    $teacherId = 12; // Or get from auth: auth()->id()
+    $teacherId = Auth::user()->id; // Or get from auth: auth()->id()
 
     $query = exam_weeckly::with([
         'researcher.user',

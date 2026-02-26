@@ -12,7 +12,7 @@ use App\Models\lessonss;
 use App\Models\questions;
 use App\Models\subject;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Facades\Auth;
 class exam_Controller extends Controller
 {
     /**
@@ -20,6 +20,7 @@ class exam_Controller extends Controller
      */
     public function index(Request $request)
 {
+
     // Start query with relationships
     $query = exams::with([
         'lesson' => function($query) {

@@ -8,7 +8,7 @@ use App\Models\lessonss;
 use App\Models\User;
 use App\Models\classroom;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 class Interaction_Notes_student extends Controller
 {
     public function index(Request $request)
@@ -21,7 +21,7 @@ class Interaction_Notes_student extends Controller
             ->join('lessonss', 'interaction__notes_students.lesson_id', '=', 'lessonss.id')
             ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
             ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
-            ->where('classrooms.teacher_id', 12)
+            ->where('classrooms.teacher_id', Auth::user()->id)
             ->select(
                 'student_users.name AS student_name',
                 'teacher_users.name AS teacher_name',
@@ -57,7 +57,7 @@ class Interaction_Notes_student extends Controller
             ->join('users as student_users', 'students.id', '=', 'student_users.id')
             ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
             ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
-            ->where('classrooms.teacher_id', 12)
+            ->where('classrooms.teacher_id', Auth::user()->id)
             ->select('student_users.name', 'students.id')
             ->distinct()
             ->get();
@@ -66,7 +66,7 @@ class Interaction_Notes_student extends Controller
             ->join('students', 'interaction__notes_students.student_id', '=', 'students.id')
             ->join('student_classrooms', 'students.id', '=', 'student_classrooms.student_id')
             ->join('classrooms', 'student_classrooms.classroom_id', '=', 'classrooms.id')
-            ->where('classrooms.teacher_id', 12)
+            ->where('classrooms.teacher_id', Auth::user()->id)
             ->select('classrooms.id', 'classrooms.class_name')
             ->distinct()
             ->get();
@@ -83,7 +83,7 @@ class Interaction_Notes_student extends Controller
 
     public function create()
     {
-        $teacherId = 12;
+        $teacherId = Auth::user()->id;
         $classrooms = classroom::where('teacher_id', $teacherId)->get();
         $lessons = lessonss::all(); // Get all lessons (unique across all classrooms)
         
@@ -93,7 +93,7 @@ class Interaction_Notes_student extends Controller
 
     public function getClassroomStudentsAjax($classroomId)
     {
-        $teacherId = 12;
+        $teacherId = Auth::user()->id;
         
         $students = DB::table('students')
             ->join('users', 'students.id', '=', 'users.id')
@@ -139,7 +139,7 @@ class Interaction_Notes_student extends Controller
         Interaction_Notes_students::create([
             'student_id' => $validatedData['student_id'],
             'lesson_id' => $validatedData['lesson_id'],
-            'teacher_id' => 12,
+            'teacher_id' => Auth::user()->id,
             'note_content' => $validatedData['note_content'],
         ]);
 
@@ -166,7 +166,7 @@ class Interaction_Notes_student extends Controller
 
     public function update(Interaction_Notes_students $Interaction_Notes_students)
     {
-        $teacherId = 12;
+        $teacherId = Auth::user()->id;
         
         $interaction_notes_student = Interaction_Notes_students::where('interaction__notes_students.id', $Interaction_Notes_students->id)
             ->join('students', 'interaction__notes_students.student_id', '=', 'students.id')

@@ -179,8 +179,8 @@
 
                 <!-- Desktop Auth Buttons -->
                 <div class="hidden md:flex items-center space-x-4 space-x-reverse">
-                    <a href="#" class="font-semibold text-gray-700 hover:text-blue-600 transition-colors">تسجيل الدخول</a>
-                    <a href="#" class="gradient-red text-white px-5 py-2 rounded-lg font-bold hover:shadow-lg transition-all duration-300 hover-lift">
+                    <a href="" class="font-semibold text-gray-700 hover:text-blue-600 transition-colors">تسجيل الدخول</a>
+                    <a href="{{ route('register') }}" class="gradient-red text-white px-5 py-2 rounded-lg font-bold hover:shadow-lg transition-all duration-300 hover-lift">
                         إنشاء حساب مجاني
                     </a>
                 </div>

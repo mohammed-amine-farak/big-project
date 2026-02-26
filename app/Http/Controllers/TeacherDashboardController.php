@@ -12,12 +12,12 @@ use App\Models\lesson_report;
 use App\Models\exam_schol_weeckly_report;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Auth;
 class TeacherDashboardController extends Controller
 {
     public function index()
     {
-        $teacherId = 12; // Replace with auth()->id() in production
+        $teacherId = Auth::user()->id; // Replace with auth()->id() in production
         
         // ========== STATS CARDS ==========
         // Total students in teacher's classrooms

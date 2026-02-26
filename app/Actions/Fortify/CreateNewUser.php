@@ -4,8 +4,8 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
-use App\Models\teacher;
-
+use App\Models\Teacher;
+use App\Models\Researcher;
 use App\Models\Researchers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;

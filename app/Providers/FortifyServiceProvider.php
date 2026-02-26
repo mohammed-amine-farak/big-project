@@ -14,6 +14,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Fortify;
+use Illuminate\Support\Facades\Auth;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -44,12 +45,30 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::loginView(function () {
             return view('auth.login');
         });
+        Fortify::redirects('login', function () {
+        $user = auth::user();
+        
+        // التحقق من حالة الحساب
+        if ($user->account_status === 'pending') {
+            return route('waiting.approval');
+        }
+        
+        if ($user->account_status === 'rejected') {
+            return route('rejected.notice');
+        }
+        
+        // إذا كان الحساب مقبولاً، اذهب إلى dashboard
+        return route('dashboard');
+    });
 
         // صفحة التسجيل
         Fortify::registerView(function () {
             return view('auth.register');
         });
 
+         Fortify::redirects('register', function () {
+            return route('waiting.approval');
+          });
         // صفحة نسيت كلمة المرور
         Fortify::requestPasswordResetLinkView(function () {
             return view('auth.forgot-password');
@@ -59,7 +78,7 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetPasswordView(function ($request) {
             return view('auth.reset-password', ['request' => $request]);
         });
-
+        
         // صفحة تأكيد البريد الإلكتروني
         Fortify::verifyEmailView(function () {
             return view('auth.verify-email');

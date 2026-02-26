@@ -36,7 +36,7 @@ class LessonController extends Controller
             
         ]);
 
-        $data['researcher_id'] =  1; // use 1 if not using auth
+        $data['researcher_id'] =  Auth::user()->id; // use 1 if not using auth
 
         Lessonss::create($data);
 
@@ -48,7 +48,7 @@ class LessonController extends Controller
     {
         // Start building the query - only show lessons created by current user
         $query = Lessonss::with(['subject.fieldOfStudy', 'researcher'])
-                      ->where('researcher_id', 1);
+                      ->where('researcher_id', Auth::user()->id);
         
         // Apply title filter
         if ($request->filled('title')) {
