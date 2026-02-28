@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم الباحثين - مدرستي نور</title>
+    <title>لوحة تحكم المسؤول - مدرستي نور</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,28 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-<head>
-    <!-- Your existing head content -->
-    
-    <!-- MathJax for mathematical equations -->
-    <script>
-        MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-                processEscapes: true,
-                processEnvironments: true
-            },
-            options: {
-                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
-            },
-            svg: {
-                fontCache: 'global'
-            }
-        };
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
-</head>
+
     <style>
         :root {
             --primary-blue: #1e40af;
@@ -179,8 +158,8 @@
 
                 <!-- Desktop Auth Buttons -->
                 <div class="hidden md:flex items-center space-x-4 space-x-reverse">
-                    <a href="" class="font-semibold text-gray-700 hover:text-blue-600 transition-colors">تسجيل الدخول</a>
-                    <a href="{{ route('register') }}" class="gradient-red text-white px-5 py-2 rounded-lg font-bold hover:shadow-lg transition-all duration-300 hover-lift">
+                    <a href="#" class="font-semibold text-gray-700 hover:text-blue-600 transition-colors">تسجيل الدخول</a>
+                    <a href="#" class="gradient-red text-white px-5 py-2 rounded-lg font-bold hover:shadow-lg transition-all duration-300 hover-lift">
                         إنشاء حساب مجاني
                     </a>
                 </div>
@@ -211,29 +190,29 @@
                 </button>
                 <div class="flex items-center">
                     <div class="ml-3 relative">
-                        <div class="rounded-full w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-md">
+                        <div class="rounded-full w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-md">
                             <span class="text-white font-bold text-lg">أ</span>
                         </div>
                         <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-800"></span>
                     </div>
                     <div class="text-right">
-                        <p class="text-white font-medium">أحمد</p>
-                        <p class="text-gray-400 text-sm">باحث</p>
+                        <p class="text-white font-medium">أحمد المدير</p>
+                        <p class="text-gray-400 text-sm">مسؤول النظام</p>
                     </div>
                 </div>
 
-                <!-- Student Info Popover -->
-                <div id="student-info-popover" class="absolute bg-gray-700 text-white p-4 rounded-xl shadow-lg z-50 w-72
+                <!-- Admin Info Popover -->
+                <div id="admin-info-popover" class="absolute bg-gray-700 text-white p-4 rounded-xl shadow-lg z-50 w-72
                             top-full right-0 mt-2 hidden card-shadow animate-fade-in">
                     <h4 class="text-lg font-bold mb-3 border-b border-gray-600 pb-2 text-right">تفاصيل الحساب</h4>
                     <div class="space-y-3 text-right">
                         <div class="flex justify-between items-center">
                             <span class="font-semibold text-gray-300">الاسم:</span>
-                            <span class="text-gray-100">أحمد</span>
+                            <span class="text-gray-100">أحمد المدير</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="font-semibold text-gray-300">البريد الإلكتروني:</span>
-                            <span class="text-gray-400 text-xs truncate max-w-[120px]">ahmed.researcher@example.com</span>
+                            <span class="text-gray-400 text-xs truncate max-w-[120px]">admin@madrasati-noor.com</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="font-semibold text-gray-300">تاريخ التسجيل:</span>
@@ -241,37 +220,38 @@
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="font-semibold text-gray-300">الدور:</span>
-                            <span class="text-blue-400 font-medium">باحث</span>
+                            <span class="text-purple-400 font-medium">مسؤول النظام</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="font-semibold text-gray-300">نقاط الخبرة:</span>
-                            <span class="text-yellow-400 font-medium">4250 XP</span>
+                            <span class="font-semibold text-gray-300">آخر نشاط:</span>
+                            <span class="text-gray-400">منذ 5 دقائق</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="font-semibold text-gray-300">المشاريع المكتملة:</span>
-                            <span class="text-green-400 font-medium">15 مشروع</span>
+                            <span class="font-semibold text-gray-300">المستخدمين النشطين:</span>
+                            <span class="text-green-400 font-medium">1,284</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Dashboard Title -->
-            <h3 class="text-lg font-medium text-gray-300 mb-6 text-right px-3">لوحة تحكم الباحثين</h3>
+            <h3 class="text-lg font-medium text-gray-300 mb-6 text-right px-3">لوحة تحكم المسؤول</h3>
             
             <!-- Navigation Menu -->
             <ul class="space-y-2">
-                  <li>
+                <!-- Dashboard Home -->
+                <li>
                     <a href="" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
                         <div class="flex items-center space-x-3 space-x-reverse">
-                            <div class="w-8 h-8 rounded-lg bg-purple-900/20 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 17l6-6 4 4 8-8" />
-                                </svg>
+                            <div class="w-8 h-8 rounded-lg bg-blue-900/20 flex items-center justify-center">
+                                <i class="fas fa-chart-pie text-blue-400"></i>
                             </div>
-                            <span class="text-base font-medium"> الرئيسية</span>
+                            <span class="text-base font-medium">الرئيسية</span>
                         </div>
                     </a>
                 </li>
+
+                <!-- User Management -->
                 <li>
                     <button class="sidebar-toggle-btn flex items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
                         <svg class="arrow-icon h-5 w-5 text-gray-400 transition-transform duration-300 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -279,33 +259,65 @@
                         </svg>
                         <div class="flex items-center space-x-3 space-x-reverse">
                             <div class="w-8 h-8 rounded-lg bg-blue-900/20 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.523 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.523 18.246 18 16.5 18c-1.747 0-3.332.477-4.5 1.253" />
-                                </svg>
+                                <i class="fas fa-users text-blue-400"></i>
                             </div>
-                            <span class="text-base font-medium">المقالات</span>
+                            <span class="text-base font-medium">إدارة المستخدمين</span>
                         </div>
                     </button>
                     <ul class="sidebar-submenu hidden space-y-1 pt-2 pl-8 border-r-2 border-blue-500 mr-4">
                         <li>
-                            <a href="{{ route('lessons.index') }}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
                                 <span class="relative">
-                                    الدروس
+                                    جميع المستخدمين
                                     <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
                                 </span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('rules.index') }}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
                                 <span class="relative">
-                                    القواعد
+                                    الباحثون
                                     <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    المعلمون
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    الطلاب
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    أولياء الأمور
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    طلبات التسجيل
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-yellow-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                    <span class="mr-2 text-xs bg-yellow-600 text-white px-2 py-0.5 rounded-full">12</span>
                                 </span>
                             </a>
                         </li>
                     </ul>
                 </li>
 
+                <!-- Content Management -->
                 <li>
                     <button class="sidebar-toggle-btn flex items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
                         <svg class="arrow-icon h-5 w-5 text-gray-400 transition-transform duration-300 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -313,16 +325,38 @@
                         </svg>
                         <div class="flex items-center space-x-3 space-x-reverse">
                             <div class="w-8 h-8 rounded-lg bg-green-900/20 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                                </svg>
+                                <i class="fas fa-book-open text-green-400"></i>
                             </div>
-                            <span class="text-base font-medium">الاختبارات</span>
+                            <span class="text-base font-medium">إدارة المحتوى</span>
                         </div>
                     </button>
                     <ul class="sidebar-submenu hidden space-y-1 pt-2 pl-8 border-r-2 border-green-500 mr-4">
                         <li>
-                            <a href="{{ route('exam.index') }}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    جميع الدروس
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    القواعد
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    الأمثلة
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
                                 <span class="relative">
                                     الاختبارات
                                     <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
@@ -330,17 +364,9 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{route('exam_weeckly.index')}}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
                                 <span class="relative">
-                                   الاختبار الاسبوعي
-                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{route('Exam_skill.index')}}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
-                                <span class="relative">
-                                    مهارات الاختبار
+                                    المهارات
                                     <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
                                 </span>
                             </a>
@@ -348,69 +374,161 @@
                     </ul>
                 </li>
 
-                <!-- Other menu items with improved styling -->
+                <!-- Reports -->
                 <li>
-                    <a href="{{ route('lessons.ProgressTracker') }}" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
+                    <button class="sidebar-toggle-btn flex items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
+                        <svg class="arrow-icon h-5 w-5 text-gray-400 transition-transform duration-300 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
                         <div class="flex items-center space-x-3 space-x-reverse">
                             <div class="w-8 h-8 rounded-lg bg-purple-900/20 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 17l6-6 4 4 8-8" />
-                                </svg>
+                                <i class="fas fa-chart-bar text-purple-400"></i>
                             </div>
-                            <span class="text-base font-medium">تتبع التقدم</span>
+                            <span class="text-base font-medium">التقارير</span>
                         </div>
-                    </a>
+                    </button>
+                    <ul class="sidebar-submenu hidden space-y-1 pt-2 pl-8 border-r-2 border-purple-500 mr-4">
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    تقارير المعلمين
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    تقارير الطلاب
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    التقارير النفسية
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    التقارير المالية
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
-                
+
+                <!-- Academic Supervision -->
                 <li>
-                    <a href="{{route('skills.index')}}" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
+                    <button class="sidebar-toggle-btn flex items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
+                        <svg class="arrow-icon h-5 w-5 text-gray-400 transition-transform duration-300 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
                         <div class="flex items-center space-x-3 space-x-reverse">
                             <div class="w-8 h-8 rounded-lg bg-yellow-900/20 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.942 3.313.842 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.942 1.543-.842 3.313-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.942-3.313-.842-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.942-1.543.842-3.313 2.37-2.37.527.288 1.137.432 1.724.432s1.197-.144 1.724-.432z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
+                                <i class="fas fa-graduation-cap text-yellow-400"></i>
                             </div>
-                            <span class="text-base font-medium">المهارات</span>
+                            <span class="text-base font-medium">الإشراف الأكاديمي</span>
                         </div>
-                    </a>
+                    </button>
+                    <ul class="sidebar-submenu hidden space-y-1 pt-2 pl-8 border-r-2 border-yellow-500 mr-4">
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    جودة المحتوى
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-yellow-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    تقييم الباحثين
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-yellow-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    تقييم المعلمين
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-yellow-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    تقدم الطلاب
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-yellow-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
-                
+
+                <!-- Settings -->
                 <li>
-                    <a href="{{ route('lesson-reports.index') }}" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
-                        <div class="flex items-center space-x-3 space-x-reverse">
-                            <div class="w-8 h-8 rounded-lg bg-indigo-900/20 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2a4 4 0 00-4-4H5a2 2 0 00-2 2v4h6zM16 17v-2a4 4 0 00-4-4h-1a2 2 0 00-2 2v4h7zM18 7h-1.586a1 1 0 01-.707-.293l-2.414-2.414a1 1 0 011.414-1.414l2.414 2.414A1 1 0 0118 5.414V7z" />
-                                </svg>
-                            </div>
-                            <span class="text-base font-medium">تقارير المعلمين</span>
-                        </div>
-                    </a>
-                </li>
-                
-                <li>
-                    <a href="{{ route('admine_report.index') }}"  class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
+                    <button class="sidebar-toggle-btn flex items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
+                        <svg class="arrow-icon h-5 w-5 text-gray-400 transition-transform duration-300 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
                         <div class="flex items-center space-x-3 space-x-reverse">
                             <div class="w-8 h-8 rounded-lg bg-pink-900/20 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h8M8 11h8M8 15h5m-6 4h6a2 2 0 002-2v-6a2 2 0 00-2-2H7a2 2 0 00-2 2v6a2 2 0 002 2z" />
-                                </svg>
+                                <i class="fas fa-cog text-pink-400"></i>
                             </div>
-                            <span class="text-base font-medium">الادارة</span>
+                            <span class="text-base font-medium">الإعدادات</span>
                         </div>
-                    </a>
+                    </button>
+                    <ul class="sidebar-submenu hidden space-y-1 pt-2 pl-8 border-r-2 border-pink-500 mr-4">
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    الإعدادات العامة
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-pink-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    الصلاحيات
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-pink-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    الإعدادات المالية
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-pink-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
+                                <span class="relative">
+                                    الأمان والنسخ الاحتياطي
+                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-pink-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
-                
+
+                <!-- System Monitor -->
                 <li>
-                    <a href="{{ route('lessons.student_reports') }}" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
+                    <a href="" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
                         <div class="flex items-center space-x-3 space-x-reverse">
-                            <div class="w-8 h-8 rounded-lg bg-teal-900/20 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8s-9-3.582-9-8 4.03-8 9-8 9 3.582 9 8z" />
-                                </svg>
+                            <div class="w-8 h-8 rounded-lg bg-indigo-900/20 flex items-center justify-center">
+                                <i class="fas fa-server text-indigo-400"></i>
                             </div>
-                            <span class="text-base font-medium">تقارير الطلاب</span>
+                            <span class="text-base font-medium">مراقبة النظام</span>
                         </div>
                     </a>
                 </li>
@@ -418,7 +536,7 @@
 
             <!-- Logout Button -->
             <div class="mt-8 pt-6 border-t border-gray-700">
-                <a href="#" class="flex items-center justify-end w-full py-3 px-4 rounded-lg text-red-400 hover:bg-gray-700 hover:text-red-300 transition-all-custom focus-ring group">
+                <a href="{{ route('logout') }}" class="flex items-center justify-end w-full py-3 px-4 rounded-lg text-red-400 hover:bg-gray-700 hover:text-red-300 transition-all-custom focus-ring group">
                     <span class="text-base font-medium ml-3">تسجيل الخروج</span>
                     <div class="w-8 h-8 rounded-lg bg-red-900/20 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -489,7 +607,7 @@
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('overlay');
             const profileInfoButton = document.getElementById('profile-info-button');
-            const studentInfoPopover = document.getElementById('student-info-popover');
+            const adminInfoPopover = document.getElementById('admin-info-popover');
 
             // Toggle submenus
             sidebarToggleBtns.forEach(button => {
@@ -518,17 +636,17 @@
                 document.body.style.overflow = '';
             });
 
-            // Toggle student info popover
+            // Toggle admin info popover
             profileInfoButton.addEventListener('click', (event) => {
                 event.stopPropagation();
-                studentInfoPopover.classList.toggle('hidden');
+                adminInfoPopover.classList.toggle('hidden');
             });
 
             // Close sidebar and popover when clicking outside
             document.addEventListener('click', (event) => {
                 const isClickInsideSidebar = sidebar.contains(event.target);
                 const isClickOnMobileToggle = mobileSidebarToggle.contains(event.target);
-                const isClickInsidePopover = studentInfoPopover.contains(event.target);
+                const isClickInsidePopover = adminInfoPopover.contains(event.target);
                 const isLargeScreen = window.innerWidth >= 1024;
 
                 // Close sidebar if open on mobile and clicked outside sidebar and toggle button
@@ -539,8 +657,8 @@
                 }
 
                 // Close popover if open and clicked outside itself or its trigger button
-                if (!studentInfoPopover.classList.contains('hidden') && !isClickInsidePopover && !profileInfoButton.contains(event.target)) {
-                    studentInfoPopover.classList.add('hidden');
+                if (!adminInfoPopover.classList.contains('hidden') && !isClickInsidePopover && !profileInfoButton.contains(event.target)) {
+                    adminInfoPopover.classList.add('hidden');
                 }
             });
 
@@ -554,8 +672,8 @@
                     document.body.style.overflow = '';
                 }
                 // Hide popover on resize
-                if (!studentInfoPopover.classList.contains('hidden')) {
-                    studentInfoPopover.classList.add('hidden');
+                if (!adminInfoPopover.classList.contains('hidden')) {
+                    adminInfoPopover.classList.add('hidden');
                 }
             });
         });

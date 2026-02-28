@@ -13,6 +13,7 @@ use App\Http\Controllers\exam_skills_level_Controller;
 use App\Http\Controllers\exam_weeckly_Controller;
 use App\Http\Controllers\teacher_report;
 use App\Http\Controllers\admine_report_controller;
+use App\Http\Controllers\ReseacherDashboardController;
 use App\Http\Controllers\StudentPsychologyController;
 use App\Http\Controllers\teacher_admine_reports_view_Controller;
 use App\Http\Controllers\teacher_lesson_controller;
@@ -66,9 +67,9 @@ Route::middleware(['auth', 'check.status'])->group(function () {
     });
     
     // Routes الباحث
-    Route::prefix('researcher')->name('lessons.')->group(function () {
-       Route::get('/dashboard', [LessonController::class, 'index'])
-             ->name('index');
+    Route::prefix('researcher')->name('researcher.')->group(function () {
+       Route::get('/dashboard', [ReseacherDashboardController::class, 'index'])
+             ->name('dashboard');
     });
     
     // Routes أخرى...

@@ -57,6 +57,7 @@ class FortifyServiceProvider extends ServiceProvider
             return route('rejected.notice');
         }
         
+        
         // إذا كان الحساب مقبولاً، اذهب إلى dashboard
         return route('dashboard');
     });
