@@ -26,7 +26,10 @@ class rules extends Model
 public function content_blocks(){
      return $this->hasMany(content_blocks::class, 'rule_id');
 }
-
+public function productionRequests()
+    {
+        return $this->hasMany(production_request::class);
+    }
 
 protected $fillable = [
      'lessons_id',

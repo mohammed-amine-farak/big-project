@@ -40,8 +40,10 @@ class lessonss extends Model
     {
         return $this->hasMany(lesson_report::class,'lesson_id');
     } 
-
-
+ public function productionRequests()
+    {
+        return $this->hasMany(production_request::class, 'lesson_id');  // ✅ lesson_id وليس lessonss_id
+    }
     protected $casts = [
         'completed_at' => 'datetime',
     ];
@@ -57,4 +59,6 @@ class lessonss extends Model
         'completed_at',
 
     ];
+
+
 }

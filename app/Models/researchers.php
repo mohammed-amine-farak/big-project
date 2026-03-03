@@ -21,7 +21,10 @@ protected $fillable = [
     {
         return $this->belongsTo(User::class, 'id', 'id');
     }
-
+public function productionRequests()
+    {
+        return $this->hasMany(production_request::class, 'researcher_id');
+    }
     public function lessonReports()
     {
         return $this->hasMany(lesson_report::class);

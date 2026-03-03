@@ -1,6 +1,7 @@
 @extends('layouts.reseacher_dashboard')
 
 @section('content')
+
 @php
     // Status colors and names
     $statusColors = [

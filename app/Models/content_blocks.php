@@ -17,4 +17,8 @@ class content_blocks extends Model
      public function rules(){
         return $this->belongsTo(rules::class, 'rule_id');
      }
+     public function productionRequests()
+    {
+        return $this->belongsTo(production_request::class);
+    }
 }

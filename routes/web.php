@@ -20,6 +20,7 @@ use App\Http\Controllers\teacher_lesson_controller;
 use App\Http\Controllers\teacher_lesson_report_controller;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use App\Http\Controllers\TeacherDashboardController;
+use App\Http\Controllers\VideoCreatorProductionRequestController;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -295,12 +296,13 @@ Route::get('/teacher/dashboard', [TeacherDashboardController::class, 'index'])->
 });
 
 
-//techer routes
+//video_creator
 
 
 
 
-// أضف هذا route مؤقتاً وسجل خروج
+Route::get('/video_creator/production_request', [VideoCreatorProductionRequestController::class, 'index'])->name('video_creator.production_request');
+
 
 
 
