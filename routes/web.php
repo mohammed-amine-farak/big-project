@@ -302,9 +302,13 @@ Route::get('/teacher/dashboard', [TeacherDashboardController::class, 'index'])->
 
 
 Route::get('/video_creator/production_request', [VideoCreatorProductionRequestController::class, 'index'])->name('video_creator.production_request');
-
-
-
+Route::get('/video_creator/production_request/show/{productionRequest}', [VideoCreatorProductionRequestController::class,'show'])->name('video_creator.production_request.show');
+ Route::get('/production-requests/{production_request}/accept', [VideoCreatorProductionRequestController::class, 'accept'])
+        ->name('video_creator.production_requests.accept');
+Route::get('/production-requests/{production_request}/upload', [VideoCreatorProductionRequestController::class, 'uploadForm'])
+        ->name('video_creator.production_requests.upload');
+Route::post('/production-requests/{production_request}/upload', [VideoCreatorProductionRequestController::class, 'upload'])
+        ->name('production_requests.upload');
 
 
 

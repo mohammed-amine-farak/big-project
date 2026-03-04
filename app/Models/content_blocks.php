@@ -19,6 +19,6 @@ class content_blocks extends Model
      }
      public function productionRequests()
     {
-        return $this->belongsTo(production_request::class);
+        return $this->belongsTo(production_request::class,'content_block_id');
     }
 }

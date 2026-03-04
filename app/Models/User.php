@@ -72,6 +72,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(Teacher::class,'id');
     }   
+     public function videoCreatorProfile()
+    {
+        return $this->hasOne(video_creator::class,'id');
+    }   
     public function adminProfile()
     {
         return $this->hasOne(Admin::class,'id');
