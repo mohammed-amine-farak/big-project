@@ -307,8 +307,9 @@ Route::get('/video_creator/production_request/show/{productionRequest}', [VideoC
         ->name('video_creator.production_requests.accept');
 Route::get('/production-requests/{production_request}/upload', [VideoCreatorProductionRequestController::class, 'uploadForm'])
         ->name('video_creator.production_requests.upload');
-Route::post('/production-requests/{production_request}/upload', [VideoCreatorProductionRequestController::class, 'upload'])
-        ->name('production_requests.upload');
+    Route::post('/production-requests/{production_request}/upload-chunk', 
+        [VideoCreatorProductionRequestController::class, 'uploadChunk'])
+        ->name('production_requests.upload.chunk');
 
 
 

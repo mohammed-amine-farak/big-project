@@ -7,7 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\production_request;
 use App\Models\Researchers;
 use App\Models\video;
-
+use Illuminate\Support\Facades\Storage;
+use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
+use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
+use Illuminate\Support\Str; 
 class VideoCreatorProductionRequestController extends Controller
 {
          public function index(Request $request)
@@ -127,86 +130,91 @@ class VideoCreatorProductionRequestController extends Controller
 
         return view('video-dashboard.production_requests.Upload_Video', compact('production_request'));
     }
-        public function upload(Request $request, production_request $production_request)
+
+
+          public function uploadChunk(Request $request, production_request $production_request)
     {
-        // التحقق من الصلاحية - استخدام Auth::id() بدلاً من الرقم الثابت
+        // التحقق من الصلاحية
         if ($production_request->video_creator_id !== 63) {
-            abort(403, 'غير مصرح لك برفع فيديو لهذا الطلب');
+            return response()->json(['error' => 'غير مصرح'], 403);
         }
-
-        // التحقق من أن الطلب في حالة "accepted" فقط
-        if ($production_request->status !== 'accepted') {
-            return redirect()->route('video_creator.production_requests.show', $production_request->id)
-                ->with('error', 'لا يمكن رفع فيديو لهذا الطلب في حالته الحالية');
-        }
-
-        // التحقق من صحة البيانات
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string|max:500',
-            'video_file' => 'required|file|mimes:mp4,mov,avi|max:512000', // 500MB max
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:2048' // صورة مصغرة (اختياري)
-        ], [
-            'title.required' => 'عنوان الفيديو مطلوب',
-            'title.max' => 'عنوان الفيديو يجب أن لا يتجاوز 255 حرف',
-            'description.max' => 'وصف الفيديو يجب أن لا يتجاوز 500 حرف',
-            'video_file.required' => 'ملف الفيديو مطلوب',
-            'video_file.mimes' => 'صيغة الملف غير مدعومة. الصيغ المدعومة: mp4, mov, avi',
-            'video_file.max' => 'حجم الملف كبير جداً. الحد الأقصى هو 500 ميجابايت',
-            'thumbnail.image' => 'الملف يجب أن يكون صورة',
-            'thumbnail.mimes' => 'صيغ الصور المدعومة: jpeg, png, jpg',
-            'thumbnail.max' => 'حجم الصورة يجب أن لا يتجاوز 2 ميجابايت'
-        ]);
 
         try {
-            // رفع ملف الفيديو إلى السيرفر
-            $videoPath = $request->file('video_file')->store('videos/' . date('Y/m'), 'public');
+            $chunk = $request->file('video_file');
+            $chunkIndex = $request->input('chunk_index');
+            $totalChunks = $request->input('total_chunks');
+            $fileName = $request->input('file_name');
+            $fileSize = $request->input('file_size');
 
-            // رفع الصورة المصغرة إن وجدت
-            $thumbnailPath = null;
-            if ($request->hasFile('thumbnail')) {
-                $thumbnailPath = $request->file('thumbnail')->store('thumbnails/' . date('Y/m'), 'public');
+            // مجلد مؤقت للقطع
+            $tempDir = 'temp/' . uniqid() . '_' . $production_request->id;
+            
+            // حفظ القطعة
+            $chunk->storeAs($tempDir, 'chunk_' . $chunkIndex . '.part', 'public');
+
+            // إذا كانت آخر قطعة، نقوم بدمج جميع القطع
+            if ($chunkIndex == $totalChunks - 1) {
+                return $this->assembleChunks($tempDir, $totalChunks, $fileName, $fileSize, $production_request, $request);
             }
 
-            // حساب حجم الملف بالميجابايت
-            $fileSize = round($request->file('video_file')->getSize() / 1048576, 2);
-
-            // حساب مدة الفيديو (اختياري - يمكنك استخدام مكتبة getID3)
-            $duration = null;
-            // يمكنك إضافة كود لحساب المدة إذا أردت
-            // مثال: $duration = $this->getVideoDuration($request->file('video_file'));
-
-            // إنشاء سجل الفيديو في قاعدة البيانات (ملاحظة: تم حذف حقل status)
-            $video = video::create([
-                'creator_id' => 63, // استخدام Auth بدلاً من الرقم الثابت
-                'production_request_id' => $production_request->id,
-                'title' => $request->title,
-                'description' => $request->description,
-                'file_path' => $videoPath,
-                'thumbnail' => $thumbnailPath,
-                'duration' => $duration,
-                'video_format' => $request->file('video_file')->getClientOriginalExtension(),
-                'file_size' => $fileSize,
-                'views' => 0,
-                'likes' => 0,
-                'completion_rate' => 0
-            ]);
-
-            // ✅ تحديث حالة طلب الإنتاج تلقائياً
-            $production_request->status = 'submitted';
-            $production_request->submitted_at = now();
-            $production_request->save();
-
-            // رسالة نجاح
-            return redirect()->route('video_creator.production_request.show', $production_request->id)
-                ->with('success', '✅ تم رفع الفيديو بنجاح. بانتظار مراجعة الباحث.');
+            return response()->json(['success' => true, 'chunk' => $chunkIndex]);
 
         } catch (\Exception $e) {
-            // رسالة خطأ في حالة فشل الرفع
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'حدث خطأ أثناء رفع الفيديو: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-}
+    /**
+     * دمج القطع وحفظ الفيديو النهائي
+     */
+    protected function assembleChunks($tempDir, $totalChunks, $fileName, $fileSize, $production_request, $request)
+    {
+        // المسار النهائي للفيديو
+        $finalPath = 'videos/' . date('Y/m');
+        $finalFileName = time() . '_' . $fileName;
+        
+        // إنشاء المجلد النهائي إذا لم يكن موجوداً
+        if (!Storage::disk('public')->exists($finalPath)) {
+            Storage::disk('public')->makeDirectory($finalPath);
+        }
+
+        // دمج القطع
+        for ($i = 0; $i < $totalChunks; $i++) {
+            $chunkPath = storage_path('app/public/' . $tempDir . '/chunk_' . $i . '.part');
+            $finalFilePath = storage_path('app/public/' . $finalPath . '/' . $finalFileName);
+            
+            if (file_exists($chunkPath)) {
+                file_put_contents($finalFilePath, file_get_contents($chunkPath), FILE_APPEND);
+                unlink($chunkPath); // حذف القطعة بعد الدمج
+            }
+        }
+
+        // حذف المجلد المؤقت
+        rmdir(storage_path('app/public/' . $tempDir));
+
+        // حفظ معلومات الفيديو في قاعدة البيانات
+        $video = Video::create([
+            'creator_id' =>63,
+            'production_request_id' => $production_request->id,
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'file_path' => $finalPath . '/' . $finalFileName,
+            'video_format' => pathinfo($fileName, PATHINFO_EXTENSION),
+            'file_size' => round($fileSize / 1048576, 2),
+            'views' => 0,
+            'likes' => 0,
+            'completion_rate' => 0
+        ]);
+
+        // تحديث حالة طلب الإنتاج
+        $production_request->update([
+            'status' => 'submitted',
+            'submitted_at' => now()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'video_id' => $video->id
+        ]);
+    }
+      }
