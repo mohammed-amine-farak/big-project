@@ -14,6 +14,7 @@ use App\Http\Controllers\exam_weeckly_Controller;
 use App\Http\Controllers\teacher_report;
 use App\Http\Controllers\admine_report_controller;
 use App\Http\Controllers\ReseacherDashboardController;
+use App\Http\Controllers\ResearcherProductionRequestController;
 use App\Http\Controllers\StudentPsychologyController;
 use App\Http\Controllers\teacher_admine_reports_view_Controller;
 use App\Http\Controllers\teacher_lesson_controller;
@@ -21,6 +22,8 @@ use App\Http\Controllers\teacher_lesson_report_controller;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use App\Http\Controllers\TeacherDashboardController;
 use App\Http\Controllers\VideoCreatorProductionRequestController;
+use App\Models\content_blocks;
+use App\Models\rules;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -96,6 +99,7 @@ Route::get('/', function () {
 
    Route::middleware(['user.type:researcher'])->group(function () {
        
+
 
 
 Route::get('/exam/create', [exam_Controller::class, 'create'])->name('exam.create');
@@ -191,9 +195,41 @@ Route::put('skills/{id}', [skille_level_Controller::class, 'update'])->name('ski
 Route::delete('skills/{id}', [skille_level_Controller::class, 'destroy'])->name('skills.destroy');
 
 
+ Route::get('researcher/production-requests', 
+        [ResearcherProductionRequestController::class, 'index'])
+        ->name('researcher.production_requests.index');
 
+ Route::get('researcher/production-requests/create', 
+        [ResearcherProductionRequestController::class, 'create'])
+        ->name('researcher.production_requests.create');
 
+Route::post('researcher/production-requests/store', 
+        [ResearcherProductionRequestController::class, 'store'])
+        ->name('researcher.production_requests.store');
 
+Route::get('/ajax/get-lesson-rules/{lessonId}', function($lessonId) {
+    $rules = rules::where('lessons_id', $lessonId)
+                 ->select('id', 'title')
+                 ->orderBy('title')
+                 ->get();
+    
+    return response()->json([
+        'success' => true,
+        'rules' => $rules
+    ]);
+});
+
+Route::get('/ajax/get-rule-content-blocks/{ruleId}', function($ruleId) {
+    $contentBlocks = content_blocks::where('rule_id', $ruleId)
+                                 ->select('id', 'type', 'content')
+                                 ->orderBy('block_order')
+                                 ->get();
+    
+    return response()->json([
+        'success' => true,
+        'contentBlocks' => $contentBlocks
+    ]);
+});
     });
 
 
@@ -311,6 +347,12 @@ Route::get('/production-requests/{production_request}/upload', [VideoCreatorProd
         [VideoCreatorProductionRequestController::class, 'uploadChunk'])
         ->name('production_requests.upload.chunk');
 
+         Route::get('/production-requests/{production_request}/revise', 
+        [VideoCreatorProductionRequestController::class, 'reviseForm'])
+        ->name('video_creator.production_requests.revise');
+ Route::post('/production-requests/{production_request}/revise-chunk', 
+        [VideoCreatorProductionRequestController::class, 'reviseChunk'])
+        ->name('video_creator.production_requests.revise.chunk');
 
 
    

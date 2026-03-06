@@ -361,6 +361,18 @@
                         </div>
                     </a>
                 </li>
+                <li>
+                    <a href="{{ route('researcher.production_requests.index') }}" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
+                        <div class="flex items-center space-x-3 space-x-reverse">
+                            <div class="w-8 h-8 rounded-lg bg-purple-900/20 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 17l6-6 4 4 8-8" />
+                                </svg>
+                            </div>
+                            <span class="text-base font-medium">طلبات الانتاج</span>
+                        </div>
+                    </a>
+                </li>
                 
                 <li>
                     <a href="{{route('skills.index')}}" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
