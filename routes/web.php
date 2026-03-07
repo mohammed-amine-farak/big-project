@@ -232,7 +232,42 @@ Route::get('/ajax/get-rule-content-blocks/{ruleId}', function($ruleId) {
 });
     });
 
+Route::prefix('researcher')->name('researcher.')->group(function () {
+    
+    // عرض تفاصيل طلب معين
+    Route::get('/production-requests/{production_request}', 
+        [ResearcherProductionRequestController::class, 'show'])
+        ->name('production_requests.show');
+    
+    // الموافقة على الفيديو
+    Route::post('/production-requests/{production_request}/approve', 
+        [ResearcherProductionRequestController::class, 'approve'])
+        ->name('production_requests.approve');
+    
+    // طلب تعديلات
+    Route::post('/production-requests/{production_request}/revision', 
+        [ResearcherProductionRequestController::class, 'requestRevision'])
+        ->name('production_requests.revision');
+    
+    // رفض الفيديو
+    Route::post('/production-requests/{production_request}/reject', 
+        [ResearcherProductionRequestController::class, 'reject'])
+        ->name('production_requests.reject');
 
+          Route::get('/production-requests/{production_request}/edit', 
+        [ResearcherProductionRequestController::class, 'edit'])
+        ->name('production_requests.edit');
+    
+    // تحديث طلب
+    Route::put('/production-requests/{production_request}', 
+        [ResearcherProductionRequestController::class, 'update'])
+        ->name('production_requests.update');
+
+        
+    Route::delete('/production-requests/{production_request}', 
+        [ResearcherProductionRequestController::class, 'destroy'])
+        ->name('production_requests.destroy');
+});
 
 
 
