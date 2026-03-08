@@ -10,9 +10,10 @@ use App\Models\production_request;
 use App\Models\video_creator;
 use App\Models\lessonss;
 use App\Models\rules;
+use App\Models\video;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\DB;
 
 class ResearcherProductionRequestController extends Controller
 {
@@ -205,46 +206,50 @@ class ResearcherProductionRequestController extends Controller
     /**
      * الموافقة على الفيديو (تستخدم في صفحة show)
      */
-    public function approve(Request $request, production_request $production_request)
-    {
-        $researcher = Auth::user()->id;
-        
-        // التحقق من الصلاحية
-        if ($production_request->researcher_id !== $researcher) {
-            abort(403);
-        }
-
-        // التحقق من أن الطلب في حالة submitted
-        if ($production_request->status !== 'submitted') {
-            return redirect()->back()
-                ->with('error', 'لا يمكن الموافقة على هذا الطلب في حالته الحالية');
-        }
-
-        // التحقق من وجود فيديو
-        if (!$production_request->videos || $production_request->videos->count() == 0) {
-            return redirect()->back()
-                ->with('error', 'لا يوجد فيديو للموافقة عليه');
-        }
-
-        // تحديث حالة الطلب
-        $production_request->status = 'approved';
-        $production_request->approved_at = now();
-        
-        // إضافة التقييم إذا وجد
-        if ($request->has('rating')) {
-            $production_request->rating = $request->rating;
-        }
-        
-        if ($request->has('review_comment')) {
-            $production_request->review_comment = $request->review_comment;
-        }
-        
-        $production_request->save();
-
-        return redirect()->route('researcher.production_requests.show', $production_request->id)
-            ->with('success', '✅ تمت الموافقة على الفيديو بنجاح');
+ public function approve(Request $request, production_request $production_request)
+{
+    // التحقق من الصلاحية
+    if ($production_request->researcher_id !== Auth::user()->id) {
+        abort(403);
     }
 
+    // التحقق من حالة الطلب
+    if ($production_request->status !== 'submitted') {
+        return redirect()->back()->with('error', 'لا يمكن الموافقة على هذا الطلب في حالته الحالية');
+    }
+
+    // التحقق من وجود فيديو
+    $video = $production_request->videos()->latest()->first();
+    if (!$video) {
+        return redirect()->back()->with('error', 'لا يوجد فيديو للموافقة عليه');
+    }
+
+    try {
+        // 1. تحديث حالة طلب الإنتاج (الفيديو يرث هذه الحالة)
+        $production_request->status = 'approved';
+        $production_request->approved_at = now();
+        $production_request->save();
+
+        // ✅ 2. ربط الفيديو بكتلة المحتوى (إذا وجدت)
+        if ($production_request->content_block_id) {
+            // فصل أي فيديو قديم مرتبط بنفس الكتلة
+            DB::table('videos')
+                ->where('content_block_id', $production_request->content_block_id)
+                ->where('id', '!=', $video->id)
+                ->update(['content_block_id' => null]);
+            
+            // ربط الفيديو الحالي
+            $video->content_block_id = $production_request->content_block_id;
+            $video->save(); // ✅ الفيديو لا يحتوي على status، فقط content_block_id
+        }
+              
+        return redirect()->route('researcher.production_requests.show', $production_request->id)
+            ->with('success', '✅ تمت الموافقة على الفيديو وربطه بالدرس بنجاح');
+
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'حدث خطأ: ' . $e->getMessage());
+    }
+}
     /**
      * طلب تعديلات على الفيديو (revision)
      */

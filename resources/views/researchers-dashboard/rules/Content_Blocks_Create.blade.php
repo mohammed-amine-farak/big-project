@@ -1,4 +1,4 @@
-@extends('layouts.teacher_dashboard')
+@extends('layouts.reseacher_dashboard')
 
 @section('content')
 <div class="p-8">

@@ -116,8 +116,8 @@ class rule_controller extends Controller
     // Load the rule with its content blocks ordered by block_order
     $rule->load(['content_blocks' => function($query) {
         $query->orderBy('block_order', 'asc');
-    } ,'lesson','lesson.researcher.researcherProfile']);
-    
+    } ,'lesson','lesson.researcher.researcherProfile','content_blocks.video']);
+   
   
 
     // Get statistics
@@ -125,7 +125,7 @@ class rule_controller extends Controller
     $textCount = $rule->content_blocks->where('type', 'text')->count();
     $mathCount = $rule->content_blocks->where('type', 'math')->count();
     $imageCount = $rule->content_blocks->where('type', 'image')->count();
-    $videoCount = $rule->content_blocks->where('type', 'video')->count();
+ 
     $exerciseCount = $rule->content_blocks->where('type', 'exercise')->count();
     
     return view('researchers-dashboard.rules.rule_Content_Blocks', compact(
@@ -134,7 +134,7 @@ class rule_controller extends Controller
         'textCount', 
         'mathCount', 
         'imageCount', 
-        'videoCount', 
+       
         'exerciseCount'
     ));
 }

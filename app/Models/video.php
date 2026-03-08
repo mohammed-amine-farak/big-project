@@ -29,5 +29,8 @@ class video extends Model
     {
         return $this->belongsTo(video_creator::class, 'creator_id');
     }
-
+public function contentBlock()
+    {
+        return $this->belongsTo(content_blocks::class, 'content_block_id');
+    }
 }

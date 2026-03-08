@@ -21,4 +21,9 @@ class content_blocks extends Model
     {
         return $this->belongsTo(production_request::class,'content_block_id');
     }
+    public function video()
+    {
+        return $this->hasOne(Video::class, 'content_block_id');
+    }
+    
 }

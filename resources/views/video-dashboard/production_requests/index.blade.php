@@ -142,7 +142,7 @@
                     <tbody class="divide-y divide-gray-200">
                         @foreach($production_requests as $request)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 whitespace-nowrap">{{ $request->researcher->name }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap">{{ $request->researcher->user->name }}</td>
                             <td class="px-4 py-3">{{ $request->title }}</td>
                             <td class="px-4 py-3">{{ $request->lesson->title }}</td>
                             <td class="px-4 py-3 text-center">{{ $request->deadline ? $request->deadline->format('Y-m-d') : '-' }}</td>

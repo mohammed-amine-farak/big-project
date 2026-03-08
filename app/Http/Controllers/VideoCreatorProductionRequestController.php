@@ -19,7 +19,7 @@ class VideoCreatorProductionRequestController extends Controller
         
         // استعلام واحد لكل الطلبات
         $query = production_request::where('video_creator_id', $videoCreator)
-                    ->with(['researcher', 'lesson']);
+                    ->with(['researcher.user', 'lesson']);
         
         // تطبيق فلتر الحالة (إذا كان موجوداً)
         if ($request->filled('status')) {
