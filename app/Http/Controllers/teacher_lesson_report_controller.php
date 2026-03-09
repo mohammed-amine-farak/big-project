@@ -9,6 +9,7 @@ use App\Models\lessonss;
 use App\Models\Researchers;
 use App\Models\teacher;
 use App\Models\teacher_reports;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class teacher_lesson_report_controller extends Controller
@@ -81,10 +82,13 @@ class teacher_lesson_report_controller extends Controller
     public function create()
 {
     // Get teacher ID
-    $teacherId = Auth::user()->id;
-    
-    // Get lessons with their researchers
-    $lessons = lessonss::with('researcher')->get();
+    $teacher = User::with('teacherProfile')->find(Auth::id());
+      $teacheSubject = $teacher->teacherProfile->subject;
+      
+   $lessons = Lessonss::select('lessonss.*','researchers.subject')
+    ->join('researchers', 'lessonss.researcher_id', '=', 'researchers.id')
+    ->where('researchers.subject', $teacher->subject)->get();
+    dd($lessons);
     
     // Get classrooms
     $classrooms = classroom::all();

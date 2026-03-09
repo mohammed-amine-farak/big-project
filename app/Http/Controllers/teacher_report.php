@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\lesson_report;
+
+use Illuminate\Support\Facades\Auth;
 class teacher_report extends Controller
 {
     /**
@@ -13,13 +15,14 @@ class teacher_report extends Controller
 {
     // Get all lessons and classrooms for filters
     $lessons = \App\Models\Lessonss::with('subject')
-        ->where('researcher_id', 1) // Adjust based on your auth
+        ->where('researcher_id',Auth::user()->id) // Adjust based on your auth
         ->get();
+
     
     $classrooms = \App\Models\Classroom::all();
 
     $query = lesson_report::with(['lesson', 'teacher.user', 'classroom','researcher.user'])
-        ->where('researcher_id', 1);
+        ->where('researcher_id',Auth::user()->id);
 
     // Apply filters
     if (request('title')) {

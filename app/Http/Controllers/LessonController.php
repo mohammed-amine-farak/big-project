@@ -75,7 +75,7 @@ class LessonController extends Controller
         $fieldStudies = Fields_Of_Study::all();
         
         // Get total lessons count for stats (without pagination)
-        $totalLessonsCount = Lessonss::where('researcher_id', 1)->count();
+        $totalLessonsCount = Lessonss::where('researcher_id', Auth::user()->id)->count();
         
         return view('researchers-dashboard.lessons.index', compact('lessons', 'subjects', 'fieldStudies', 'totalLessonsCount'));
     }
@@ -143,7 +143,8 @@ public function show(Lessonss $lesson)
 
 
 public function ProgressTracker(){
-       $lessons = Lessonss::all();
+       $lessons = Lessonss::where('researcher_id', Auth::user()->id)->get();
+     
     return view('researchers-dashboard.lessons.Progress_Tracker',compact('lessons'));
 }
 public function updateStatus(Request $request, Lessonss $lesson)

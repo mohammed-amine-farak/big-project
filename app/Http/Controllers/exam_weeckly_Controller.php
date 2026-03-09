@@ -8,6 +8,7 @@ use App\Models\classroom;
 use App\Models\subject;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 class exam_weeckly_Controller extends Controller
 {
     /**
@@ -15,9 +16,9 @@ class exam_weeckly_Controller extends Controller
      */
     public function index(Request $request)
     {
-        $query = exam_weeckly::with(['subject', 'classroom']);
+        $query = exam_weeckly::with(['subject', 'classroom'])
+            ->where('researcher_id', Auth::id()); // ✅
       
-    
         // Apply filters
         if ($request->filled('title')) {
             $query->where('title', 'like', '%' . $request->title . '%');
@@ -34,7 +35,7 @@ class exam_weeckly_Controller extends Controller
         $exams = $query->latest()->paginate(10);
     
         // Get counts for stats
-        $totalExamsCount = exam_weeckly::count();
+        $totalExamsCount = exam_weeckly::where('researcher_id', Auth::id())->count(); // ✅
        
         $subjectsCount = subject::count();
         $classroomsCount = Classroom::count();
@@ -46,13 +47,13 @@ class exam_weeckly_Controller extends Controller
         return view('researchers-dashboard\exam_weecklies\index', compact(
             'exams',
             'totalExamsCount',
-            
             'subjectsCount',
             'classroomsCount',
             'subjects',
             'classrooms'
         ));
     }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -73,7 +74,7 @@ class exam_weeckly_Controller extends Controller
             'title' => 'required|string|max:255',
             'subject_id' => 'required|exists:subjects,id',
             'classroom_id' => 'required|exists:classrooms,id',
-            'file_path' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240', // 10MB
+            'file_path' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
         ]);
 
         // Handle file upload
@@ -84,15 +85,14 @@ class exam_weeckly_Controller extends Controller
             $validated['file_path'] = $filePath;
         }
 
-        // Add researcher_id from authenticated user
-        $validated['researcher_id'] = 1;
+        $validated['researcher_id'] = Auth::id(); // ✅ كان 1 ثابت
 
-        // Create the exam
         exam_weeckly::create($validated);
 
         return redirect()->route('exam_weeckly.index')
                         ->with('success', 'تم إنشاء الامتحان الأسبوعي بنجاح.');
     }
+
     public function getClassroomsBySubject(Request $request)
     {
         Log::info('AJAX request received', $request->all());
@@ -101,7 +101,6 @@ class exam_weeckly_Controller extends Controller
             'subject_id' => 'required|exists:subjects,id'
         ]);
 
-        // Get classrooms that belong to this subject (one-to-many)
         $classrooms = Classroom::where('subject_id', $request->subject_id)->get();
 
         Log::info('Classrooms found:', $classrooms->toArray());
@@ -111,6 +110,7 @@ class exam_weeckly_Controller extends Controller
             'classrooms' => $classrooms
         ]);
     }
+
     /**
      * Display the specified resource.
      */
@@ -127,8 +127,10 @@ class exam_weeckly_Controller extends Controller
         try {
             $exam = exam_weeckly::findOrFail($id);
             
-            // Check if the authenticated user owns this exam
-            
+            // ✅ تحقق أن الامتحان يخص الباحث الحالي
+            if ($exam->researcher_id !== Auth::id()) {
+                abort(403);
+            }
 
             $subjects =  Subject::with('fieldOfStudy')->get();
             $classrooms = Classroom::where('subject_id', $exam->subject_id)->get();
@@ -149,8 +151,10 @@ class exam_weeckly_Controller extends Controller
         try {
             $exam = exam_weeckly::findOrFail($id);
             
-            // Check if the authenticated user owns this exam
-           
+            // ✅ تحقق أن الامتحان يخص الباحث الحالي
+            if ($exam->researcher_id !== Auth::id()) {
+                abort(403);
+            }
 
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
@@ -159,9 +163,7 @@ class exam_weeckly_Controller extends Controller
                 'file_path' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
             ]);
 
-            // Handle file upload if new file is provided
             if ($request->hasFile('file_path')) {
-                // Delete old file if exists
                 if ($exam->file_path && Storage::disk('public')->exists($exam->file_path)) {
                     Storage::disk('public')->delete($exam->file_path);
                 }
@@ -171,11 +173,9 @@ class exam_weeckly_Controller extends Controller
                 $filePath = $file->storeAs('exam_weeklies', $fileName, 'public');
                 $validated['file_path'] = $filePath;
             } else {
-                // Keep the existing file path
                 $validated['file_path'] = $exam->file_path;
             }
 
-            // Update the exam
             $exam->update($validated);
 
             return redirect()->route('exam_weeckly.index')
@@ -192,20 +192,20 @@ class exam_weeckly_Controller extends Controller
      */
     public function destroy($id)
     {
+        $exam = exam_weeckly::findOrFail($id);
         
-            $exam = exam_weeckly::findOrFail($id);
-            
-            // Check if the authenticated user owns this exam
-            
+        // ✅ تحقق أن الامتحان يخص الباحث الحالي
+        if ($exam->researcher_id !== Auth::id()) {
+            abort(403);
+        }
 
-            // Delete file if exists
-            if ($exam->file_path && Storage::disk('public')->exists($exam->file_path)) {
-                Storage::disk('public')->delete($exam->file_path);
-            }
+        if ($exam->file_path && Storage::disk('public')->exists($exam->file_path)) {
+            Storage::disk('public')->delete($exam->file_path);
+        }
 
-            $exam->delete();
+        $exam->delete();
 
-            return redirect()->route('exam_weeckly.index')
-                        ->with('success');
+        return redirect()->route('exam_weeckly.index')
+                    ->with('success');
     }
 }

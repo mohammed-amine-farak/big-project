@@ -10,17 +10,16 @@ use App\Models\exams_weekly_skills;
 use App\Models\level_skill;
 use App\Models\subject;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 class exam_skills_level_Controller extends Controller
 {
     public function create(){
-       
         $results = exam_weeckly::with('subject')
-        ->whereDoesntHave('weeklySkills')
-        ->get();
+            ->where('researcher_id', Auth::id()) // ✅
+            ->whereDoesntHave('weeklySkills')
+            ->get();
         
-        
-        
-        return view('researchers-dashboard\exam_skills\create',compact('results'));
+        return view('researchers-dashboard\exam_skills\create', compact('results'));
     }
 
     public function getSkillLevelsByExam(Request $request)
@@ -33,7 +32,11 @@ class exam_skills_level_Controller extends Controller
             return response()->json(['skill_levels' => []]);
         }
 
-        // Get level_skills that belong to skills with the same subject as the exam
+        // ✅ تحقق أن الاختبار يخص الباحث الحالي
+        if ($exam->researcher_id !== Auth::id()) {
+            return response()->json(['skill_levels' => []]);
+        }
+
         $skillLevels = level_skill::with(['skill' => function($query) use ($exam) {
                 $query->where('subject_id', $exam->subject_id);
             }])
@@ -60,20 +63,18 @@ class exam_skills_level_Controller extends Controller
             'subject', 
             'weeklySkills.levelSkill.skill'
         ])
-        ->has('weeklySkills') // هذا السطر يضمن عرض الاختبارات المرتبطة فقط
+        ->where('researcher_id', Auth::id()) // ✅
+        ->has('weeklySkills')
         ->withCount(['weeklySkills']);
     
-        // Filter by exam title
         if ($request->has('exam_title') && $request->exam_title) {
             $query->where('title', 'like', '%' . $request->exam_title . '%');
         }
     
-        // Filter by subject
         if ($request->has('subject_id') && $request->subject_id) {
             $query->where('subject_id', $request->subject_id);
         }
     
-        // Filter by skills count
         if ($request->has('skills_count') && $request->skills_count) {
             if ($request->skills_count == '3+') {
                 $query->has('weeklySkills', '>=', 3);
@@ -82,22 +83,20 @@ class exam_skills_level_Controller extends Controller
             }
         }
     
-        // Filter by specific skill
         if ($request->has('skill_id') && $request->skill_id) {
             $query->whereHas('weeklySkills.levelSkill', function($q) use ($request) {
                 $q->where('skill_id', $request->skill_id);
             });
         }
     
-        // Paginate results (10 items per page)
         $results = $query->paginate(10)->withQueryString();
         
-        // Get subjects and skills for filter dropdowns
         $subjects = \App\Models\subject::all();
         $skills = \App\Models\skills::with('subject')->get();
     
         return view('researchers-dashboard.exam_skills.index', compact('results', 'subjects', 'skills'));
     }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -106,7 +105,12 @@ class exam_skills_level_Controller extends Controller
             'skill_level_ids.*' => 'exists:level_skills,id'
         ]);
 
-        // Remove duplicates from input
+        // ✅ تحقق أن الاختبار يخص الباحث الحالي
+        $exam = exam_weeckly::findOrFail($request->exam_id);
+        if ($exam->researcher_id !== Auth::id()) {
+            abort(403);
+        }
+
         $uniqueLevelIds = array_unique($request->skill_level_ids);
 
         foreach ($uniqueLevelIds as $levelId) {
@@ -120,6 +124,7 @@ class exam_skills_level_Controller extends Controller
 
         return redirect()->route('Exam_skill.index')->with('success', 'تم ربط مستويات المهارات بالاختبار بنجاح!');
     }
+
     public function show($id)
     {
         $exam = exam_weeckly::with([
@@ -129,38 +134,46 @@ class exam_skills_level_Controller extends Controller
             ->withCount(['weeklySkills'])
             ->findOrFail($id);
 
+        // ✅ تحقق أن الاختبار يخص الباحث الحالي
+        if ($exam->researcher_id !== Auth::id()) {
+            abort(403);
+        }
 
-            $levelSkills = level_skill::with('skill')
+        $levelSkills = level_skill::with('skill')
             ->whereHas('skill', function($query) use ($exam) {
                 $query->where('subject_id', $exam->subject_id);
             }) 
-            ->get()
-            ;
+            ->get();
           
-        return view('researchers-dashboard.exam_skills.show', compact('exam','levelSkills'));
+        return view('researchers-dashboard.exam_skills.show', compact('exam', 'levelSkills'));
     }
    
     public function delete_level(exams_weekly_skills $exam_id){
-    exams_weekly_skills::destroy([$exam_id->id, /* other ids */]);
+        // ✅ تحقق أن الاختبار يخص الباحث الحالي
+        if ($exam_id->examWeeckly->researcher_id !== Auth::id()) {
+            abort(403);
+        }
+
+        exams_weekly_skills::destroy([$exam_id->id]);
     
         return redirect()->back()->with('success', 'Level deleted successfully');
-        
-        
     }
 
     public function delete($exam_id){
         try {
-            // Find the level where exam_id equals the level id
-            $level = exams_weekly_skills::where('exams_weekly_id', $exam_id)
-                         // if you want to match either exam_id or id
-                        ->delete();
+            $exam = exam_weeckly::findOrFail($exam_id);
+
+            // ✅ تحقق أن الاختبار يخص الباحث الحالي
+            if ($exam->researcher_id !== Auth::id()) {
+                abort(403);
+            }
+
+            $level = exams_weekly_skills::where('exams_weekly_id', $exam_id)->delete();
             
             if (!$level) {
                 return redirect()->back()
                     ->with('error', 'لم يتم العثور على المهارة المطلوبة');
             }
-            
-           
             
             return redirect()->back()
                 ->with('success', 'تم حذف المهارة من الاختبار بنجاح');
@@ -169,40 +182,42 @@ class exam_skills_level_Controller extends Controller
             return redirect()->back()
                 ->with('error', 'فشل في حذف المهارة: ' . $e->getMessage());
         }
-          
     }
+
     public function add_to_exam_skills(Request $request, exam_weeckly $exam_id)
-{
-    
-    $request->validate([
-        'level_skill_id' => 'required|exists:level_skills,id'
-    ]);
-
-    try {
-        // Check if relationship already exists
-        $existing = exams_weekly_skills::where([
-            'exams_weekly_id' => $exam_id->id,
-            'id_level' => $request->level_skill_id
-        ])->exists();
-
-        if ($existing) {
-            return redirect()->back()
-                ->with('error', 'هذه المهارة مرتبطة بالفعل بالاختبار');
+    {
+        // ✅ تحقق أن الاختبار يخص الباحث الحالي
+        if ($exam_id->researcher_id !== Auth::id()) {
+            abort(403);
         }
 
-        // Create the relationship
-        exams_weekly_skills::create([
-            'exams_weekly_id' => $exam_id->id,
-            'id_level' => $request->level_skill_id,
-            'status' => 'in_progress'
+        $request->validate([
+            'level_skill_id' => 'required|exists:level_skills,id'
         ]);
 
-        return redirect()->back()
-            ->with('success', 'تم ربط المهارة بالاختبار بنجاح!');
+        try {
+            $existing = exams_weekly_skills::where([
+                'exams_weekly_id' => $exam_id->id,
+                'id_level' => $request->level_skill_id
+            ])->exists();
 
-    } catch (\Exception $e) {
-        return redirect()->back()
-            ->with('error', 'فشل في الربط: ' . $e->getMessage());
+            if ($existing) {
+                return redirect()->back()
+                    ->with('error', 'هذه المهارة مرتبطة بالفعل بالاختبار');
+            }
+
+            exams_weekly_skills::create([
+                'exams_weekly_id' => $exam_id->id,
+                'id_level' => $request->level_skill_id,
+                'status' => 'in_progress'
+            ]);
+
+            return redirect()->back()
+                ->with('success', 'تم ربط المهارة بالاختبار بنجاح!');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'فشل في الربط: ' . $e->getMessage());
+        }
     }
-}
 }

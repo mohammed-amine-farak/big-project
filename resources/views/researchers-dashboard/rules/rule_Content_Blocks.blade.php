@@ -2,575 +2,694 @@
 @extends('layouts.reseacher_dashboard')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 py-8" dir="rtl">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <!-- MathJax -->
-        <script>
-            window.MathJax = {
-                tex: {
-                    inlineMath: [['$', '$'], ['\\(', '\\)']],
-                    displayMath: [['$$', '$$'], ['\\[', '\\]']],
-                    processEscapes: true
-                },
-                svg: { fontCache: 'global' }
-            };
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
-
-        <!-- ═══ HEADER ═══ -->
-        <div class="mb-8">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 relative overflow-hidden">
-                <!-- Top accent line -->
-                <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-400"></div>
-
-                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mt-1">
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-md flex items-center justify-center flex-shrink-0">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-xs font-semibold text-emerald-600 uppercase tracking-widest mb-0.5">محتوى القاعدة</p>
-                            <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 leading-tight">{{ $rule->title }}</h1>
-                            @if($rule->description)
-                                <p class="text-gray-500 text-sm mt-1">{{ $rule->description }}</p>
-                            @else
-                                <p class="text-gray-400 text-sm mt-1">عرض محتوى القاعدة</p>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-3 flex-shrink-0">
-                        <a href="{{ route('rules.content.create', $rule->id) }}"
-                           class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-5 py-2.5 rounded-xl shadow-md shadow-emerald-100 hover:shadow-lg hover:shadow-emerald-200 transition-all duration-200 font-semibold text-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                            </svg>
-                            إضافة محتوى جديد
-                        </a>
-                        <a href="{{ route('rules.index') }}"
-                           class="inline-flex items-center gap-2 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-600 hover:text-gray-800 px-5 py-2.5 rounded-xl transition-all duration-200 font-medium text-sm shadow-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                            </svg>
-                            العودة
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ═══ LESSON INFO ═══ -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-            <div class="px-6 py-4 bg-gradient-to-r from-blue-50 via-indigo-50/60 to-blue-50 border-b border-blue-100/50">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white rounded-xl shadow-sm border border-blue-100 flex items-center justify-center flex-shrink-0">
-                        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-xs font-semibold text-blue-500 uppercase tracking-wider">الدرس المرتبط</p>
-                        <p class="font-bold text-gray-800 mt-0.5">{{ $rule->lesson->title ?? 'غير محدد' }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ═══ STATS ═══ -->
-        @if(!$rule->content_blocks->isEmpty())
-        @php
-            $textCount     = $rule->content_blocks->where('type', 'text')->count();
-            $mathCount     = $rule->content_blocks->where('type', 'math')->count();
-            $imageCount    = $rule->content_blocks->where('type', 'image')->count();
-            $videoCount    = $rule->content_blocks->where('type', 'video')->count();
-            $exerciseCount = $rule->content_blocks->where('type', 'exercise')->count();
-        @endphp
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-gray-400 font-medium mb-1">الإجمالي</p>
-                        <p class="text-2xl font-bold text-gray-800">{{ $rule->content_blocks->count() }}</p>
-                    </div>
-                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
-                        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            @if($textCount > 0)
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 hover:border-blue-100 p-4 transition-colors">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-gray-400 font-medium mb-1">نصوص</p>
-                        <p class="text-2xl font-bold text-gray-800">{{ $textCount }}</p>
-                    </div>
-                    <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-lg">📝</div>
-                </div>
-            </div>
-            @endif
-
-            @if($mathCount > 0)
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 hover:border-purple-100 p-4 transition-colors">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-gray-400 font-medium mb-1">معادلات</p>
-                        <p class="text-2xl font-bold text-gray-800">{{ $mathCount }}</p>
-                    </div>
-                    <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-lg">📐</div>
-                </div>
-            </div>
-            @endif
-
-            @if($imageCount > 0)
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 hover:border-green-100 p-4 transition-colors">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-gray-400 font-medium mb-1">صور</p>
-                        <p class="text-2xl font-bold text-gray-800">{{ $imageCount }}</p>
-                    </div>
-                    <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-lg">🖼️</div>
-                </div>
-            </div>
-            @endif
-
-            @if($exerciseCount > 0)
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 hover:border-orange-100 p-4 transition-colors">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-gray-400 font-medium mb-1">تمارين</p>
-                        <p class="text-2xl font-bold text-gray-800">{{ $exerciseCount }}</p>
-                    </div>
-                    <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-lg">✏️</div>
-                </div>
-            </div>
-            @endif
-        </div>
-        @endif
-
-        <!-- ═══ CONTENT BLOCKS ═══ -->
-        @if($rule->content_blocks->isEmpty())
-            <div class="bg-white rounded-2xl shadow-sm border border-dashed border-gray-200 p-16 text-center">
-                <div class="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mx-auto mb-5">
-                    <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h7"/>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-gray-700 mb-2">لا يوجد محتوى</h3>
-                <p class="text-gray-400 mb-7">لم يتم إضافة أي محتوى لهذه القاعدة بعد</p>
-                <a href="{{ route('rules.content.create', $rule->id) }}"
-                   class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-7 py-3 rounded-xl shadow-md shadow-emerald-100 transition-all duration-200 font-semibold">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    إضافة أول محتوى
-                </a>
-            </div>
-
-        @else
-            <div class="space-y-5">
-                @foreach($rule->content_blocks as $index => $block)
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:border-gray-200 transition-all duration-300 hover:-translate-y-0.5">
-
-                    <!-- Block Header -->
-                    <div class="px-5 py-3.5 bg-gradient-to-r from-gray-50/80 to-white border-b border-gray-100 flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-3 flex-wrap">
-                            <span class="w-8 h-8 bg-gradient-to-br from-gray-700 to-gray-900 text-white rounded-lg flex items-center justify-center text-xs font-bold shadow-sm flex-shrink-0">
-                                {{ $index + 1 }}
-                            </span>
-                            <span class="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full font-medium">
-                                ترتيب {{ $block->block_order + 1 }}
-                            </span>
-                            <span class="px-3 py-1 text-xs font-semibold rounded-full flex items-center gap-1.5
-                                @if($block->type == 'text')      bg-blue-50   text-blue-600   ring-1 ring-blue-100
-                                @elseif($block->type == 'math')  bg-purple-50 text-purple-600 ring-1 ring-purple-100
-                                @elseif($block->type == 'image') bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100
-                                @else                            bg-orange-50 text-orange-600 ring-1 ring-orange-100
-                                @endif">
-                                @if($block->type == 'text')     <span>📝</span> نص
-                                @elseif($block->type == 'math') <span>📐</span> معادلة
-                                @elseif($block->type == 'image') <span>🖼️</span> صورة
-                                @else                            <span>✏️</span> تمرين
-                                @endif
-                            </span>
-                            <span class="text-xs text-gray-300 hidden sm:inline">{{ $block->created_at->format('Y-m-d') }}</span>
-                        </div>
-
-                        <div class="flex items-center gap-1.5 flex-shrink-0">
-                            <a href="{{ route('rules.content.edit', [$rule->id, $block->id]) }}"
-                               class="p-2 bg-white hover:bg-blue-50 text-gray-400 hover:text-blue-600 rounded-lg border border-gray-100 hover:border-blue-200 transition-all duration-200"
-                               title="تعديل">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                </svg>
-                            </a>
-                            <form action="{{ route('rules.content.destroy', [$rule->id, $block->id]) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                        onclick="return confirm('هل أنت متأكد من حذف هذا المحتوى؟');"
-                                        class="p-2 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-lg border border-gray-100 hover:border-red-200 transition-all duration-200"
-                                        title="حذف">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                    </svg>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- Block Content -->
-                    <div class="p-6 lg:p-8">
-                        @if($block->type == 'math')
-                            <div class="bg-gradient-to-br from-gray-950 to-gray-900 rounded-xl p-8 overflow-x-auto border border-gray-800 shadow-inner">
-                                <div class="text-center text-emerald-400 text-xl font-mono math-equation" dir="ltr">
-                                    {!! $block->content !!}
-                                </div>
-                            </div>
-
-                        @elseif($block->type == 'image')
-                            <div class="bg-gray-50 rounded-xl p-6 border border-gray-100">
-                                <img src="{{ asset('storage/' . $block->content) }}"
-                                     alt="صورة"
-                                     class="rounded-xl max-h-72 mx-auto object-contain shadow-sm block">
-                                <p class="text-center text-xs text-gray-400 mt-4 font-mono bg-white py-1.5 px-4 rounded-full border border-gray-100" style="display:table;margin:1rem auto 0;">
-                                    {{ basename($block->content) }}
-                                </p>
-                            </div>
-
-                        @elseif($block->type == 'exercise')
-                            <div class="bg-gradient-to-br from-orange-50 to-amber-50/60 rounded-xl p-6 border border-orange-100 border-r-4 border-r-orange-400">
-                                <div class="flex items-center gap-2 mb-4">
-                                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                                        <span class="text-base">✏️</span>
-                                    </div>
-                                    <span class="font-bold text-orange-700 text-sm">تمرين</span>
-                                </div>
-                                <div class="text-gray-700 leading-relaxed whitespace-pre-line text-base">
-                                    {{ $block->content }}
-                                </div>
-                            </div>
-
-                        @elseif($block->type == 'text')
-                            <div class="prose prose-gray max-w-none">
-                                <div class="text-gray-700 leading-relaxed whitespace-pre-line text-5xl" style="font-family:'Tajawal',sans-serif; line-height:1.9;">
-                                    {{ $block->content }}
-                                </div>
-                            </div>
-                           @if($block->video)
-<div class="mt-6 rounded-2xl overflow-hidden bg-gray-950 shadow-xl shadow-black/20 border border-gray-800/60" x-data="{
-    playing: false,
-    progress: 0,
-    currentTime: '0:00',
-    duration: '0:00',
-    volume: 1,
-    muted: false,
-    fullscreen: false,
-    showControls: true,
-    controlsTimer: null,
-    formatTime(s) {
-        if (isNaN(s)) return '0:00';
-        const m = Math.floor(s / 60);
-        const sec = Math.floor(s % 60);
-        return m + ':' + (sec < 10 ? '0' : '') + sec;
+<script>
+window.MathJax = {
+    tex: {
+        inlineMath: [['$','$'],['\\(','\\)']],
+        displayMath: [['$$','$$'],['\\[','\\]']],
+        processEscapes: true
     },
-    initVideo() {
-        const v = this.$refs.video;
-        v.addEventListener('loadedmetadata', () => { this.duration = this.formatTime(v.duration); });
-        v.addEventListener('timeupdate', () => {
-            this.progress = (v.currentTime / v.duration) * 100 || 0;
-            this.currentTime = this.formatTime(v.currentTime);
-        });
-        v.addEventListener('ended', () => { this.playing = false; });
-    },
-    togglePlay() {
-        const v = this.$refs.video;
-        if (v.paused) { v.play(); this.playing = true; }
-        else { v.pause(); this.playing = false; }
-    },
-    seek(e) {
-        const v = this.$refs.video;
-        const rect = e.currentTarget.getBoundingClientRect();
-        const pct = (e.clientX - rect.left) / rect.width;
-        v.currentTime = pct * v.duration;
-    },
-    setVolume(e) {
-        const v = this.$refs.video;
-        v.volume = e.target.value;
-        this.volume = e.target.value;
-        this.muted = v.volume === 0;
-    },
-    toggleMute() {
-        const v = this.$refs.video;
-        v.muted = !v.muted;
-        this.muted = v.muted;
-    },
-    toggleFullscreen() {
-        const el = this.$refs.wrapper;
-        if (!document.fullscreenElement) { el.requestFullscreen(); this.fullscreen = true; }
-        else { document.exitFullscreen(); this.fullscreen = false; }
-    },
-    resetTimer() {
-        clearTimeout(this.controlsTimer);
-        this.showControls = true;
-        this.controlsTimer = setTimeout(() => { if (this.playing) this.showControls = false; }, 2500);
-    }
-}" x-init="initVideo()" x-ref="wrapper">
+    svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-    <!-- ── Video Element ── -->
-    <div class="relative bg-black group cursor-pointer"
-         @click="togglePlay(); resetTimer();"
-         @mousemove="resetTimer()"
-         @mouseleave="if(playing) showControls = false">
+<style>
+:root {
+    --bg:       #f0f2f8;
+    --surface:  #ffffff;
+    --s2:       #f7f8fc;
+    --border:   #e4e8f4;
+    --border2:  #d0d6ec;
+    --text:     #111827;
+    --mid:      #4b5675;
+    --dim:      #8c94b0;
+    --blue:     #2563eb;
+    --blue-l:   #eff4ff;
+    --blue-m:   #6591f5;
+    --green:    #059669;
+    --green-l:  #ecfdf5;
+    --teal:     #0d9488;
+    --teal-l:   #f0fdfa;
+    --purple:   #7c3aed;
+    --purple-l: #f5f3ff;
+    --orange:   #ea580c;
+    --orange-l: #fff7ed;
+    --red:      #dc2626;
+    --red-l:    #fef2f2;
+    --gold:     #d97706;
+    --gold-l:   #fffbeb;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); font-family:'Tajawal',sans-serif; color:var(--text); }
 
-        <video x-ref="video"
-               class="w-full block max-h-[480px] object-contain bg-black"
-               preload="metadata">
-            <source src="{{ asset('storage/' . $block->video->file_path) }}" type="video/mp4">
-            متصفحك لا يدعم تشغيل الفيديو
-        </video>
+/* ── LAYOUT ── */
+.page-wrap { max-width:1100px; margin:0 auto; padding:32px 24px 80px; }
 
-        <!-- Big play button overlay (shown when paused) -->
-        <div x-show="!playing"
-             x-transition:enter="transition ease-out duration-150"
-             x-transition:enter-start="opacity-0 scale-90"
-             x-transition:enter-end="opacity-100 scale-100"
-             class="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div class="w-20 h-20 rounded-full bg-black/50 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-2xl">
-                <svg class="w-9 h-9 text-white translate-x-0.5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
+/* ── BREADCRUMB ── */
+.breadcrumb {
+    display:flex; align-items:center; gap:6px;
+    font-size:13px; color:var(--dim); margin-bottom:24px;
+}
+.breadcrumb a { color:var(--dim); text-decoration:none; transition:color .15s; }
+.breadcrumb a:hover { color:var(--blue); }
+.breadcrumb .sep { color:var(--border2); }
+.breadcrumb .cur { color:var(--text); font-weight:600; }
+
+/* ── HEADER CARD ── */
+.header-card {
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:28px 32px;
+    margin-bottom:20px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:20px;
+    position:relative;
+    overflow:hidden;
+}
+.header-card::before {
+    content:'';
+    position:absolute; top:0; right:0; left:0; height:3px;
+    background:linear-gradient(90deg, var(--teal), var(--blue), var(--purple));
+}
+.hc-left { display:flex; align-items:flex-start; gap:16px; }
+.hc-icon {
+    width:52px; height:52px; border-radius:14px; flex-shrink:0;
+    background:linear-gradient(135deg, var(--teal), var(--blue));
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 16px rgba(13,148,136,.25);
+}
+.hc-label { font-size:11px; font-weight:700; letter-spacing:2px; color:var(--teal); text-transform:uppercase; margin-bottom:5px; }
+.hc-title { font-family:'Cairo',sans-serif; font-size:22px; font-weight:900; color:var(--text); line-height:1.3; margin-bottom:4px; }
+.hc-desc { font-size:14px; color:var(--dim); }
+.hc-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+
+/* ── BUTTONS ── */
+.btn {
+    display:inline-flex; align-items:center; gap:7px;
+    padding:9px 18px; border-radius:10px; border:none; cursor:pointer;
+    font-family:'Tajawal',sans-serif; font-size:13px; font-weight:700; transition:all .15s;
+    text-decoration:none;
+}
+.btn-teal {
+    background:linear-gradient(135deg, var(--teal), #0f766e);
+    color:#fff; box-shadow:0 3px 14px rgba(13,148,136,.25);
+}
+.btn-teal:hover { box-shadow:0 6px 20px rgba(13,148,136,.35); transform:translateY(-1px); }
+.btn-ghost {
+    background:var(--surface); color:var(--mid);
+    border:1px solid var(--border);
+}
+.btn-ghost:hover { border-color:var(--blue-m); color:var(--blue); }
+
+/* ── LESSON CHIP ── */
+.lesson-chip {
+    background:var(--blue-l); border:1px solid #c7d7fd;
+    border-radius:12px; padding:12px 18px;
+    display:flex; align-items:center; gap:12px;
+    margin-bottom:20px;
+}
+.lc-icon {
+    width:36px; height:36px; background:#fff; border:1px solid #c7d7fd;
+    border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.lc-label { font-size:10px; font-weight:700; letter-spacing:1.5px; color:var(--blue); text-transform:uppercase; margin-bottom:2px; }
+.lc-name { font-size:14px; font-weight:700; color:var(--text); }
+
+/* ── STATS ROW ── */
+.stats-row { display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
+.stat-pill {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:12px 16px;
+    display:flex; align-items:center; gap:10px;
+    flex:1; min-width:110px;
+}
+.sp-icon {
+    width:36px; height:36px; border-radius:9px;
+    display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0;
+}
+.sp-val { font-family:'Cairo',sans-serif; font-size:20px; font-weight:900; color:var(--text); }
+.sp-lbl { font-size:11px; color:var(--dim); }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+    background:var(--surface); border:2px dashed var(--border);
+    border-radius:20px; padding:64px 32px; text-align:center;
+}
+.empty-icon {
+    width:72px; height:72px; background:var(--s2); border-radius:18px;
+    display:flex; align-items:center; justify-content:center;
+    margin:0 auto 20px; font-size:32px;
+}
+.empty-title { font-family:'Cairo',sans-serif; font-size:20px; font-weight:700; color:var(--text); margin-bottom:8px; }
+.empty-sub { font-size:14px; color:var(--dim); margin-bottom:28px; }
+
+/* ── BLOCK CARD ── */
+.block-card {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:18px; overflow:hidden;
+    margin-bottom:16px;
+    transition:all .2s;
+}
+.block-card:hover {
+    border-color:var(--border2);
+    box-shadow:0 4px 24px rgba(37,99,235,.07);
+    transform:translateY(-1px);
+}
+
+/* ── BLOCK TOP BAR ── */
+.block-topbar {
+    padding:12px 18px;
+    background:var(--s2);
+    border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.bt-left { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.bt-num {
+    width:30px; height:30px; border-radius:8px;
+    background:linear-gradient(135deg,#334155,#1e293b);
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:700; color:#fff; flex-shrink:0;
+}
+.bt-order {
+    font-size:11px; color:var(--dim); background:var(--border);
+    padding:3px 9px; border-radius:6px; font-weight:600;
+}
+.type-badge {
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:11px; font-weight:700; padding:4px 10px; border-radius:7px;
+}
+.type-text    { background:var(--blue-l);   color:var(--blue);   border:1px solid #c7d7fd; }
+.type-math    { background:var(--purple-l); color:var(--purple); border:1px solid #ddd6fe; }
+.type-image   { background:var(--green-l);  color:var(--green);  border:1px solid #a7f3d0; }
+.type-exercise{ background:var(--orange-l); color:var(--orange); border:1px solid #fed7aa; }
+.bt-date { font-size:11px; color:var(--dim); }
+
+.bt-actions { display:flex; align-items:center; gap:6px; }
+.act-btn {
+    width:32px; height:32px; border-radius:8px;
+    background:var(--surface); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all .15s; color:var(--dim);
+}
+.act-btn:hover.edit  { background:var(--blue-l);  border-color:#c7d7fd; color:var(--blue); }
+.act-btn:hover.del   { background:var(--red-l);   border-color:#fecaca; color:var(--red); }
+
+/* ── BLOCK BODY ── */
+.block-body { padding:24px 28px; }
+
+/* TEXT */
+.cb-text {
+    font-size:16px; color:var(--mid); line-height:2;
+    font-family:'Tajawal',sans-serif;
+}
+
+/* MATH */
+.cb-math-wrap {
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    border-radius:14px; padding:28px 24px; text-align:center;
+    border:1px solid rgba(255,255,255,.07);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 4px 24px rgba(0,0,0,.15);
+    position:relative; overflow:hidden;
+}
+.cb-math-wrap::before {
+    content:'';
+    position:absolute; top:-40px; right:-40px;
+    width:140px; height:140px; border-radius:50%;
+    background:radial-gradient(circle, rgba(45,212,191,.08), transparent 70%);
+}
+.cb-math-content {
+    color:#2dd4bf; font-size:1.4rem; font-family:monospace;
+    position:relative; z-index:1;
+}
+.math-toolbar {
+    display:flex; justify-content:flex-end; margin-top:16px; position:relative; z-index:1;
+}
+.math-speak-btn {
+    display:inline-flex; align-items:center; gap:6px;
+    background:rgba(45,212,191,.12); border:1px solid rgba(45,212,191,.2);
+    color:#2dd4bf; padding:6px 12px; border-radius:8px;
+    font-size:12px; font-weight:600; cursor:pointer; transition:all .15s;
+    font-family:'Tajawal',sans-serif;
+}
+.math-speak-btn:hover { background:rgba(45,212,191,.2); }
+
+/* IMAGE */
+.cb-image-wrap {
+    background:var(--s2); border:1px solid var(--border);
+    border-radius:12px; padding:20px; text-align:center;
+}
+.cb-image-wrap img {
+    border-radius:10px; max-height:280px; object-fit:contain;
+    display:block; margin:0 auto; box-shadow:0 4px 20px rgba(0,0,0,.08);
+}
+.cb-filename {
+    display:inline-flex; align-items:center; gap:5px;
+    margin-top:12px; font-size:11px; color:var(--dim);
+    background:var(--surface); border:1px solid var(--border);
+    padding:4px 10px; border-radius:6px; font-family:monospace;
+}
+
+/* EXERCISE */
+.cb-exercise-wrap {
+    background:linear-gradient(135deg, #fff7ed, #fffbeb);
+    border:1px solid #fed7aa;
+    border-right:4px solid var(--orange);
+    border-radius:0 12px 12px 0;
+    padding:20px 22px;
+}
+.ex-header { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+.ex-icon-badge {
+    width:32px; height:32px; background:#fff;
+    border:1px solid #fed7aa; border-radius:8px;
+    display:flex; align-items:center; justify-content:center; font-size:15px;
+}
+.ex-label-text { font-size:13px; font-weight:700; color:var(--orange); }
+.ex-content { font-size:15px; color:var(--text); line-height:1.85; white-space:pre-line; }
+
+/* VIDEO */
+.video-wrapper {
+    margin-top:20px; border-radius:16px; overflow:hidden;
+    background:#000; box-shadow:0 8px 32px rgba(0,0,0,.2);
+    border:1px solid rgba(255,255,255,.06);
+}
+.video-info-bar {
+    background:#0f172a; border-top:1px solid rgba(255,255,255,.05);
+    padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.vib-left { display:flex; align-items:center; gap:10px; }
+.vib-badge {
+    width:36px; height:36px; border-radius:9px;
+    background:rgba(45,212,191,.12); border:1px solid rgba(45,212,191,.2);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.vib-title { font-size:13px; font-weight:600; color:#fff; font-family:'Tajawal',sans-serif; }
+.vib-sub   { font-size:11px; color:#64748b; margin-top:1px; }
+.vib-dur {
+    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08);
+    padding:5px 10px; border-radius:7px;
+    display:flex; align-items:center; gap:5px;
+    font-size:11px; color:#94a3b8; font-family:monospace; flex-shrink:0;
+}
+
+/* BLOCK FOOTER */
+.block-footer {
+    padding:10px 18px;
+    background:var(--s2); border-top:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+    flex-wrap:wrap; gap:8px;
+    font-size:11px; color:var(--dim);
+}
+.bf-item { display:flex; align-items:center; gap:5px; }
+
+/* FAB */
+.fab {
+    position:fixed; bottom:28px; left:28px; z-index:50;
+    width:52px; height:52px;
+    background:linear-gradient(135deg, var(--teal), #0f766e);
+    border-radius:14px; display:none; align-items:center; justify-content:center;
+    box-shadow:0 6px 20px rgba(13,148,136,.35);
+    text-decoration:none; color:#fff;
+    transition:all .2s;
+}
+.fab:hover { transform:translateY(-2px) scale(1.05); }
+@media(max-width:1024px){ .fab{ display:flex; } }
+
+/* TOAST */
+.speech-toast {
+    position:fixed; bottom:28px; right:28px; z-index:100;
+    background:linear-gradient(135deg,#6d28d9,#4f46e5);
+    color:#fff; padding:12px 18px; border-radius:14px;
+    display:none; align-items:center; gap:10px;
+    box-shadow:0 8px 28px rgba(109,40,217,.3);
+    font-size:13px; font-weight:600; font-family:'Tajawal',sans-serif;
+}
+.speech-toast.visible { display:flex; }
+.toast-pulse { width:8px; height:8px; border-radius:50%; background:#a78bfa; animation:pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+.toast-close {
+    width:26px; height:26px; border-radius:7px; background:rgba(255,255,255,.15);
+    border:none; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    margin-right:4px;
+}
+</style>
+
+<div class="page-wrap" dir="rtl">
+
+    {{-- BREADCRUMB --}}
+    <div class="breadcrumb">
+        <a href="{{ route('rules.index') }}">القواعد</a>
+        <span class="sep">›</span>
+        <span class="cur">{{ $rule->title }}</span>
+    </div>
+
+    {{-- HEADER --}}
+    <div class="header-card">
+        <div class="hc-left">
+            <div class="hc-icon">
+                <svg width="26" height="26" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7"/>
                 </svg>
             </div>
-        </div>
-
-        <!-- Controls Bar -->
-        <div x-show="showControls || !playing"
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="opacity-0 translate-y-2"
-             x-transition:enter-end="opacity-100 translate-y-0"
-             x-transition:leave="transition ease-in duration-300"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent pt-10 pb-3 px-4"
-             @click.stop>
-
-            <!-- Progress Bar -->
-            <div class="relative h-1 bg-white/20 rounded-full mb-3 cursor-pointer group/bar"
-                 @click="seek($event)">
-                <!-- Buffered (decorative) -->
-                <div class="absolute inset-y-0 left-0 bg-white/30 rounded-full" :style="`width: ${progress * 0.9}%`"></div>
-                <!-- Played -->
-                <div class="absolute inset-y-0 left-0 bg-teal-400 rounded-full transition-all duration-100"
-                     :style="`width: ${progress}%`"></div>
-                <!-- Thumb -->
-                <div class="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-teal-400 rounded-full shadow-md opacity-0 group-hover/bar:opacity-100 transition-opacity -translate-x-1/2"
-                     :style="`left: ${progress}%`"></div>
-                <!-- Hover expand -->
-                <div class="absolute inset-0 -top-1 -bottom-1 rounded-full group-hover/bar:bg-transparent"></div>
+            <div>
+                <div class="hc-label">محتوى القاعدة</div>
+                <h1 class="hc-title">{{ $rule->title }}</h1>
+                <p class="hc-desc">{{ $rule->description ?? 'عرض محتوى القاعدة' }}</p>
             </div>
+        </div>
+        <div class="hc-actions">
+            <a href="{{ route('rules.content.create', $rule->id) }}" class="btn btn-teal">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                </svg>
+                إضافة محتوى
+            </a>
+            <a href="{{ route('rules.index') }}" class="btn btn-ghost">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                العودة
+            </a>
+        </div>
+    </div>
 
-            <!-- Controls Row -->
-            <div class="flex items-center justify-between gap-3">
-                <!-- Left: Play + Volume + Time -->
-                <div class="flex items-center gap-3">
-                    <!-- Play/Pause -->
-                    <button @click="togglePlay()" class="text-white hover:text-teal-400 transition-colors p-1">
-                        <svg x-show="!playing" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M8 5v14l11-7z"/>
-                        </svg>
-                        <svg x-show="playing" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                        </svg>
-                    </button>
+    {{-- LESSON CHIP --}}
+    <div class="lesson-chip">
+        <div class="lc-icon">
+            <svg width="18" height="18" fill="none" stroke="#2563eb" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+        </div>
+        <div>
+            <div class="lc-label">الدرس المرتبط</div>
+            <div class="lc-name">{{ $rule->lesson->title ?? 'غير محدد' }}</div>
+        </div>
+    </div>
 
-                    <!-- Volume -->
-                    <div class="flex items-center gap-2">
-                        <button @click="toggleMute()" class="text-white/70 hover:text-white transition-colors p-1">
-                            <svg x-show="!muted && volume > 0" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-                            </svg>
-                            <svg x-show="muted || volume == 0" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+    {{-- STATS --}}
+    @if(!$rule->content_blocks->isEmpty())
+    @php
+        $total   = $rule->content_blocks->count();
+        $texts   = $rule->content_blocks->where('type','text')->count();
+        $maths   = $rule->content_blocks->where('type','math')->count();
+        $images  = $rule->content_blocks->where('type','image')->count();
+        $exers   = $rule->content_blocks->where('type','exercise')->count();
+    @endphp
+    <div class="stats-row">
+        <div class="stat-pill">
+            <div class="sp-icon" style="background:var(--blue-l)">📦</div>
+            <div><div class="sp-val">{{ $total }}</div><div class="sp-lbl">الإجمالي</div></div>
+        </div>
+        @if($texts)
+        <div class="stat-pill">
+            <div class="sp-icon" style="background:var(--blue-l)">📝</div>
+            <div><div class="sp-val">{{ $texts }}</div><div class="sp-lbl">نصوص</div></div>
+        </div>
+        @endif
+        @if($maths)
+        <div class="stat-pill">
+            <div class="sp-icon" style="background:var(--purple-l)">📐</div>
+            <div><div class="sp-val">{{ $maths }}</div><div class="sp-lbl">معادلات</div></div>
+        </div>
+        @endif
+        @if($images)
+        <div class="stat-pill">
+            <div class="sp-icon" style="background:var(--green-l)">🖼️</div>
+            <div><div class="sp-val">{{ $images }}</div><div class="sp-lbl">صور</div></div>
+        </div>
+        @endif
+        @if($exers)
+        <div class="stat-pill">
+            <div class="sp-icon" style="background:var(--orange-l)">✏️</div>
+            <div><div class="sp-val">{{ $exers }}</div><div class="sp-lbl">تمارين</div></div>
+        </div>
+        @endif
+    </div>
+    @endif
+
+    {{-- EMPTY --}}
+    @if($rule->content_blocks->isEmpty())
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <div class="empty-title">لا يوجد محتوى بعد</div>
+        <p class="empty-sub">لم يتم إضافة أي محتوى لهذه القاعدة</p>
+        <a href="{{ route('rules.content.create', $rule->id) }}" class="btn btn-teal">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            إضافة أول محتوى
+        </a>
+    </div>
+
+    @else
+    {{-- BLOCKS --}}
+    <div>
+        @foreach($rule->content_blocks as $index => $block)
+        <div class="block-card">
+
+            {{-- TOP BAR --}}
+            <div class="block-topbar">
+                <div class="bt-left">
+                    <div class="bt-num">{{ $index + 1 }}</div>
+                    <div class="bt-order">ترتيب {{ $block->block_order + 1 }}</div>
+                    <div class="type-badge
+                        @if($block->type=='text')     type-text
+                        @elseif($block->type=='math') type-math
+                        @elseif($block->type=='image') type-image
+                        @else                         type-exercise
+                        @endif">
+                        @if($block->type=='text')     📝 نص
+                        @elseif($block->type=='math') 📐 معادلة
+                        @elseif($block->type=='image') 🖼️ صورة
+                        @else                         ✏️ تمرين
+                        @endif
+                    </div>
+                    <span class="bt-date">{{ $block->created_at->format('Y-m-d') }}</span>
+                </div>
+                <div class="bt-actions">
+                    <a href="{{ route('rules.content.edit', [$rule->id, $block->id]) }}"
+                       class="act-btn edit" title="تعديل">
+                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                    </a>
+                    <form action="{{ route('rules.content.destroy', [$rule->id, $block->id]) }}" method="POST" style="display:inline">
+                        @csrf @method('DELETE')
+                        <button type="submit"
+                                onclick="return confirm('هل أنت متأكد من حذف هذا المحتوى؟');"
+                                class="act-btn del" title="حذف">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                             </svg>
                         </button>
-                        <input type="range" min="0" max="1" step="0.05"
-                               :value="muted ? 0 : volume"
-                               @input="setVolume($event)"
-                               class="w-16 h-1 accent-teal-400 cursor-pointer">
-                    </div>
-
-                    <!-- Time -->
-                    <span class="text-white/60 text-xs font-mono tabular-nums">
-                        <span x-text="currentTime"></span> / <span x-text="duration"></span>
-                    </span>
-                </div>
-
-                <!-- Right: Fullscreen -->
-                <button @click="toggleFullscreen()" class="text-white/70 hover:text-white transition-colors p-1">
-                    <svg x-show="!fullscreen" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-                    </svg>
-                    <svg x-show="fullscreen" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ── Info Panel (Khan Academy style) ── -->
-    <div class="bg-gray-950 border-t border-white/5 px-5 py-4">
-        <div class="flex items-start justify-between gap-4">
-            <div class="flex items-start gap-3 min-w-0">
-                <!-- Teal play icon badge -->
-                <div class="w-9 h-9 rounded-lg bg-teal-500/15 border border-teal-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg class="w-4 h-4 text-teal-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                </div>
-                <div class="min-w-0">
-                    @if($block->video->title)
-                        <p class="text-white font-semibold text-sm leading-snug truncate" style="font-family:'Tajawal',sans-serif;">
-                            {{ $block->video->title }}
-                        </p>
-                    @endif
-                    <p class="text-gray-500 text-xs mt-1" style="font-family:'Tajawal',sans-serif;">فيديو تعليمي · مرتبط بهذا المحتوى</p>
+                    </form>
                 </div>
             </div>
-            <!-- Duration chip -->
-            <div class="flex-shrink-0 bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 flex items-center gap-1.5">
-                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <span x-text="duration" class="text-gray-300 text-xs font-mono tabular-nums"></span>
-            </div>
-        </div>
-    </div>
-</div>
-@endif
-                        @endif
-                    </div>
 
-                    <!-- Block Footer -->
-                    <div class="px-5 py-2.5 bg-gray-50/60 border-t border-gray-100 flex items-center justify-between flex-wrap gap-2 text-xs text-gray-400">
-                        <div class="flex items-center gap-1.5">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            {{-- BODY --}}
+            <div class="block-body">
+
+                @if($block->type == 'math')
+                <div class="cb-math-wrap">
+                    <div class="cb-math-content math-eq" dir="ltr">{!! $block->content !!}</div>
+                    <div class="math-toolbar">
+                        <button class="math-speak-btn" onclick="readEquation('{{ addslashes($block->content) }}')">
+                            <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
                             </svg>
-                            تاريخ الإضافة: {{ $block->created_at->format('Y-m-d H:i') }}
-                        </div>
-                        @if($block->updated_at != $block->created_at)
-                        <div class="flex items-center gap-1.5">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                            </svg>
-                            آخر تحديث: {{ $block->updated_at->format('Y-m-d H:i') }}
-                        </div>
-                        @endif
+                            استمع للمعادلة
+                        </button>
                     </div>
                 </div>
-                @endforeach
+
+                @elseif($block->type == 'image')
+                <div class="cb-image-wrap">
+                    <img src="{{ asset('storage/' . $block->content) }}" alt="صورة">
+                    <div class="cb-filename">
+                        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        {{ basename($block->content) }}
+                    </div>
+                </div>
+
+                @elseif($block->type == 'exercise')
+                <div class="cb-exercise-wrap">
+                    <div class="ex-header">
+                        <div class="ex-icon-badge">✏️</div>
+                        <span class="ex-label-text">تمرين تطبيقي</span>
+                    </div>
+                    <div class="ex-content">{{ $block->content }}</div>
+                </div>
+
+                @elseif($block->type == 'text')
+                <div class="cb-text">{{ $block->content }}</div>
+
+                @endif
+
+                {{-- VIDEO --}}
+                @if(isset($block->video) && $block->video)
+                <div class="video-wrapper" x-data="{
+                    playing:false, progress:0, currentTime:'0:00', duration:'0:00',
+                    volume:1, muted:false, fullscreen:false, showControls:true, ct:null,
+                    fmt(s){ if(isNaN(s))return'0:00'; const m=Math.floor(s/60),sec=Math.floor(s%60); return m+':'+(sec<10?'0':'')+sec; },
+                    init(){
+                        const v=this.$refs.vid;
+                        v.addEventListener('loadedmetadata',()=>this.duration=this.fmt(v.duration));
+                        v.addEventListener('timeupdate',()=>{ this.progress=(v.currentTime/v.duration)*100||0; this.currentTime=this.fmt(v.currentTime); });
+                        v.addEventListener('ended',()=>this.playing=false);
+                    },
+                    play(){ const v=this.$refs.vid; v.paused?(v.play(),this.playing=true):(v.pause(),this.playing=false); },
+                    seek(e){ const v=this.$refs.vid,r=e.currentTarget.getBoundingClientRect(); v.currentTime=((e.clientX-r.left)/r.width)*v.duration; },
+                    vol(e){ const v=this.$refs.vid; v.volume=e.target.value; this.volume=e.target.value; this.muted=v.volume===0; },
+                    mute(){ const v=this.$refs.vid; v.muted=!v.muted; this.muted=v.muted; },
+                    fs(){ const el=this.$refs.wrap; !document.fullscreenElement?(el.requestFullscreen(),this.fullscreen=true):(document.exitFullscreen(),this.fullscreen=false); },
+                    rst(){ clearTimeout(this.ct); this.showControls=true; this.ct=setTimeout(()=>{ if(this.playing)this.showControls=false; },2500); }
+                }" x-init="init()" x-ref="wrap">
+
+                    <div class="relative bg-black cursor-pointer select-none"
+                         @click="play();rst();" @mousemove="rst()" @mouseleave="if(playing)showControls=false">
+                        <video x-ref="vid" class="w-full block" style="max-height:440px;object-fit:contain;background:#000;" preload="metadata">
+                            <source src="{{ asset('storage/' . $block->video->file_path) }}" type="video/mp4">
+                        </video>
+                        {{-- Play overlay --}}
+                        <div x-show="!playing" x-transition class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div style="width:72px;height:72px;border-radius:50%;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;">
+                                <svg width="30" height="30" fill="white" viewBox="0 0 24 24" style="transform:translateX(2px)">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        {{-- Controls --}}
+                        <div x-show="showControls||!playing" x-transition
+                             style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.9),transparent);padding:36px 16px 12px;"
+                             @click.stop>
+                            {{-- Progress --}}
+                            <div style="height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin-bottom:12px;cursor:pointer;position:relative;" @click="seek($event)">
+                                <div style="position:absolute;inset-y:0;left:0;background:#2dd4bf;border-radius:2px;transition:width .1s;" :style="`width:${progress}%`"></div>
+                            </div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;">
+                                <div style="display:flex;align-items:center;gap:12px;">
+                                    <button @click="play()" style="background:none;border:none;color:#fff;cursor:pointer;padding:3px;">
+                                        <svg x-show="!playing" width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        <svg x-show="playing"  width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                    </button>
+                                    <button @click="mute()" style="background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;padding:3px;">
+                                        <svg x-show="!muted" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                                        <svg x-show="muted"  width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                                    </button>
+                                    <input type="range" min="0" max="1" step="0.05" :value="muted?0:volume" @input="vol($event)" style="width:60px;accent-color:#2dd4bf;cursor:pointer;">
+                                    <span style="font-size:11px;color:rgba(255,255,255,.6);font-family:monospace;" x-text="currentTime+' / '+duration"></span>
+                                </div>
+                                <button @click="fs()" style="background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;padding:3px;">
+                                    <svg x-show="!fullscreen" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                                    <svg x-show="fullscreen"  width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vib-left" style="padding:14px 18px;background:#0f172a;border-top:1px solid rgba(255,255,255,.04);display:flex;align-items:center;justify-content:space-between;">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <div class="vib-badge">
+                                <svg width="16" height="16" fill="#2dd4bf" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                            <div>
+                                @if($block->video->title)
+                                <div class="vib-title">{{ $block->video->title }}</div>
+                                @endif
+                                <div class="vib-sub">فيديو تعليمي · مرتبط بهذا المحتوى</div>
+                            </div>
+                        </div>
+                        <div class="vib-dur">
+                            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span x-text="duration" style="font-family:monospace;font-size:11px;color:#94a3b8;"></span>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
+            </div>{{-- end block-body --}}
+
+            {{-- FOOTER --}}
+            <div class="block-footer">
+                <div class="bf-item">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    أُضيف: {{ $block->created_at->format('Y-m-d H:i') }}
+                </div>
+                @if($block->updated_at != $block->created_at)
+                <div class="bf-item">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    آخر تحديث: {{ $block->updated_at->format('Y-m-d H:i') }}
+                </div>
+                @endif
             </div>
 
-            <!-- Mobile FAB -->
-            <div class="fixed bottom-6 left-6 lg:hidden z-50">
-                <a href="{{ route('rules.content.create', $rule->id) }}"
-                   class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg shadow-emerald-200 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform duration-200">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                    </svg>
-                </a>
-            </div>
-        @endif
+        </div>{{-- end block-card --}}
+        @endforeach
     </div>
+    @endif
+
 </div>
 
-<!-- Audio Toast -->
-<div id="audioStatus" class="fixed bottom-6 right-6 hidden z-50">
-    <div class="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-3.5 rounded-2xl shadow-xl shadow-violet-200/50 flex items-center gap-3">
-        <div class="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center">
-            <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
-            </svg>
-        </div>
-        <span class="font-medium text-sm">جاري قراءة المعادلة...</span>
-        <button onclick="stopReading()" class="mr-2 hover:bg-white/20 w-7 h-7 rounded-lg flex items-center justify-center transition">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-        </button>
-    </div>
+{{-- FAB --}}
+<a href="{{ route('rules.content.create', $rule->id) }}" class="fab" title="إضافة محتوى">
+    <svg width="22" height="22" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+    </svg>
+</a>
+
+{{-- SPEECH TOAST --}}
+<div id="speechToast" class="speech-toast">
+    <div class="toast-pulse"></div>
+    <span>جاري قراءة المعادلة...</span>
+    <button class="toast-close" onclick="stopReading()">✕</button>
 </div>
 
 <script>
-    let speechSynthesis = window.speechSynthesis;
-    let currentUtterance = null;
-    const audioStatus = document.getElementById('audioStatus');
+const toast = document.getElementById('speechToast');
+let currentUtterance = null;
 
-    function readEquation(equation) {
-        if (speechSynthesis.speaking) speechSynthesis.cancel();
-        audioStatus.classList.remove('hidden');
-        let cleanEquation = equation
-            .replace(/\$\$/g, '').replace(/\$/g, '').replace(/\\/g, '').replace(/\{|\}/g, '')
-            .replace(/\\frac/g, ' كسر ').replace(/_/g, ' تحت ').replace(/\^/g, ' أس ')
-            .replace(/\\sqrt/g, ' جذر ').replace(/\\int/g, ' تكامل ').replace(/\\sum/g, ' مجموع ')
-            .replace(/\\lim/g, ' نهاية ').replace(/\\alpha/g, ' ألفا ').replace(/\\beta/g, ' بيتا ')
-            .replace(/\\gamma/g, ' جاما ').replace(/\\pi/g, ' باي ').replace(/\\sin/g, ' جا ')
-            .replace(/\\cos/g, ' جتا ').replace(/\\tan/g, ' ظا ').replace(/\\log/g, ' لوغاريتم ')
-            .replace(/\\ln/g, ' لوغاريتم طبيعي ').replace(/\\pm/g, ' موجب أو سالب ')
-            .replace(/\\times/g, ' في ').replace(/\\div/g, ' على ')
-            .replace(/\\leq/g, ' أصغر من أو يساوي ').replace(/\\geq/g, ' أكبر من أو يساوي ')
-            .replace(/\\neq/g, ' لا يساوي ').replace(/\\approx/g, ' تقريباً ')
-            .replace(/\\infty/g, ' مالانهاية ');
-        currentUtterance = new SpeechSynthesisUtterance(cleanEquation);
-        currentUtterance.lang = 'ar-SA';
-        currentUtterance.rate = 0.9;
-        currentUtterance.pitch = 1;
-        currentUtterance.onend  = () => audioStatus.classList.add('hidden');
-        currentUtterance.onerror = () => audioStatus.classList.add('hidden');
-        speechSynthesis.speak(currentUtterance);
-    }
+function readEquation(eq) {
+    if (speechSynthesis.speaking) speechSynthesis.cancel();
+    toast.classList.add('visible');
+    let clean = eq
+        .replace(/\$\$/g,'').replace(/\$/g,'').replace(/\\/g,'').replace(/[{}]/g,'')
+        .replace(/frac/g,' كسر ').replace(/_/g,' تحت ').replace(/\^/g,' أس ')
+        .replace(/sqrt/g,' جذر ').replace(/int/g,' تكامل ').replace(/sum/g,' مجموع ')
+        .replace(/pi/g,' باي ').replace(/sin/g,' جا ').replace(/cos/g,' جتا ')
+        .replace(/tan/g,' ظا ').replace(/log/g,' لوغاريتم ').replace(/ln/g,' لوغاريتم طبيعي ')
+        .replace(/times/g,' في ').replace(/div/g,' على ')
+        .replace(/leq/g,' أصغر أو يساوي ').replace(/geq/g,' أكبر أو يساوي ')
+        .replace(/neq/g,' لا يساوي ').replace(/approx/g,' تقريباً ').replace(/infty/g,' مالانهاية ');
+    currentUtterance = new SpeechSynthesisUtterance(clean);
+    currentUtterance.lang = 'ar-SA';
+    currentUtterance.rate = 0.9;
+    currentUtterance.onend = currentUtterance.onerror = () => toast.classList.remove('visible');
+    speechSynthesis.speak(currentUtterance);
+}
 
-    function stopReading() {
-        if (speechSynthesis.speaking) {
-            speechSynthesis.cancel();
-            audioStatus.classList.add('hidden');
-        }
-    }
+function stopReading() {
+    if (speechSynthesis.speaking) speechSynthesis.cancel();
+    toast.classList.remove('visible');
+}
 
-    window.addEventListener('beforeunload', () => {
-        if (speechSynthesis.speaking) speechSynthesis.cancel();
-    });
+window.addEventListener('beforeunload', () => { if(speechSynthesis.speaking) speechSynthesis.cancel(); });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        if (window.MathJax) {
-            MathJax.typesetPromise().catch(err => console.log('MathJax error:', err));
-        }
-    });
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.MathJax) MathJax.typesetPromise().catch(e => console.log(e));
+});
 </script>
-
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
-
-    body { font-family: 'Tajawal', sans-serif; }
-
-    .math-equation mjx-container {
-        color: #34d399 !important;
-        font-size: 1.3rem !important;
-    }
-
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #f8fafc; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
-
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-    .animate-pulse { animation: pulse 2s ease-in-out infinite; }
-</style>
 
 @endsection

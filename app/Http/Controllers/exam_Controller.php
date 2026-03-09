@@ -26,7 +26,9 @@ class exam_Controller extends Controller
         'lesson' => function($query) {
             $query->with('subject');
         }
-    ])->latest();
+    ])
+    ->where('researcher_id', Auth::id()) // ✅ فقط اختبارات الباحث الحالي
+    ->latest();
  
     // Apply filters
     if ($request->filled('title')) {
@@ -54,12 +56,15 @@ class exam_Controller extends Controller
     $exams = $query->paginate(10)->withQueryString();
 
     // Calculate statistics
-    $totalExamsCount = exams::count();
-    $activeExams = exams::where('start_time', '<=', now())
+    $totalExamsCount = exams::where('researcher_id', Auth::id())->count(); // ✅
+    $activeExams = exams::where('researcher_id', Auth::id()) // ✅
+                      ->where('start_time', '<=', now())
                       ->where('end_time', '>=', now())
                       ->count();
-    $upcomingExams = exams::where('start_time', '>', now())->count();
-    $finishedExams = exams::where('end_time', '<', now())->count();
+    $upcomingExams = exams::where('researcher_id', Auth::id()) // ✅
+                      ->where('start_time', '>', now())->count();
+    $finishedExams = exams::where('researcher_id', Auth::id()) // ✅
+                      ->where('end_time', '<', now())->count();
 
     return view('researchers-dashboard.exam.index', compact(
         'exams',
@@ -77,7 +82,7 @@ class exam_Controller extends Controller
      */
     public function create()
     {
-        $lessons = lessonss::all();
+        $lessons = lessonss::where('researcher_id', Auth::id())->get(); // ✅ فقط دروس الباحث الحالي
         return view('researchers-dashboard.exam.create',compact('lessons'));
 
     }
@@ -100,7 +105,6 @@ class exam_Controller extends Controller
             'questions.*.correct_choice' => 'required|integer|min:0',
             'lessons_id'=>'required',
         ],
-        // Arabic error messages for better user experience
         [
             'exam_title.required' => 'عنوان الاختبار مطلوب.',
             'exam_title.string' => 'يجب أن يكون عنوان الاختبار نصًا.',
@@ -119,42 +123,29 @@ class exam_Controller extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        // 2. Database Transaction
-        // We use a transaction to ensure that if any part of the save process fails,
-        // all changes are rolled back.
         DB::transaction(function () use ($request) {
-            // Create the main Exam record
             $exam = exams::create([
                 'title' => $request->input('exam_title'),
-               
                 'start_time' => $request->input('start_time'),
                 'end_time' => $request->input('end_time'),
-                // Using researcher_id as per the new schema
-                'researcher_id' => 1, // Use the authenticated user's ID
+                'researcher_id' => Auth::id(), // ✅ كان 1 ثابت
                 'lesson_id' => $request->input('lessons_id'),
             ]);
 
-            // Loop through the questions submitted
             foreach ($request->input('questions') as $questionData) {
-                // Create a new Question record linked to the Exam
                 $question = $exam->questions()->create([
-                    // Using question_text as per the new schema
                     'question_text' => $questionData['text'], 
                 ]);
 
-                // Loop through the choices for the current question
                 foreach ($questionData['choices'] as $choiceIndex => $choiceData) {
-                    // Create a new Choice record linked to the Question
                     $question->choices()->create([
-                        // Using choice_text as per the new schema
                         'choice_text' => $choiceData['text'], 
-                        'is_correct' => ($choiceIndex == $questionData['correct_choice']), // Check if this is the correct choice
+                        'is_correct' => ($choiceIndex == $questionData['correct_choice']),
                     ]);
                 }
             }
         });
 
-        // Redirect back with a success message
         return redirect()->route('exam.index')->with('success', 'تم إنشاء الاختبار بنجاح!');
     }
     /**
@@ -162,10 +153,12 @@ class exam_Controller extends Controller
      */
     public function show(exams $exam)
 {
-    // Eagerly load the questions and their choices
-    $exam->load('questions.choices');
+    // ✅ تحقق أن الاختبار يخص الباحث الحالي
+    if ($exam->researcher_id !== Auth::id()) {
+        abort(403);
+    }
 
-    // Pass the exam to the view
+    $exam->load('questions.choices');
     return view('researchers-dashboard.exam.show', compact('exam'));
 }
 
@@ -174,23 +167,25 @@ class exam_Controller extends Controller
      */
     public function edit(exams $exam)
     {
+        // ✅ تحقق أن الاختبار يخص الباحث الحالي
+        if ($exam->researcher_id !== Auth::id()) {
+            abort(403);
+        }
+
         try {
-            // Eager load all necessary relationships
             $exam->load([
                 'questions.choices',
                 'lesson',
                 'lesson.subject'
             ]);
     
-            // Get lessons for the dropdown with subject information
             $lessons = lessonss::with('subject')
+                ->where('researcher_id', Auth::id()) // ✅ فقط دروس الباحث الحالي
                 ->orderBy('title')
                 ->get();
     
-            // Define Arabic choice letters for the view
             $choiceLetters = ['أ', 'ب', 'ج', 'د', 'هـ', 'و', 'ز', 'ح'];
     
-            // Prepare additional data if needed
             $examStats = [
                 'total_questions' => $exam->questions->count(),
                 'total_choices' => $exam->questions->sum(function($question) {
@@ -207,10 +202,6 @@ class exam_Controller extends Controller
             ));
     
         } catch (\Exception $e) {
-            // Log the error and redirect back with message
-            
-            
-            
             return redirect()->route('exam.index')
                 ->with('error', 'حدث خطأ أثناء تحميل صفحة التعديل. يرجى المحاولة مرة أخرى.');
         }
@@ -222,6 +213,11 @@ class exam_Controller extends Controller
      */
     public function update(Request $request, exams $exam)
     {
+        // ✅ تحقق أن الاختبار يخص الباحث الحالي
+        if ($exam->researcher_id !== Auth::id()) {
+            abort(403);
+        }
+
         try {
             $validatedData = $request->validate([
                 'title' => 'required|string|max:255',
@@ -242,7 +238,6 @@ class exam_Controller extends Controller
             ]);
      
             DB::transaction(function () use ($validatedData, $exam) {
-                // Update exam details
                 $exam->update([
                     'title' => $validatedData['title'],
                     'lesson_id' => $validatedData['lesson_id'],
@@ -250,23 +245,20 @@ class exam_Controller extends Controller
                     'end_time' => $validatedData['end_time'],
                 ]);
     
-                // Handle questions and choices
                 $questions_to_keep_ids = [];
     
                 foreach ($validatedData['questions'] as $questionIndex => $questionData) {
-                    // Validate that correct_choice is within choices range
                     if ($questionData['correct_choice'] >= count($questionData['choices'])) {
                         throw new \Exception("الإجابة الصحيحة غير صالحة للسؤال " . ($questionIndex + 1));
                     }
     
-                    // Update existing or create a new question
                     $question = questions::updateOrCreate(
                         ['id' => $questionData['id'] ?? null],
                         [
                             'exam_id' => $exam->id,
                             'question_text' => $questionData['text'],
                             'type' => 'multiple_choice',
-                            'order' => $questionIndex, // Maintain question order
+                            'order' => $questionIndex,
                         ]
                     );
                     
@@ -276,25 +268,22 @@ class exam_Controller extends Controller
                     foreach ($questionData['choices'] as $choiceIndex => $choiceData) {
                         $isCorrect = (int) $questionData['correct_choice'] === (int) $choiceIndex;
     
-                        // Update existing or create a new choice
                         $choice = choices::updateOrCreate(
                             ['id' => $choiceData['id'] ?? null],
                             [
                                 'question_id' => $question->id,
                                 'choice_text' => $choiceData['text'],
                                 'is_correct' => $isCorrect,
-                                'order' => $choiceIndex, // Maintain choice order
+                                'order' => $choiceIndex,
                             ]
                         );
     
                         $choices_to_keep_ids[] = $choice->id;
                     }
     
-                    // Delete choices that were removed
                     $question->choices()->whereNotIn('id', $choices_to_keep_ids)->delete();
                 }
     
-                // Delete questions that were removed
                 $exam->questions()->whereNotIn('id', $questions_to_keep_ids)->delete();
             });
     
@@ -302,10 +291,8 @@ class exam_Controller extends Controller
                 ->with('success', 'تم تحديث الاختبار بنجاح!');
     
         } catch (\Illuminate\Validation\ValidationException $e) {
-            throw $e; // Re-throw validation exceptions
+            throw $e;
         } catch (\Exception $e) {
-
-            
             return back()
                 ->with('error', 'حدث خطأ أثناء تحديث الاختبار: ' . $e->getMessage())
                 ->withInput();
@@ -316,6 +303,11 @@ class exam_Controller extends Controller
      */
     public function destroy(exams $exam)
     {
+        // ✅ تحقق أن الاختبار يخص الباحث الحالي
+        if ($exam->researcher_id !== Auth::id()) {
+            abort(403);
+        }
+
         $exam->delete();
 
         return redirect()->route('exam.index')->with('success', 'تم حذف الدرس بنجاح.');
