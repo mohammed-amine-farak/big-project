@@ -13,6 +13,7 @@
         "laravel/fortify": "^1.35",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
+        "mll-lab/laravel-comment": "^1.5",
         "pion/laravel-chunk-upload": "^1.5"
     },
     "require-dev": {

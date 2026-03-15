@@ -13,6 +13,7 @@ use App\Http\Controllers\exam_skills_level_Controller;
 use App\Http\Controllers\exam_weeckly_Controller;
 use App\Http\Controllers\teacher_report;
 use App\Http\Controllers\admine_report_controller;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ReseacherDashboardController;
 use App\Http\Controllers\ResearcherProductionRequestController;
 use App\Http\Controllers\StudentPsychologyController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\teacher_lesson_controller;
 use App\Http\Controllers\teacher_lesson_report_controller;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use App\Http\Controllers\TeacherDashboardController;
+use App\Http\Controllers\VideoCreatorVideoController;
 use App\Http\Controllers\VideoCreatorProductionRequestController;
 use App\Models\content_blocks;
 use App\Models\rules;
@@ -263,7 +265,7 @@ Route::prefix('researcher')->name('researcher.')->group(function () {
         [ResearcherProductionRequestController::class, 'update'])
         ->name('production_requests.update');
 
-        
+
     Route::delete('/production-requests/{production_request}', 
         [ResearcherProductionRequestController::class, 'destroy'])
         ->name('production_requests.destroy');
@@ -389,8 +391,18 @@ Route::get('/production-requests/{production_request}/upload', [VideoCreatorProd
         [VideoCreatorProductionRequestController::class, 'reviseChunk'])
         ->name('video_creator.production_requests.revise.chunk');
 
+Route::get('video-creator/comments', [CommentController::class, 'videoCreatorComments'])->name('video_creator.comments.index');
+  Route::post('/comments/{comment}/reply', [CommentController::class, 'reply'])->name('comments.reply');
+    
+    // تعليم كمقروء
+    Route::put('/comments/{comment}/mark-read', [CommentController::class, 'markAsRead'])->name('comments.mark-read');
+    
+    // حذف تعليق
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
-   
+
+     Route::get('/videos', [VideoCreatorVideoController::class, 'index'])->name('video_creator.videos.index');
+    Route::get('/videos/{video}', [VideoCreatorVideoController::class, 'show'])->name('video_creator.videos.show');
 
 
 

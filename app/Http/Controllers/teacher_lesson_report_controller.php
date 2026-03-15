@@ -85,10 +85,10 @@ class teacher_lesson_report_controller extends Controller
     $teacher = User::with('teacherProfile')->find(Auth::id());
       $teacheSubject = $teacher->teacherProfile->subject;
       
-   $lessons = Lessonss::select('lessonss.*','researchers.subject')
+   $lessons = Lessonss::select('lessonss.*','researchers.*')
     ->join('researchers', 'lessonss.researcher_id', '=', 'researchers.id')
     ->where('researchers.subject', $teacher->subject)->get();
-    dd($lessons);
+    
     
     // Get classrooms
     $classrooms = classroom::all();

@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Traits\Commentable;
 class video extends Model
 {
+    use Commentable;
      protected $fillable = [
         'creator_id',
         'production_request_id',

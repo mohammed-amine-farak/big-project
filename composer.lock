@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9baf9a601b3070ba6996b3b5633b64d8",
+    "content-hash": "2f794911f9ac1055087054c32e312944",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2173,6 +2173,69 @@
                 }
             ],
             "time": "2024-12-08T08:18:47+00:00"
+        },
+        {
+            "name": "mll-lab/laravel-comment",
+            "version": "1.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mll-lab/laravel-comment.git",
+                "reference": "f2f6475849a3aa71aca10622cdfe9b8f58844522"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mll-lab/laravel-comment/zipball/f2f6475849a3aa71aca10622cdfe9b8f58844522",
+                "reference": "f2f6475849a3aa71aca10622cdfe9b8f58844522",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "~5.5.0 || ~5.6.0 || ~5.7.0 || ~5.8.0 || ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12",
+                "illuminate/support": "~5.5.0 || ~5.6.0 || ~5.7.0 || ~5.8.0 || ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12",
+                "php": "^7.1 || ^8"
+            },
+            "require-dev": {
+                "ergebnis/composer-normalize": "^2",
+                "fakerphp/faker": "^1.8",
+                "orchestra/testbench": "~3.5.0 || ~3.6.0 || ~3.7.0 || ~3.8.0 || ~3.9.0 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9 || ^10",
+                "phpunit/phpunit": "^7.5 || ^8.4 || ^9 || ^10 || ^11 || ^12"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "\\Actuallymab\\LaravelComment\\LaravelCommentServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Actuallymab\\LaravelComment\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mehmet Aydin Bahadir",
+                    "email": "mehmet.aydin.bahadir@gmail.com"
+                },
+                {
+                    "name": "Benedikt Franke",
+                    "email": "benedikt@franke.tech"
+                }
+            ],
+            "description": "Just another comment system for your awesome Laravel project.",
+            "homepage": "https://github.com/mll-lab/laravel-comment",
+            "keywords": [
+                "laravel-comment"
+            ],
+            "support": {
+                "issues": "https://github.com/mll-lab/laravel-comment/issues",
+                "source": "https://github.com/mll-lab/laravel-comment/tree/1.5.0"
+            },
+            "time": "2025-03-12T09:15:25+00:00"
         },
         {
             "name": "monolog/monolog",

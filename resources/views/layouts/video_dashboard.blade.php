@@ -279,45 +279,13 @@
                     </button>
                     <ul class="sidebar-submenu hidden space-y-1 pt-2 pr-4 mr-4 border-r-2 border-orange-500">
                         <!-- طلبات جديدة -->
-                        <li>
-                            <a href="" class="flex items-center justify-between py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-sm group">
-                                <span class="relative pr-2">
-                                    طلبات جديدة
-                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-orange-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                                </span>
-                                <span class="bg-orange-600 text-white text-xs px-2 py-0.5 rounded-full">5</span>
-                            </a>
-                        </li>
+                       
                         <!-- قيد التنفيذ -->
-                        <li>
-                            <a href="" class="flex items-center justify-between py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-sm group">
-                                <span class="relative pr-2">
-                                    قيد التنفيذ
-                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                                </span>
-                                <span class="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">3</span>
-                            </a>
-                        </li>
+                        
                         <!-- تحتاج تعديل -->
-                        <li>
-                            <a href="" class="flex items-center justify-between py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-sm group">
-                                <span class="relative pr-2">
-                                    تحتاج تعديل
-                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-yellow-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                                </span>
-                                <span class="bg-yellow-600 text-white text-xs px-2 py-0.5 rounded-full">2</span>
-                            </a>
-                        </li>
+                       
                         <!-- مكتملة -->
-                        <li>
-                            <a href="" class="flex items-center justify-between py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-sm group">
-                                <span class="relative pr-2">
-                                    مكتملة
-                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                                </span>
-                                <span class="bg-green-600 text-white text-xs px-2 py-0.5 rounded-full">12</span>
-                            </a>
-                        </li>
+                        
                     </ul>
                 </li>
 
@@ -325,16 +293,29 @@
                 <!-- 🎬 فيديوهاتي -->
                 <!-- ===================== -->
                 <li>
-                    <a href="" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
+                    <a href="{{route('video_creator.comments.index')}}" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
                         <div class="flex items-center space-x-3 space-x-reverse">
                             <div class="w-8 h-8 rounded-lg bg-red-900/20 flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                 </svg>
                             </div>
-                            <span class="text-base font-medium">🎬 فيديوهاتي</span>
+                            <span class="text-base font-medium">التعليقات</span>
                         </div>
-                        <span class="bg-red-600 text-white text-xs px-2 py-0.5 rounded-full">24</span>
+                       
+                    </a>
+                </li>
+                 <li>
+                    <a href="{{route('video_creator.videos.index')}}" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
+                        <div class="flex items-center space-x-3 space-x-reverse">
+                            <div class="w-8 h-8 rounded-lg bg-red-900/20 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <span class="text-base font-medium">فيديوهاتي</span>
+                        </div>
+                     
                     </a>
                 </li>
 
