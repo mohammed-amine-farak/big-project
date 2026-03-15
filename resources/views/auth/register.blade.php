@@ -70,7 +70,7 @@
                 <label class="block text-lg font-semibold text-gray-700 mb-3 text-right">
                     نوع الحساب
                 </label>
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-4 gap-4">
                     <!-- Teacher -->
                     <label class="cursor-pointer">
                         <input type="radio" name="user_type" value="teacher" class="sr-only peer" {{ old('user_type') == 'teacher' ? 'checked' : '' }}>
@@ -101,6 +101,17 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                             <span class="text-sm font-medium">مدير</span>
+                        </div>
+                    </label>
+
+                    <!-- Video Creator -->
+                    <label class="cursor-pointer">
+                        <input type="radio" name="user_type" value="video_creator" class="sr-only peer" {{ old('user_type') == 'video_creator' ? 'checked' : '' }}>
+                        <div class="border-2 border-gray-300 rounded-xl p-4 text-center peer-checked:border-orange-600 peer-checked:bg-orange-50 transition-all">
+                            <svg class="w-8 h-8 mx-auto text-orange-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                            <span class="text-sm font-medium">منشئ فيديو</span>
                         </div>
                     </label>
                 </div>
@@ -173,7 +184,7 @@
                         <input type="text" 
                                name="school_level" 
                                id="school_level" 
-                               value=""
+                               value="{{ old('school_level') }}"
                                class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-base text-right"
                                placeholder="مثال: المرحلة الثانوية">
                     </div>
@@ -185,7 +196,7 @@
                         <input type="text" 
                                name="school" 
                                id="school" 
-                               value=""
+                               value="{{ old('school') }}"
                                class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-base text-right"
                                placeholder="اسم المدرسة">
                     </div>
@@ -197,7 +208,7 @@
                         <input type="text" 
                                name="subject" 
                                id="subject" 
-                               value=""
+                               value="{{ old('subject') }}"
                                class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-base text-right"
                                placeholder="مادة التخصص">
                     </div>
@@ -216,7 +227,7 @@
                         <input type="text" 
                                name="field_of_study" 
                                id="field_of_study" 
-                               value=""
+                               value="{{ old('field_of_study') }}"
                                class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500 text-base text-right"
                                placeholder="مثال: الرياضيات">
                     </div>
@@ -228,7 +239,7 @@
                         <input type="text" 
                                name="institution" 
                                id="institution" 
-                               value=""
+                               value="{{ old('institution') }}"
                                class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500 text-base text-right"
                                placeholder="اسم الجامعة أو المؤسسة">
                     </div>
@@ -242,7 +253,7 @@
                         <input type="text" 
                                name="country" 
                                id="country" 
-                               value=""
+                               value="{{ old('country') }}"
                                class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500 text-base text-right"
                                placeholder="الدولة">
                     </div>
@@ -254,7 +265,7 @@
                         <input type="text" 
                                name="city" 
                                id="city" 
-                               value=""
+                               value="{{ old('city') }}"
                                class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500 text-base text-right"
                                placeholder="المدينة">
                     </div>
@@ -286,6 +297,108 @@
                 </div>
             </div>
 
+            <!-- Video Creator Specific Fields -->
+            <div id="video-creator-fields" class="space-y-6 hidden">
+                <h3 class="text-xl font-bold text-gray-800 border-b pb-2">معلومات منشئ الفيديو</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="specialization" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
+                            التخصص <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                               name="specialization" 
+                               id="specialization" 
+                               value="{{ old('specialization') }}"
+                               class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-base text-right"
+                               placeholder="مثال: رياضيات، فيزياء، كيمياء"
+                               data-required="video_creator">
+                        <p class="text-sm text-gray-500 mt-1">التخصص الذي ستنتج فيه الفيديوهات</p>
+                    </div>
+                    
+                    <div>
+                        <label for="preferred_software" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
+                            البرامج المفضلة
+                        </label>
+                        <input type="text" 
+                               name="preferred_software" 
+                               id="preferred_software" 
+                               value="{{ old('preferred_software') }}"
+                               class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-base text-right"
+                               placeholder="مثال: Adobe Premiere, After Effects, DaVinci Resolve">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-lg font-semibold text-gray-700 mb-3 text-right">
+                        المهارات <span class="text-red-500">*</span>
+                    </label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-orange-50 transition-colors">
+                            <input type="checkbox" name="skills[]" value="مونتاج" {{ in_array('مونتاج', old('skills', [])) ? 'checked' : '' }} class="rounded text-orange-600 focus:ring-orange-500">
+                            <span class="text-sm">🎬 مونتاج</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-orange-50 transition-colors">
+                            <input type="checkbox" name="skills[]" value="رسوم متحركة" {{ in_array('رسوم متحركة', old('skills', [])) ? 'checked' : '' }} class="rounded text-orange-600 focus:ring-orange-500">
+                            <span class="text-sm">✨ رسوم متحركة</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-orange-50 transition-colors">
+                            <input type="checkbox" name="skills[]" value="تعليق صوتي" {{ in_array('تعليق صوتي', old('skills', [])) ? 'checked' : '' }} class="rounded text-orange-600 focus:ring-orange-500">
+                            <span class="text-sm">🎙️ تعليق صوتي</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-orange-50 transition-colors">
+                            <input type="checkbox" name="skills[]" value="مؤثرات بصرية" {{ in_array('مؤثرات بصرية', old('skills', [])) ? 'checked' : '' }} class="rounded text-orange-600 focus:ring-orange-500">
+                            <span class="text-sm">✨ مؤثرات بصرية</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-orange-50 transition-colors">
+                            <input type="checkbox" name="skills[]" value="كتابة سيناريو" {{ in_array('كتابة سيناريو', old('skills', [])) ? 'checked' : '' }} class="rounded text-orange-600 focus:ring-orange-500">
+                            <span class="text-sm">📝 كتابة سيناريو</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-orange-50 transition-colors">
+                            <input type="checkbox" name="skills[]" value="تصوير" {{ in_array('تصوير', old('skills', [])) ? 'checked' : '' }} class="rounded text-orange-600 focus:ring-orange-500">
+                            <span class="text-sm">📹 تصوير</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-orange-50 transition-colors">
+                            <input type="checkbox" name="skills[]" value="إضاءة" {{ in_array('إضاءة', old('skills', [])) ? 'checked' : '' }} class="rounded text-orange-600 focus:ring-orange-500">
+                            <span class="text-sm">💡 إضاءة</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-orange-50 transition-colors">
+                            <input type="checkbox" name="skills[]" value="تلوين" {{ in_array('تلوين', old('skills', [])) ? 'checked' : '' }} class="rounded text-orange-600 focus:ring-orange-500">
+                            <span class="text-sm">🎨 تلوين</span>
+                        </label>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">اختر المهارات التي تجيدها (يمكن اختيار أكثر من واحدة)</p>
+                </div>
+
+                <div>
+                    <label for="portfolio_url" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
+                        رابط معرض الأعمال (اختياري)
+                    </label>
+                    <input type="url" 
+                           name="portfolio_url" 
+                           id="portfolio_url" 
+                           value="{{ old('portfolio_url') }}"
+                           class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-base text-right"
+                           placeholder="https://youtube.com/... أو https://portfolio.com/...">
+                </div>
+
+                <div class="bg-orange-50 border border-orange-200 rounded-xl p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0">
+                            <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-orange-800 mb-1">ملاحظة هامة</h4>
+                            <p class="text-sm text-orange-700">
+                                سيتم مراجعة طلب التسجيل الخاص بك من قبل الإدارة قبل تفعيل الحساب. سيتم إشعارك عبر البريد الإلكتروني عند التفعيل.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Register Button -->
             <div class="pt-4">
                 <button type="submit"
@@ -299,7 +412,7 @@
         <div class="mt-8 text-center text-base">
             <p class="text-gray-700">
                 لديك حساب بالفعل؟
-                <a href="" class="font-medium text-blue-600 hover:text-blue-500 hover:underline transition-colors">
+                <a href="{{ route('login') }}" class="font-medium text-blue-600 hover:text-blue-500 hover:underline transition-colors">
                     تسجيل الدخول
                 </a>
             </p>
@@ -312,17 +425,23 @@
             const userTypeRadios = document.querySelectorAll('input[name="user_type"]');
             const teacherFields = document.getElementById('teacher-fields');
             const researcherFields = document.getElementById('researcher-fields');
+            const videoCreatorFields = document.getElementById('video-creator-fields');
 
             function toggleFields() {
                 const selectedType = document.querySelector('input[name="user_type"]:checked')?.value;
                 
+                // Hide all fields first
                 teacherFields.classList.add('hidden');
                 researcherFields.classList.add('hidden');
+                videoCreatorFields.classList.add('hidden');
                 
+                // Show appropriate fields
                 if (selectedType === 'teacher') {
                     teacherFields.classList.remove('hidden');
                 } else if (selectedType === 'researcher') {
                     researcherFields.classList.remove('hidden');
+                } else if (selectedType === 'video_creator') {
+                    videoCreatorFields.classList.remove('hidden');
                 }
             }
 
@@ -332,6 +451,19 @@
 
             // Initial toggle based on old value
             toggleFields();
+
+            // Update validation for mobile devices
+            const videoCreatorInputs = videoCreatorFields.querySelectorAll('input[data-required="video_creator"]');
+            videoCreatorInputs.forEach(input => {
+                input.addEventListener('invalid', function(e) {
+                    if (!this.value && document.querySelector('input[name="user_type"]:checked')?.value === 'video_creator') {
+                        e.target.setCustomValidity('هذا الحقل مطلوب');
+                    }
+                });
+                input.addEventListener('input', function(e) {
+                    e.target.setCustomValidity('');
+                });
+            });
         });
     </script>
 </body>

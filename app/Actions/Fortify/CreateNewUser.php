@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\Teacher;
 use App\Models\Researcher;
 use App\Models\Researchers;
+use App\Models\video_creator;
+use App\Models\VideoCreator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -40,6 +42,15 @@ class CreateNewUser implements CreatesNewUsers
             $rules['city'] = ['nullable', 'string'];
             $rules['degree'] = ['nullable', 'in:Master,PhD'];
             $rules['certificate'] = ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'];
+        }
+
+        // ✅ قواعد التحقق لمنشئ الفيديو
+        if ($input['user_type'] === 'video_creator') {
+            $rules['specialization'] = ['required', 'string', 'max:255'];
+            $rules['skills'] = ['required', 'array', 'min:1'];
+            $rules['skills.*'] = ['string'];
+            $rules['preferred_software'] = ['nullable', 'string', 'max:255'];
+            $rules['portfolio_url'] = ['nullable', 'url', 'max:255'];
         }
 
         // التحقق من صحة البيانات
@@ -82,17 +93,28 @@ class CreateNewUser implements CreatesNewUsers
                 ]);
                 break;
 
-            // يمكن إضافة أنواع أخرى لاحقاً
+            // ✅ إنشاء منشئ الفيديو
+            case 'video_creator':
+                video_creator::create([
+                    'id' => $user->id,
+                    'specialization' => $input['specialization'],
+                    'skills' => json_encode($input['skills']), // تحويل المصفوفة إلى JSON
+                    'preferred_software' => $input['preferred_software'] ?? null,
+                    'portfolio_url' => $input['portfolio_url'] ?? null,
+                    'completed_videos' => 0,
+                    'average_rating' => 0,
+                    'total_ratings' => 0,
+                    'total_rating_sum' => 0,
+                    'status' => 'active',
+                ]);
+                break;
+
             case 'parent':
                 // Parent::create([...]);
                 break;
 
             case 'student':
                 // Student::create([...]);
-                break;
-
-            case 'video_creator':
-                // VideoCreator::create([...]);
                 break;
 
             case 'admin':

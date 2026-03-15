@@ -21,7 +21,7 @@ class VideoCreatorVideoController extends Controller
      */
     public function show(Video $video)
     {
-        $videoCreator = 63;
+        $videoCreator = Auth::user()->id;
         
         // التحقق من أن الفيديو يخص هذا المنشئ
         if ($video->creator_id !== $videoCreator) {
@@ -47,7 +47,7 @@ class VideoCreatorVideoController extends Controller
     }
     public function index(Request $request)
     {
-        $videoCreator = 63;
+        $videoCreator = Auth::user()->id;
         
         if (!$videoCreator) {
             return redirect()->route('video_creator.dashboard')

@@ -14,7 +14,7 @@ class CommentController extends Controller
      */
     public function videoCreatorComments(Request $request)
     {
-        $videoCreator = 63;
+        $videoCreator = Auth::user()->id;
         
       
 
@@ -64,7 +64,7 @@ class CommentController extends Controller
     public function videoComments(Video $video)
     {
         // التحقق من أن منشئ الفيديو يمكنه رؤية هذه التعليقات
-        $videoCreator = 63;
+        $videoCreator = Auth::user()->id;
         
         if ($video->creator_id !== $videoCreator) {
             abort(403, 'غير مصرح لك بمشاهدة هذه التعليقات');
@@ -164,7 +164,7 @@ class CommentController extends Controller
     public function destroy(Comment $comment)
     {
         // التحقق من الصلاحية (صاحب التعليق أو منشئ الفيديو)
-        $videoCreator = 63;
+        $videoCreator = auth::user()->id;
         $video = Video::find($comment->commentable_id);
         
         if ($comment->user_id !== Auth::id() && 

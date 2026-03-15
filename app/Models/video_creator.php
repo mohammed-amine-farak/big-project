@@ -8,7 +8,18 @@ class video_creator extends Model
 {
     public $incrementing = false; // لأن المفتاح ليس auto-increment هنا
     protected $primaryKey = 'id';
-
+  protected $fillable = [
+        'id',
+        'specialization',
+        'skills',
+        'portfolio_url',
+        'preferred_software',
+        'completed_videos',
+        'average_rating',
+        'total_ratings',
+        'total_rating_sum',
+        'status',
+    ];
 
     public function productionRequests()
     {

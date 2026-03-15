@@ -22,6 +22,7 @@ use App\Http\Controllers\teacher_lesson_controller;
 use App\Http\Controllers\teacher_lesson_report_controller;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use App\Http\Controllers\TeacherDashboardController;
+use App\Http\Controllers\VideoCreatorDashboardControlle;
 use App\Http\Controllers\VideoCreatorVideoController;
 use App\Http\Controllers\VideoCreatorProductionRequestController;
 use App\Models\content_blocks;
@@ -372,7 +373,7 @@ Route::get('/teacher/dashboard', [TeacherDashboardController::class, 'index'])->
 //video_creator
 
 
-
+Route::middleware(['user.type:video_creator'])->group(function () {
 
 Route::get('/video_creator/production_request', [VideoCreatorProductionRequestController::class, 'index'])->name('video_creator.production_request');
 Route::get('/video_creator/production_request/show/{productionRequest}', [VideoCreatorProductionRequestController::class,'show'])->name('video_creator.production_request.show');
@@ -403,9 +404,11 @@ Route::get('video-creator/comments', [CommentController::class, 'videoCreatorCom
 
      Route::get('/videos', [VideoCreatorVideoController::class, 'index'])->name('video_creator.videos.index');
     Route::get('/videos/{video}', [VideoCreatorVideoController::class, 'show'])->name('video_creator.videos.show');
+Route::get('/video_creator/dashboard', [VideoCreatorDashboardControlle::class, 'index'])->name('video_creator.dashboard');
 
 
 
+});
 
 
 

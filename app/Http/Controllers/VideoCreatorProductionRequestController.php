@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\production_request;
 use App\Models\Researchers;
 use App\Models\video;
+
+use Illuminate\Support\Facades\Auth ;
 use Illuminate\Support\Facades\Storage;
 use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
@@ -15,7 +17,7 @@ class VideoCreatorProductionRequestController extends Controller
 {
          public function index(Request $request)
     {
-        $videoCreator = 1;
+        $videoCreator = Auth::user()->id;
         
         // استعلام واحد لكل الطلبات
         $query = production_request::where('video_creator_id', $videoCreator)
@@ -70,7 +72,7 @@ class VideoCreatorProductionRequestController extends Controller
     } 
     
  public function show(production_request $productionRequest){
-    if ($productionRequest->video_creator_id !== 1) {
+    if ($productionRequest->video_creator_id !== Auth::user()->id) {
         abort(403, 'غير مصرح لك بعرض هذا الطلب');
     }
           $productionRequest::with(['researcher','researcher.user','videoCreator','videoCreator.user','lesson','rule','contentBlock','videos'])->get();
@@ -84,7 +86,7 @@ class VideoCreatorProductionRequestController extends Controller
      public function accept(production_request $production_request)
     {
         // التحقق من أن الطلب يخص منشئ الفيديو الحالي
-        if ($production_request->video_creator_id !== 1) {
+        if ($production_request->video_creator_id !== Auth::user()->id) {
             abort(403, 'غير مصرح لك بقبول هذا الطلب');
         }
 

@@ -394,7 +394,7 @@
                 </div>
                 <h3 class="vc-empty-title">لا توجد فيديوهات</h3>
                 <p class="vc-empty-sub">لم تقم بإنتاج أي فيديو بعد</p>
-                <a href="{{ route('video_creator.production_requests.index') }}" class="vc-btn-primary">
+                <a href="{{ route('video_creator.production_request') }}" class="vc-btn-primary">
                     <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
