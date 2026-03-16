@@ -25,6 +25,7 @@ use App\Http\Controllers\TeacherDashboardController;
 use App\Http\Controllers\VideoCreatorDashboardControlle;
 use App\Http\Controllers\VideoCreatorVideoController;
 use App\Http\Controllers\VideoCreatorProductionRequestController;
+use App\Http\Controllers\VideoCreatorProfileController;
 use App\Models\content_blocks;
 use App\Models\rules;
 use Illuminate\Support\Facades\Request;
@@ -407,6 +408,25 @@ Route::get('video-creator/comments', [CommentController::class, 'videoCreatorCom
 Route::get('/video_creator/dashboard', [VideoCreatorDashboardControlle::class, 'index'])->name('video_creator.dashboard');
 
 
+
+ Route::get('/video_creator/profile', [VideoCreatorProfileController::class, 'index'])
+        ->name('video_creator.profile.index');
+    
+    // عرض صفحة تعديل الملف الشخصي
+    Route::get('/video_creator/profile/edit', [VideoCreatorProfileController::class, 'edit'])
+        ->name('video_creator.profile.edit');
+    
+    // تحديث الملف الشخصي
+    Route::put('/video_creator/profile', [VideoCreatorProfileController::class, 'update'])
+        ->name('video_creator.profile.update');
+    
+    // تحديث حالة التوفر (متاح/مشغول)
+    Route::post('/video_creator/profile/status', [VideoCreatorProfileController::class, 'updateStatus'])
+        ->name('video_creator.profile.update-status');
+    
+    // عرض معرض الأعمال (اختياري)
+    Route::get('/video_creator/portfolio', [VideoCreatorProfileController::class, 'portfolio'])
+        ->name('video_creator.profile.portfolio');
 
 });
 

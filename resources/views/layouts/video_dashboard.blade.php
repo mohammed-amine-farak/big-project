@@ -192,12 +192,12 @@
                 <div class="flex items-center">
                     <div class="ml-3 relative">
                         <div class="rounded-full w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-md">
-                            <span class="text-white font-bold text-lg">م</span>
+                            <span class="text-white font-bold text-lg">{{ substr(Auth::user()->name, 0, 1) }}</span>
                         </div>
                         <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-800"></span>
                     </div>
                     <div class="text-right">
-                        <p class="text-white font-medium">محمد الأنصاري</p>
+                        <p class="text-white font-medium">{{ Auth::user()->name }}</p>
                         <p class="text-gray-400 text-sm">منشئ فيديو</p>
                     </div>
                 </div>
@@ -209,15 +209,15 @@
                     <div class="space-y-3 text-right">
                         <div class="flex justify-between items-center">
                             <span class="font-semibold text-gray-300">الاسم:</span>
-                            <span class="text-gray-100">محمد الأنصاري</span>
+                            <span class="text-gray-100">{{ Auth::user()->name }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="font-semibold text-gray-300">البريد الإلكتروني:</span>
-                            <span class="text-gray-400 text-xs truncate max-w-[120px]">mohamed.video@example.com</span>
+                            <span class="text-gray-400 text-xs truncate max-w-[120px]">{{ Auth::user()->email }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="font-semibold text-gray-300">تاريخ التسجيل:</span>
-                            <span class="text-gray-100">01 يناير 2024</span>
+                            <span class="text-gray-100">{{ Auth::user()->created_at->format('d M Y') }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="font-semibold text-gray-300">الدور:</span>
@@ -225,15 +225,15 @@
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="font-semibold text-gray-300">التخصص:</span>
-                            <span class="text-yellow-400 font-medium">رياضيات</span>
+                            <span class="text-yellow-400 font-medium">{{ Auth::user()->video_creators->specialization ?? 'غير محدد' }}</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="font-semibold text-gray-300">الفيديوهات المنتجة:</span>
-                            <span class="text-green-400 font-medium">24 فيديو</span>
+                            <span class="text-green-400 font-medium">{{ Auth::user()->video_creators->completed_videos ?? 0 }} فيديو</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="font-semibold text-gray-300">التقييم:</span>
-                            <span class="text-yellow-400 font-medium">4.8 ⭐</span>
+                            <span class="text-yellow-400 font-medium">{{ number_format(Auth::user()->video_creators->average_rating ?? 0, 1) }} ⭐</span>
                         </div>
                     </div>
                 </div>
@@ -338,29 +338,15 @@
                     </button>
                     <ul class="sidebar-submenu hidden space-y-1 pt-2 pr-4 mr-4 border-r-2 border-pink-500">
                         <li>
-                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm group">
+                            <a href="{{route('video_creator.profile.index')}}" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm group">
                                 <span class="relative pr-2">
                                     الملف الشخصي
                                     <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-pink-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
                                 </span>
                             </a>
                         </li>
-                        <li>
-                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm group">
-                                <span class="relative pr-2">
-                                    المهارات
-                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-pink-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm group">
-                                <span class="relative pr-2">
-                                    التنبيهات
-                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-pink-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                                </span>
-                            </a>
-                        </li>
+                       
+                       
                     </ul>
                 </li>
             </ul>

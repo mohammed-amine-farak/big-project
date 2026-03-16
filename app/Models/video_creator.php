@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class video_creator extends Model
 {
+    protected $table = 'video_creators';
     public $incrementing = false; // لأن المفتاح ليس auto-increment هنا
     protected $primaryKey = 'id';
   protected $fillable = [
@@ -19,6 +20,8 @@ class video_creator extends Model
         'total_ratings',
         'total_rating_sum',
         'status',
+        'profile_image',
+        'bio'
     ];
 
     public function productionRequests()
@@ -32,4 +35,19 @@ class video_creator extends Model
     public function video(){
          return $this->hasMany(video::class);
     }
+    protected $casts = [
+        'skills' => 'array',
+        'completed_videos' => 'integer',
+        'average_rating' => 'float',
+        'total_ratings' => 'integer',
+        'total_rating_sum' => 'integer',
+    ];
+
+    protected $attributes = [
+        'completed_videos' => 0,
+        'average_rating' => 0,
+        'total_ratings' => 0,
+        'total_rating_sum' => 0,
+        'status' => 'active',
+    ];
 }
