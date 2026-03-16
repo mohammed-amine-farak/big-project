@@ -85,8 +85,8 @@
                     <select name="researcher_id" class="w-full px-3 py-2 border rounded-lg text-sm">
                         <option value="">الكل</option>
                         @foreach($researchers as $researcher)
-                            <option value="{{ $researcher->id }}" {{ request('researcher_id') == $researcher->id ? 'selected' : '' }}>
-                                {{ $researcher->name }}
+                            <option value="{{ $researcher->user->id }}" {{ request('researcher_id') == $researcher->user->id ? 'selected' : '' }}>
+                                {{ $researcher->user->name }}
                             </option>
                         @endforeach
                     </select>
@@ -147,23 +147,26 @@
                             <td class="px-4 py-3">{{ $request->lesson->title }}</td>
                             <td class="px-4 py-3 text-center">{{ $request->deadline ? $request->deadline->format('Y-m-d') : '-' }}</td>
                             <td class="px-4 py-3 text-center">
-                                @php
-                                    $statusColors = [
-                                        'pending' => 'bg-orange-100 text-orange-800',
-                                        'accepted' => 'bg-blue-100 text-blue-800',
-                                        'revision_required' => 'bg-yellow-100 text-yellow-800',
-                                        'approved' => 'bg-green-100 text-green-800',
-                                        'rejected' => 'bg-red-100 text-red-800'
-                                    ];
-                                    $statusTexts = [
-                                        'pending' => 'جديدة',
-                                        'accepted' => 'قيد التنفيذ',
-                                        'revision_required' => 'تحتاج تعديل',
-                                        'approved' => 'مكتملة',
-                                        'rejected' => 'مرفوضة'
-                                    ];
-                                @endphp
-                                <span class="px-2 py-1 rounded-full text-xs {{ $statusColors[$request->status] }}">
+                               @php
+    $statusColors = [
+        'pending' => 'bg-orange-100 text-orange-800',
+        'accepted' => 'bg-blue-100 text-blue-800',
+        'revision_required' => 'bg-yellow-100 text-yellow-800',
+        'approved' => 'bg-green-100 text-green-800',
+        'rejected' => 'bg-red-100 text-red-800',
+        'submitted' => 'bg-purple-100 text-purple-800'  // لون مختلف للإرسال
+    ];
+    
+    $statusTexts = [
+        'pending' => 'في الانتظار',           // "جديدة" أو "في الانتظار"
+        'accepted' => 'قيد التنفيذ',          // ✅
+        'revision_required' => 'يحتاج تعديل',  // أو "تحتاج تعديل"
+        'approved' => 'مكتمل',                  // أو "مكتملة"
+        'rejected' => 'مرفوض',                  // ✅
+        'submitted' => 'تم الإرسال'             // أو "بإنتظار المراجعة"
+    ];
+@endphp
+ <span class="px-2 py-1 rounded-full text-xs {{ $statusColors[$request->status] }}">
                                     {{ $statusTexts[$request->status] }}
                                 </span>
                             </td>

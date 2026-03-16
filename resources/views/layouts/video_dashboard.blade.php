@@ -264,31 +264,18 @@
                 <!-- 📥 طلبات الإنتاج -->
                 <!-- ===================== -->
                 <li>
-                    <button class="sidebar-toggle-btn flex items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
-                        <svg class="arrow-icon h-5 w-5 text-gray-400 transition-transform duration-300 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
+                    <a href="{{route('video_creator.production_request')}}" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
                         <div class="flex items-center space-x-3 space-x-reverse">
-                            <div class="w-8 h-8 rounded-lg bg-orange-900/20 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                            <div class="w-8 h-8 rounded-lg bg-red-900/20 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                 </svg>
                             </div>
                             <span class="text-base font-medium">📥 طلبات الإنتاج</span>
                         </div>
-                    </button>
-                    <ul class="sidebar-submenu hidden space-y-1 pt-2 pr-4 mr-4 border-r-2 border-orange-500">
-                        <!-- طلبات جديدة -->
                        
-                        <!-- قيد التنفيذ -->
-                        
-                        <!-- تحتاج تعديل -->
-                       
-                        <!-- مكتملة -->
-                        
-                    </ul>
+                    </a>
                 </li>
-
                 <!-- ===================== -->
                 <!-- 🎬 فيديوهاتي -->
                 <!-- ===================== -->

@@ -544,7 +544,7 @@
                 </span>
               </div>
             </div>
-            <a href="{{ route('video_creator.production_requests.show', $request) }}" class="db-req-link">
+            <a href="{{ route('video_creator.production_request.show', $request) }}" class="db-req-link">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
             </a>
           </div>

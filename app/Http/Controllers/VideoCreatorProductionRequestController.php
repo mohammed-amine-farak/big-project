@@ -119,7 +119,7 @@ class VideoCreatorProductionRequestController extends Controller
      public function uploadForm(production_request $production_request)
     {
         // التحقق من الصلاحية
-        if ($production_request->video_creator_id !== 1) {
+        if ($production_request->video_creator_id !== Auth::user()->id) {
             abort(403, 'غير مصرح لك برفع فيديو لهذا الطلب');
         }
 
@@ -139,7 +139,7 @@ class VideoCreatorProductionRequestController extends Controller
     try {
 
         // التحقق من الصلاحية
-        if ($production_request->video_creator_id !== 1) {
+        if ($production_request->video_creator_id !== Auth::user()->id) {
             return response()->json(['error' => 'غير مصرح'], 403);
         }
 
@@ -248,7 +248,7 @@ protected function assembleChunks($tempDir, $totalChunks, $fileName, $fileSize, 
 
     // حفظ الفيديو في قاعدة البيانات
     $video = Video::create([
-        'creator_id' => 1,
+        'creator_id' => Auth::user()->id,
         'production_request_id' => $production_request->id,
         'title' => $request->input('title'),
         'description' => $request->input('description'),
@@ -274,7 +274,7 @@ protected function assembleChunks($tempDir, $totalChunks, $fileName, $fileSize, 
         public function reviseForm(production_request $production_request)
     {
         // التحقق من الصلاحية
-        if ($production_request->video_creator_id !== 1) {
+        if ($production_request->video_creator_id !== Auth::user()->id) {
             abort(403, 'غير مصرح لك بتعديل هذا الطلب');
         }
 
@@ -296,7 +296,7 @@ protected function assembleChunks($tempDir, $totalChunks, $fileName, $fileSize, 
      */
     public function reviseChunk(Request $request, production_request $production_request)
 {
-    if ($production_request->video_creator_id !== 1) {
+    if ($production_request->video_creator_id !== Auth::user()->id) {
         return response()->json(['error' => 'غير مصرح لك برفع فيديو لهذا الطلب'], 403);
     }
 
@@ -398,7 +398,7 @@ protected function assembleChunks($tempDir, $totalChunks, $fileName, $fileSize, 
         rmdir(storage_path('app/public/' . $tempDir));
 
         $video = Video::create([
-            'creator_id' => 1,
+            'creator_id' => Auth::user()->id,
             'production_request_id' => $production_request->id,
             'title' => $production_request->title . ' (نسخة معدلة)',
             'description' => $revisionNotes,
