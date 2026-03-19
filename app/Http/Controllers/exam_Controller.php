@@ -131,7 +131,7 @@ class exam_Controller extends Controller
                 'researcher_id' => Auth::id(), // ✅ كان 1 ثابت
                 'lesson_id' => $request->input('lessons_id'),
             ]);
-
+              
             foreach ($request->input('questions') as $questionData) {
                 $question = $exam->questions()->create([
                     'question_text' => $questionData['text'], 

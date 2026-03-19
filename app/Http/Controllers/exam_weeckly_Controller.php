@@ -74,6 +74,7 @@ class exam_weeckly_Controller extends Controller
             'title' => 'required|string|max:255',
             'subject_id' => 'required|exists:subjects,id',
             'classroom_id' => 'required|exists:classrooms,id',
+            
             'file_path' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
         ]);
 

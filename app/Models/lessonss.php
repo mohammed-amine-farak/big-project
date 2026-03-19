@@ -48,6 +48,10 @@ class lessonss extends Model
         'completed_at' => 'datetime',
     ];
 
+     public function examWeeckly()
+    {
+        return $this->hasOne(exam_weeckly::class, 'lesson_id');
+    }
     // You might also want to cast summary_points if it's JSON
   
     // Fillable fields to allow mass-assignment
@@ -59,6 +63,75 @@ class lessonss extends Model
         'completed_at',
 
     ];
+
+    // =========================================================
+    // 🔥 العلاقات الجديدة لتتبع التقدم
+    // =========================================================
+
+    /**
+     * العلاقة مع تقدم الطلاب في هذا الدرس
+     * Lesson has many student progress records
+     */
+    public function studentProgress()
+    {
+        return $this->hasMany(StudentLessonProgress::class, 'lesson_id');
+    }
+
+    /**
+     * العلاقة مع تقدم الطلاب في كتل المحتوى لهذا الدرس
+     * Lesson has many content progress records (through student progress)
+     */
+    public function studentContentProgress()
+    {
+        return $this->hasMany(StudentContentProgress::class, 'lesson_id');
+    }
+
+    /**
+     * الحصول على تقدم طالب معين في هذا الدرس
+     */
+    public function getStudentProgress($studentId)
+    {
+        return $this->studentProgress()
+            ->where('student_id', $studentId)
+            ->first();
+    }
+
+    /**
+     * حساب إجمالي كتل المحتوى في هذا الدرس
+     */
+    public function getTotalContentBlocksAttribute()
+    {
+        $total = 0;
+        foreach ($this->rules as $rule) {
+            $total += $rule->contentBlocks()->count();
+        }
+        return $total;
+    }
+
+    /**
+     * حساب كتل المحتوى المكتملة لطالب معين
+     */
+    public function getCompletedContentBlocksForStudent($studentId)
+    {
+        return StudentContentProgress::where('student_id', $studentId)
+            ->where('lesson_id', $this->id)
+            ->where('completed', true)
+            ->count();
+    }
+
+    /**
+     * حساب نسبة تقدم طالب معين في هذا الدرس
+     */
+    public function getProgressPercentageForStudent($studentId)
+    {
+        $total = $this->total_content_blocks;
+        if ($total == 0) return 0;
+        
+        $completed = $this->getCompletedContentBlocksForStudent($studentId);
+        return round(($completed / $total) * 100);
+    }
+
+
 
 
 }

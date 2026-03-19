@@ -16,6 +16,7 @@ use App\Http\Controllers\admine_report_controller;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ReseacherDashboardController;
 use App\Http\Controllers\ResearcherProductionRequestController;
+use App\Http\Controllers\StudentLessonController;
 use App\Http\Controllers\StudentPsychologyController;
 use App\Http\Controllers\teacher_admine_reports_view_Controller;
 use App\Http\Controllers\teacher_lesson_controller;
@@ -433,6 +434,15 @@ Route::get('/video_creator/dashboard', [VideoCreatorDashboardControlle::class, '
 
 
 
+
+
+Route::get('student/lesson', [StudentLessonController::class, 'index'])
+        ->name('student.lesson.index');
+
+Route::get('/student/lessons/{lesson}', [StudentLessonController::class, 'show'])->name('student.lessons.show');
+Route::post('/lessons/{lesson}/mark-viewed', [StudentLessonController::class, 'markLinkAsViewed'])
+    ->name('student.lessons.mark-viewed');
+
 /*
 Route::get('about_us', function () {
     return view('about.about');
@@ -449,9 +459,7 @@ Route::get('team.create', function () {
 })->name('team.create');
 //
 
-Route::get('student_dashboard', function () {
-    return view('student_dashboard.index');
-})->name('student_dashboard.index');
+
 
 Route::get('login', function () {
     return view('auth.login');

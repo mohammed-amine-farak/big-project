@@ -10,11 +10,10 @@ class exam_weeckly extends Model
     protected $fillable = [
         'researcher_id',
         'title',
-        
         'file_path',
         'subject_id',
         'classroom_id',
-        
+        'lesson_id'
     ];
 
     public function classroom()
@@ -36,4 +35,10 @@ class exam_weeckly extends Model
         return $this->hasMany(exams_weekly_skills::class, 'exams_weekly_id');
     }
 
+    public function exam_schol_weeckly_report(){
+        return $this->hasMany(exam_schol_weeckly_report::class, 'exam_weecklies_id');
+    }
+    public function lesson(){
+        return $this->belongsTo(lessonss::class, 'lesson_id');
+    }
 }
