@@ -395,14 +395,7 @@ Route::get('/production-requests/{production_request}/upload', [VideoCreatorProd
         ->name('video_creator.production_requests.revise.chunk');
 
 Route::get('video-creator/comments', [CommentController::class, 'videoCreatorComments'])->name('video_creator.comments.index');
-  Route::post('/comments/{comment}/reply', [CommentController::class, 'reply'])->name('comments.reply');
-    
-    // تعليم كمقروء
-    Route::put('/comments/{comment}/mark-read', [CommentController::class, 'markAsRead'])->name('comments.mark-read');
-    
-    // حذف تعليق
-    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
-
+  
 
      Route::get('/videos', [VideoCreatorVideoController::class, 'index'])->name('video_creator.videos.index');
     Route::get('/videos/{video}', [VideoCreatorVideoController::class, 'show'])->name('video_creator.videos.show');
@@ -431,8 +424,18 @@ Route::get('/video_creator/dashboard', [VideoCreatorDashboardControlle::class, '
 
 });
 
+Route::post('/comments/{comment}/reply', [CommentController::class, 'reply'])->name('comments.reply');
+    
+    // تعليم كمقروء
+
+    
+    // حذف تعليق
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
 
+    Route::prefix('api')->name('api.')->group(function () {
+        Route::get('/comments/{videoId}', [App\Http\Controllers\CommentController::class, 'getVideoComments'])->name('comments');
+    });
 
 
 

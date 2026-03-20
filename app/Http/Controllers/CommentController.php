@@ -16,8 +16,6 @@ class CommentController extends Controller
     {
         $videoCreator = Auth::user()->id;
         
-      
-
         // الحصول على فيديوهات هذا المنشئ فقط
         $videoIds = Video::where('creator_id', $videoCreator)->pluck('id')->toArray();
 
@@ -139,6 +137,14 @@ class CommentController extends Controller
             'is_approved' => true
         ]);
 
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'comment' => $reply->load('user'),
+                'message' => 'تم إضافة الرد'
+            ]);
+        }
+
         return back()->with('success', 'تم إضافة الرد بنجاح');
     }
 
@@ -147,6 +153,13 @@ class CommentController extends Controller
      */
     public function markAsRead(Comment $comment)
     {
+        // التحقق من أن المستخدم هو منشئ الفيديو
+        $video = Video::find($comment->commentable_id);
+        
+        if ($video->creator_id !== Auth::id()) {
+            abort(403, 'غير مصرح لك بتحديث حالة القراءة');
+        }
+        
         if (!$comment->read_at) {
             $comment->update(['read_at' => now()]);
         }
@@ -164,11 +177,9 @@ class CommentController extends Controller
     public function destroy(Comment $comment)
     {
         // التحقق من الصلاحية (صاحب التعليق أو منشئ الفيديو)
-        $videoCreator = auth::user()->id;
         $video = Video::find($comment->commentable_id);
         
-        if ($comment->user_id !== Auth::id() && 
-            (!$videoCreator || $video->creator_id !== $videoCreator)) {
+        if ($comment->user_id !== Auth::id() && $video->creator_id !== Auth::id()) {
             abort(403, 'غير مصرح لك بحذف هذا التعليق');
         }
 
@@ -179,5 +190,114 @@ class CommentController extends Controller
         }
 
         return back()->with('success', 'تم حذف التعليق');
+    }
+
+    /**
+     * ✅ عرض تعليقات المستخدم العادي (الطالب)
+     */
+    public function userComments(Request $request)
+    {
+        $userId = Auth::id();
+
+        $query = Comment::with(['user', 'replies.user', 'commentable'])
+            ->where('user_id', $userId)
+            ->where('commentable_type', 'App\\Models\\Video')
+            ->orderBy('created_at', 'desc');
+
+        // فلترة حسب نوع التعليق
+        if ($request->has('type')) {
+            if ($request->type == 'parent') {
+                $query->whereNull('parent_id');
+            } elseif ($request->type == 'reply') {
+                $query->whereNotNull('parent_id');
+            }
+        }
+
+        // فلترة حسب التاريخ
+        if ($request->has('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->has('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        // بحث في محتوى التعليق
+        if ($request->has('search') && !empty($request->search)) {
+            $query->where('content', 'like', '%' . $request->search . '%');
+        }
+
+        $comments = $query->paginate(15);
+
+        // إحصائيات
+        $totalComments = Comment::where('user_id', $userId)
+            ->where('commentable_type', 'App\\Models\\Video')
+            ->count();
+            
+        $totalReplies = Comment::where('user_id', $userId)
+            ->where('commentable_type', 'App\\Models\\Video')
+            ->whereNotNull('parent_id')
+            ->count();
+            
+        $totalParentComments = $totalComments - $totalReplies;
+
+        // أحدث نشاط
+        $latestActivity = Comment::where('user_id', $userId)
+            ->where('commentable_type', 'App\\Models\\Video')
+            ->latest()
+            ->first();
+
+        return view('student.comments.index', compact(
+            'comments', 
+            'totalComments', 
+            'totalReplies', 
+            'totalParentComments',
+            'latestActivity'
+        ));
+    }
+
+    /**
+     * ✅ جلب تعليقات فيديو معين (لـ API)
+     */
+    public function getVideoComments(Request $request, $videoId)
+    {
+        $video = Video::findOrFail($videoId);
+        
+        $sort = $request->sort ?? 'latest';
+        $perPage = 10;
+        
+        $query = Comment::with(['user', 'replies.user'])
+            ->where('commentable_id', $videoId)
+            ->where('commentable_type', 'App\\Models\\Video')
+            ->whereNull('parent_id');
+        
+        // ترتيب التعليقات
+        switch ($sort) {
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'most_replies':
+                $query->withCount('replies')->orderBy('replies_count', 'desc');
+                break;
+            default:
+                $query->orderBy('created_at', 'desc');
+        }
+        
+        $comments = $query->paginate($perPage);
+        
+        return response()->json([
+            'comments' => $comments->items(),
+            'total' => $comments->total(),
+            'current_page' => $comments->currentPage(),
+            'last_page' => $comments->lastPage()
+        ]);
+    }
+
+    /**
+     * ✅ إعجاب بتعليق (اختياري)
+     */
+    public function like(Comment $comment)
+    {
+        // يمكن إضافة نظام الإعجابات إذا أردت
+        return response()->json(['success' => true]);
     }
 }

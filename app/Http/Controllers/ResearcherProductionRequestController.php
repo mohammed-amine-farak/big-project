@@ -112,12 +112,21 @@ class ResearcherProductionRequestController extends Controller
         $lessons = lessonss::all();
 
         // جلب جميع منشئي الفيديو النشطين
-      $videoCreators = video_creator::with('user')
+    
+
+  $videoCreators = video_creator::with('user')
     ->join('users', 'video_creators.id', '=', 'users.id')
     ->where('video_creators.status', 'active')
     ->orderBy('users.name')
     ->select('video_creators.*')
     ->get();
+
+// Access the first item
+
+
+// Or loop through them
+
+
 
         return view('researchers-dashboard.production_request.create', compact('lessons', 'videoCreators'));
     }
