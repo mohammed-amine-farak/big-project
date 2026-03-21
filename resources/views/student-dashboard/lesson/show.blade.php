@@ -1,153 +1,102 @@
 @extends('layouts.student_dashboard')
 
 @section('content')
-<div class="min-h-screen" style="background: linear-gradient(135deg, #07090f 0%, #0f1520 100%);">
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
+
+        @php
+            $totalItems = 0;
+            if ($lesson->videos && $lesson->videos->isNotEmpty()) $totalItems++;
+            $totalItems += $lesson->rules->count();
+        @endphp
+
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
             <!-- ===================================================== -->
-            <!-- الشريط الجانبي الأيسر - قائمة محتوى أنيقة (3/12)   -->
+            <!-- الشريط الجانبي الأيسر (3/12) - Modern Udemy Style     -->
             <!-- ===================================================== -->
             <div class="lg:col-span-3">
                 <div class="sticky top-24 space-y-6">
 
-                    <!-- بطاقة العودة -->
-                    <div class="rounded-2xl overflow-hidden border border-[#1c2538] hover:border-[#19e8a0]/30 transition-all duration-300 group"
-                         style="background: rgba(14,17,24,0.8); backdrop-filter: blur(10px);">
+                    <!-- بطاقة العودة - Modern -->
+                    <div class="rounded-2xl overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 hover:border-emerald-500/30 transition-all duration-300 group">
                         <a href="{{ route('student.lesson.index') }}"
-                           class="flex items-center gap-3 px-5 py-4 hover:bg-[rgba(25,232,160,.04)] transition-all">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300"
-                                 style="background: rgba(25,232,160,.1);">
-                                <svg width="20" height="20" fill="none" stroke="#19e8a0" viewBox="0 0 24 24">
+                           class="flex items-center gap-3 px-5 py-4 hover:bg-white/5 transition-all">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300 bg-emerald-500/10">
+                                <svg width="20" height="20" fill="none" stroke="#10b981" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                                 </svg>
                             </div>
                             <div>
-                                <div class="text-xs text-[#8896b3]">العودة إلى</div>
-                                <div class="text-sm font-bold text-[#dde4f0] group-hover:text-[#19e8a0] transition-colors">قائمة الدروس</div>
+                                <div class="text-xs text-slate-400">العودة إلى</div>
+                                <div class="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors">قائمة الدروس</div>
                             </div>
                         </a>
                     </div>
 
-                    <!-- بطاقة محتوى الدرس مع شريط التقدم -->
-                    <div class="rounded-2xl overflow-hidden border border-[#1c2538]" style="background: rgba(14,17,24,0.8); backdrop-filter: blur(10px);">
-
-                        <!-- عنوان الدرس -->
-                        <div class="px-5 py-4 border-b border-[#1c2538]">
-                            <div class="flex items-center justify-between mb-2">
+                    <!-- بطاقة محتوى الدرس - Modern Course Sidebar -->
+                    <div class="rounded-2xl overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10">
+                        <div class="px-5 py-4 border-b border-white/10">
+                            <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center gap-2">
-                                    <div class="w-2 h-2 rounded-full animate-pulse" style="background: #19e8a0; box-shadow: 0 0 10px #19e8a0;"></div>
-                                    <span class="text-xs font-bold tracking-wider text-[#8896b3] uppercase">{{ $lesson->subject->name ?? 'الرياضيات' }}</span>
+                                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-lg shadow-emerald-500/50"></div>
+                                    <span class="text-xs font-bold tracking-wider text-slate-400 uppercase">{{ $lesson->subject->name ?? 'الرياضيات' }}</span>
                                 </div>
-                                <span class="text-xs px-2 py-1 rounded-lg" style="background: rgba(25,232,160,.1); color: #19e8a0;">متوسط</span>
+                                <span class="text-xs px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 font-medium">متوسط</span>
                             </div>
-                            <h3 class="text-lg font-bold text-[#dde4f0] mb-3">{{ $lesson->title }}</h3>
-
-                            <!-- شريط التقدم -->
-                            <div class="space-y-1">
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="text-[#8896b3]">تقدم التعلم</span>
-                                    <span class="text-[#19e8a0]" id="progress-percentage">0%</span>
-                                </div>
-                                <div class="h-1.5 rounded-full bg-[#1c2538] overflow-hidden">
-                                    <div class="h-full rounded-full transition-all duration-500"
-                                         style="width: 0%; background: linear-gradient(90deg, #19e8a0, #10b981);"
-                                         id="progress-bar"></div>
-                                </div>
+                            <h3 class="text-lg font-bold text-white mb-2">{{ $lesson->title }}</h3>
+                            <div class="flex items-center gap-2 text-xs text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>{{ $totalItems }} محتوى تعليمي</span>
                             </div>
                         </div>
 
-                        <!-- القائمة الجانبية -->
                         <div class="p-3 space-y-1" id="sidebar-links">
-                            @php $globalIndex = 0; @endphp
-
-                            <!-- فيديو الدرس الرئيسي -->
                             @if($lesson->videos && $lesson->videos->isNotEmpty())
-                                @php $globalIndex++; @endphp
-                                <div class="nav-item cursor-pointer rounded-xl transition-all duration-300 hover:bg-[rgba(25,232,160,.04)] group active-nav-item"
+                                <div class="nav-item cursor-pointer rounded-xl transition-all duration-300 group hover:bg-white/5"
                                      data-target="video-main" data-index="0">
                                     <div class="flex items-center gap-3 px-4 py-3">
-                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-all duration-300 group-hover:scale-110 group-hover:bg-[rgba(248,113,113,.15)]"
-                                             style="background: rgba(248,113,113,.1);">
-                                            <span class="text-[#f87171] text-lg">🎥</span>
+                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-rose-500/10 group-hover:scale-110 transition-transform">
+                                            <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
                                         </div>
                                         <div class="flex-1">
-                                            <div class="text-sm font-medium text-[#dde4f0] group-hover:text-[#19e8a0] transition-colors">فيديو الدرس</div>
-                                            <div class="flex items-center gap-2 text-xs text-[#8896b3]">
-                                                <span>الدرس الرئيسي</span>
-                                                <span class="w-1 h-1 rounded-full bg-[#1c2538]"></span>
-                                                <span>12 دقيقة</span>
-                                            </div>
-                                        </div>
-                                        <div class="w-5 h-5 rounded-full border-2 border-[#1c2538] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <div class="w-2 h-2 rounded-full bg-[#19e8a0]"></div>
+                                            <div class="text-sm font-medium text-white group-hover:text-emerald-400 transition-colors">فيديو الدرس</div>
+                                            <div class="text-xs text-slate-400">الدرس الرئيسي</div>
                                         </div>
                                     </div>
                                 </div>
                             @endif
 
                             @foreach($lesson->rules as $ruleIndex => $rule)
-                                @php $globalIndex++; @endphp
-                                <div class="nav-item cursor-pointer rounded-xl transition-all duration-300 hover:bg-[rgba(25,232,160,.04)] group mt-2"
-                                     data-target="rule-{{ $rule->id }}" data-index="{{ $globalIndex - 1 }}">
+                                <div class="nav-item cursor-pointer rounded-xl transition-all duration-300 group hover:bg-white/5 mt-1"
+                                     data-target="rule-{{ $rule->id }}" data-index="{{ $ruleIndex + 1 }}">
                                     <div class="flex items-center gap-3 px-4 py-3">
-                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold font-mono transition-all duration-300 group-hover:scale-110 group-hover:border-[#19e8a0]"
-                                             style="background: #131824; border: 1px solid #1c2538;">
-                                            <span style="color: #19e8a0;">{{ str_pad($ruleIndex + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold font-mono bg-slate-800 border border-white/10">
+                                            <span class="text-emerald-400">{{ str_pad($ruleIndex + 1, 2, '0', STR_PAD_LEFT) }}</span>
                                         </div>
                                         <div class="flex-1">
-                                            <div class="text-sm font-medium text-[#dde4f0] group-hover:text-[#19e8a0] transition-colors">{{ $rule->title }}</div>
-                                            <div class="flex items-center gap-2 text-xs text-[#8896b3]">
+                                            <div class="text-sm font-medium text-white group-hover:text-emerald-400 transition-colors">{{ $rule->title }}</div>
+                                            <div class="flex items-center gap-2 text-xs text-slate-400">
                                                 <span>{{ $rule->content_blocks->count() }} عناصر</span>
-                                                @if($rule->content_blocks->where('type', 'video')->count() > 0)
-                                                <span class="w-1 h-1 rounded-full bg-[#1c2538]"></span>
-                                                <span>🎥 {{ $rule->content_blocks->where('type', 'video')->count() }}</span>
+                                                @if($rule->content_blocks->where('type','video')->count() > 0)
+                                                <span>• 🎥 {{ $rule->content_blocks->where('type','video')->count() }}</span>
                                                 @endif
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
-                                @if($rule->content_blocks->count() > 1)
-                                <div class="sub-items pr-8 space-y-1 mb-2 hidden">
-                                    @foreach($rule->content_blocks as $blockIndex => $block)
-                                    <div class="sub-nav-item cursor-pointer rounded-lg transition-all hover:bg-[rgba(25,232,160,.04)] group py-2 px-3"
-                                         data-target="block-{{ $block->id }}">
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-5 h-5 rounded flex items-center justify-center text-xs">
-                                                @if($block->type == 'text') 📝
-                                                @elseif($block->type == 'math') 📐
-                                                @elseif($block->type == 'image') 🖼️
-                                                @elseif($block->type == 'exercise') ✏️
-                                                @elseif($block->type == 'video') 🎥
-                                                @endif
-                                            </div>
-                                            <span class="text-xs text-[#8896b3] group-hover:text-[#dde4f0]">
-                                                @if($block->type == 'text') نص
-                                                @elseif($block->type == 'math') معادلة
-                                                @elseif($block->type == 'image') صورة
-                                                @elseif($block->type == 'exercise') تمرين
-                                                @elseif($block->type == 'video') فيديو
-                                                @endif
-                                            </span>
-                                        </div>
-                                    </div>
-                                    @endforeach
-                                </div>
-                                @endif
                             @endforeach
                         </div>
 
-                        <!-- ملخص المحتوى -->
-                        <div class="px-5 py-4 border-t border-[#1c2538] mt-2">
-                            <div class="flex items-center justify-between text-xs text-[#8896b3] mb-2">
+                        <div class="px-5 py-4 border-t border-white/10 mt-2">
+                            <div class="flex items-center justify-between text-xs text-slate-400">
                                 <span>إجمالي العناصر</span>
-                                <span class="font-bold text-[#19e8a0]">{{ $globalIndex }} عنصر</span>
-                            </div>
-                            <div class="flex items-center justify-between text-xs text-[#8896b3]">
-                                <span>المتبقي</span>
-                                <span class="font-bold text-[#dde4f0]" id="remaining-items">{{ $globalIndex }}</span>
+                                <span class="font-bold text-emerald-400">{{ $totalItems }} عنصر</span>
                             </div>
                         </div>
                     </div>
@@ -155,447 +104,235 @@
             </div>
 
             <!-- ===================================================== -->
-            <!-- المحتوى الرئيسي (9/12)                               -->
+            <!-- المحتوى الرئيسي (9/12) - Modern Udemy Player Style    -->
             <!-- ===================================================== -->
             <div class="lg:col-span-9" id="content-area">
 
-                <!-- حالة البداية -->
+                <!-- حالة البداية - Modern Welcome Screen -->
                 <div id="empty-state" class="content-section block">
-                    <div class="rounded-3xl border border-[#1c2538] p-16 text-center relative overflow-hidden group"
-                         style="background: rgba(14,17,24,0.6); backdrop-filter: blur(10px);">
+                    <div class="rounded-3xl bg-white/5 backdrop-blur-sm border border-white/10 p-16 text-center relative overflow-hidden group">
                         <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                            <div class="absolute top-0 -right-20 w-64 h-64 rounded-full" style="background: radial-gradient(circle, rgba(25,232,160,.05) 0%, transparent 70%);"></div>
-                            <div class="absolute bottom-0 -left-20 w-64 h-64 rounded-full" style="background: radial-gradient(circle, rgba(25,232,160,.03) 0%, transparent 70%);"></div>
+                            <div class="absolute top-0 -right-20 w-64 h-64 rounded-full bg-emerald-500/5 blur-3xl"></div>
+                            <div class="absolute bottom-0 -left-20 w-64 h-64 rounded-full bg-emerald-500/3 blur-3xl"></div>
                         </div>
                         <div class="relative z-10">
-                            <div class="w-28 h-28 mx-auto mb-6 rounded-3xl flex items-center justify-center transform group-hover:scale-110 transition-transform duration-500"
-                                 style="background: rgba(25,232,160,.05);">
-                                <svg width="48" height="48" fill="none" stroke="#19e8a0" viewBox="0 0 24 24" class="animate-pulse">
+                            <div class="w-28 h-28 mx-auto mb-6 rounded-3xl flex items-center justify-center transform group-hover:scale-110 transition-transform duration-500 bg-emerald-500/10">
+                                <svg width="48" height="48" fill="none" stroke="#10b981" viewBox="0 0 24 24" class="animate-pulse">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
                                 </svg>
                             </div>
-                            <h2 class="text-2xl font-bold text-[#dde4f0] mb-3">اختر عنصراً من القائمة</h2>
-                            <p class="text-[#8896b3] text-lg max-w-md mx-auto mb-8">اضغط على أي عنصر في الشريط الجانبي لبدء التعلم</p>
-                            <div class="flex items-center justify-center gap-8 mt-8 pt-8 border-t border-[#1c2538]">
-                                <div class="text-center group/stat">
-                                    <div class="text-2xl font-bold text-[#19e8a0] mb-1 transform group-hover/stat:scale-110 transition-transform">{{ $lesson->rules->count() }}</div>
-                                    <div class="text-xs text-[#8896b3] flex items-center gap-1"><span>📚</span> قواعد</div>
-                                </div>
-                                <div class="w-px h-8" style="background: #1c2538;"></div>
-                                <div class="text-center group/stat">
-                                    <div class="text-2xl font-bold text-[#19e8a0] mb-1 transform group-hover/stat:scale-110 transition-transform">{{ $globalIndex }}</div>
-                                    <div class="text-xs text-[#8896b3] flex items-center gap-1"><span>📋</span> عناصر</div>
-                                </div>
-                                <div class="w-px h-8" style="background: #1c2538;"></div>
-                                <div class="text-center group/stat">
-                                    <div class="text-2xl font-bold text-[#19e8a0] mb-1 transform group-hover/stat:scale-110 transition-transform">
-                                        {{ $lesson->rules->sum(function($rule) { return $rule->content_blocks->where('type', 'video')->count(); }) }}
-                                    </div>
-                                    <div class="text-xs text-[#8896b3] flex items-center gap-1"><span>🎥</span> فيديوهات</div>
+                            <h2 class="text-3xl font-bold text-white mb-3">اختر عنصراً من القائمة</h2>
+                            <p class="text-slate-400 text-lg max-w-md mx-auto">اضغط على أي عنصر في الشريط الجانبي لبدء التعلم</p>
+                            <div class="flex items-center justify-center gap-8 mt-8 pt-8 border-t border-white/10">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-emerald-400 mb-1">{{ $lesson->rules->count() }}</div>
+                                    <div class="text-xs text-slate-400">📚 قواعد</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- ===================================================== -->
-                <!-- عرض القواعد وكتل المحتوى                             -->
-                <!-- ===================================================== -->
-                @foreach($lesson->rules as $rule)
-                <div id="rule-{{ $rule->id }}" class="content-section hidden rounded-3xl border border-[#1c2538] overflow-hidden mb-6 transform transition-all duration-500" style="background: #0e1118;">
+                <!-- فيديو الدرس الرئيسي - Modern Video Player -->
+                @if($lesson->videos && $lesson->videos->isNotEmpty())
+                @php $mainVideo = $lesson->videos->first(); @endphp
+                <div id="video-main" class="content-section hidden rounded-3xl overflow-hidden border border-white/10 mb-6 bg-black/30 backdrop-blur-sm">
+                    <div class="relative group/video">
+                        <video controls class="w-full aspect-video" style="background: #000;">
+                            <source src="{{ asset('storage/' . $mainVideo->file_path) }}" type="video/mp4">
+                        </video>
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4 opacity-0 group-hover/video:opacity-100 transition-opacity duration-300">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-rose-500/20 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-white">فيديو الدرس الرئيسي</div>
+                                        <div class="text-xs text-slate-400">{{ $lesson->title }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @include('partials.video-comments', ['video' => $mainVideo])
+                </div>
+                @endif
 
-                    <!-- رأس القاعدة -->
-                    <div class="relative px-8 py-6 border-b border-[#1c2538]" style="background: linear-gradient(135deg, rgba(25,232,160,.04), transparent);">
-                        <div class="absolute right-0 top-0 bottom-0 w-1" style="background: linear-gradient(180deg, #19e8a0, transparent);"></div>
+                <!-- القواعد وكتل المحتوى - Modern Content Blocks -->
+                @foreach($lesson->rules as $rule)
+                <div id="rule-{{ $rule->id }}" class="content-section hidden rounded-3xl border border-white/10 overflow-hidden mb-6 bg-white/5 backdrop-blur-sm">
+                    <div class="relative px-8 py-6 border-b border-white/10 bg-gradient-to-r from-emerald-500/5 to-transparent">
+                        <div class="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-emerald-500 to-transparent"></div>
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-4">
-                                <span class="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold font-mono text-[#19e8a0] border-2 border-[rgba(25,232,160,.35)] transform hover:scale-110 transition-transform"
-                                      style="background: rgba(25,232,160,.1);">
+                                <div class="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold font-mono text-emerald-400 border-2 border-emerald-500/30 bg-emerald-500/10">
                                     {{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}
-                                </span>
+                                </div>
                                 <div>
                                     <div class="flex items-center gap-2 mb-1">
-                                        <span class="text-xs px-2 py-1 rounded-lg" style="background: rgba(25,232,160,.1); color: #19e8a0;">قاعدة</span>
-                                        <span class="text-xs text-[#8896b3]">{{ $rule->content_blocks->count() }} عناصر</span>
+                                        <span class="text-xs px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 font-medium">قاعدة</span>
+                                        <span class="text-xs text-slate-400">{{ $rule->content_blocks->count() }} عناصر</span>
                                     </div>
-                                    <h2 class="text-xl font-bold text-[#dde4f0]">{{ $rule->title }}</h2>
+                                    <h2 class="text-xl font-bold text-white">{{ $rule->title }}</h2>
                                     @if($rule->description)
-                                    <p class="text-sm text-[#8896b3] mt-1">{{ $rule->description }}</p>
+                                    <p class="text-sm text-slate-400 mt-1">{{ $rule->description }}</p>
                                     @endif
                                 </div>
                             </div>
-                            <button class="px-4 py-2 rounded-xl text-sm font-medium transition-all hover:scale-105"
-                                    style="background: rgba(25,232,160,.1); color: #19e8a0; border: 1px solid rgba(25,232,160,.2);"
-                                    onclick="startRule({{ $rule->id }})">
+                            <button class="px-5 py-2.5 rounded-xl text-sm font-medium transition-all hover:scale-105 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20"
+                                    onclick="showSection('rule-{{ $rule->id }}')">
                                 بدء التعلم
                             </button>
                         </div>
                     </div>
 
-                    <!-- محتوى القاعدة -->
+                    <!-- كتل المحتوى - Modern Styling -->
                     <div class="p-8 space-y-8">
                         @foreach($rule->content_blocks as $block)
-                        <div id="block-{{ $block->id }}" class="block-content group/block transform transition-all duration-300 hover:scale-[1.02]">
+                        <div id="block-{{ $block->id }}" class="block-content transform transition-all duration-300 hover:translate-x-1">
 
-                            {{-- ======== نص ======== --}}
+                            {{-- نص --}}
                             @if($block->type == 'text')
-                            <div class="p-6 rounded-xl border border-[#1c2538] hover:border-[#19e8a0]/30 transition-all" style="background: #131824;">
+                            <div class="p-6 rounded-xl border border-white/10 hover:border-emerald-500/30 transition-all bg-white/5">
                                 <div class="flex items-center gap-2 mb-4">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(137,150,179,.1);">
-                                        <svg width="16" height="16" fill="none" stroke="#8896b3" viewBox="0 0 24 24">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-400/10">
+                                        <svg width="16" height="16" fill="none" stroke="#94a3b8" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
                                         </svg>
                                     </div>
-                                    <span class="text-xs font-bold tracking-wider text-[#8896b3] uppercase">نص تعليمي</span>
-                                    <span class="text-xs text-[#19e8a0] mr-auto cursor-pointer hover:underline">قراءة لاحقاً</span>
+                                    <span class="text-xs font-bold tracking-wider text-slate-400 uppercase">نص تعليمي</span>
                                 </div>
-                                <p class="text-[#bccae0] leading-relaxed text-lg">{{ $block->content }}</p>
+                                <p class="text-slate-300 leading-relaxed text-lg">{{ $block->content }}</p>
                             </div>
 
-                            {{-- ======== معادلة ======== --}}
+                            {{-- معادلة --}}
                             @elseif($block->type == 'math')
-                            <div class="relative rounded-xl border border-[#1c2538] p-8 text-center overflow-hidden group/math" style="background: #050709;">
-                                <div class="absolute top-0 left-0 right-0 h-px" style="background: linear-gradient(90deg, transparent, #19e8a0, transparent);"></div>
-                                <div class="absolute inset-0 opacity-0 group-hover/math:opacity-100 transition-opacity duration-700">
-                                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full"
-                                         style="background: radial-gradient(circle, rgba(25,232,160,.03) 0%, transparent 70%);"></div>
-                                </div>
-                                <div class="flex items-center gap-2 mb-6 absolute top-4 right-6">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(25,232,160,.1);">
-                                        <svg width="16" height="16" fill="none" stroke="#19e8a0" viewBox="0 0 24 24">
+                            <div class="relative rounded-xl border border-white/10 p-8 text-center overflow-hidden bg-black/30">
+                                <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500 to-transparent"></div>
+                                <div class="flex items-center gap-2 absolute top-4 right-6">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-500/10">
+                                        <svg width="16" height="16" fill="none" stroke="#10b981" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.5 12h15M12 4.5l7.5 7.5-7.5 7.5"/>
                                         </svg>
                                     </div>
-                                    <span class="text-xs font-bold tracking-wider text-[#19e8a0] uppercase">معادلة رياضية</span>
+                                    <span class="text-xs font-bold tracking-wider text-emerald-400 uppercase">معادلة رياضية</span>
                                 </div>
                                 <div class="text-center mt-8" dir="ltr">
-                                    <div class="math-equation text-2xl" style="color: #19e8a0;">
-                                        {!! $block->content !!}
-                                    </div>
+                                    <div class="math-equation text-2xl text-emerald-400 font-mono">{!! $block->content !!}</div>
                                 </div>
+                                <button onclick="readEquation('{{ addslashes($block->content) }}')"
+                                        class="mt-6 flex items-center gap-2 px-4 py-2 rounded-lg mx-auto text-xs transition-all hover:scale-105 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                                    </svg>
+                                    استمع للمعادلة
+                                </button>
                             </div>
 
-                            {{-- ======== صورة ======== --}}
+                            {{-- صورة --}}
                             @elseif($block->type == 'image')
-                            <div class="rounded-xl border border-[#1c2538] overflow-hidden group/image">
-                                <div class="px-6 py-4 border-b border-[#1c2538] flex items-center gap-2" style="background: #131824;">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(74,158,255,.1);">
-                                        <svg width="16" height="16" fill="none" stroke="#4a9eff" viewBox="0 0 24 24">
+                            <div class="rounded-xl border border-white/10 overflow-hidden">
+                                <div class="px-6 py-4 border-b border-white/10 flex items-center gap-2 bg-white/5">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-500/10">
+                                        <svg width="16" height="16" fill="none" stroke="#3b82f6" viewBox="0 0 24 24">
                                             <rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2"/>
                                             <path stroke-linecap="round" stroke-width="2" d="M8 12l4-4 4 4"/>
                                         </svg>
                                     </div>
-                                    <span class="text-xs font-bold tracking-wider text-[#4a9eff] uppercase">صورة توضيحية</span>
-                                    <span class="text-xs text-[#8896b3] mr-auto">{{ basename($block->content) }}</span>
+                                    <span class="text-xs font-bold tracking-wider text-blue-400 uppercase">صورة توضيحية</span>
+                                    <span class="text-xs text-slate-400 mr-auto">{{ basename($block->content) }}</span>
                                 </div>
                                 <div class="relative group cursor-pointer" onclick="openImageModal('{{ asset('storage/' . $block->content) }}')">
                                     <img src="{{ asset('storage/' . $block->content) }}" alt="صورة"
-                                         class="w-full max-h-96 object-contain transition-transform duration-500 group-hover:scale-105"
-                                         style="background: #131824;">
+                                         class="w-full max-h-96 object-contain transition-transform duration-500 group-hover:scale-105 bg-black/30">
                                     <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                        <span class="px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm text-white text-sm">اضغط للتكبير</span>
+                                        <span class="px-4 py-2 rounded-lg bg-white/10 text-white text-sm backdrop-blur-sm">اضغط للتكبير</span>
                                     </div>
                                 </div>
                             </div>
 
-                            {{-- ======== تمرين ======== --}}
+                            {{-- تمرين --}}
                             @elseif($block->type == 'exercise')
-                            <div class="relative rounded-xl p-6 overflow-hidden transform transition-all duration-300 hover:shadow-xl"
-                                 style="background: linear-gradient(135deg, rgba(251,191,36,.05), rgba(251,146,60,.03)); border: 1px solid rgba(251,191,36,.18);">
-                                <div class="absolute right-0 top-0 bottom-0 w-1" style="background: linear-gradient(180deg, #fbbf24, #fb923c);"></div>
+                            <div class="relative rounded-xl p-6 overflow-hidden bg-gradient-to-r from-amber-500/5 to-orange-500/3 border border-amber-500/20">
+                                <div class="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-orange-500"></div>
                                 <div class="flex items-center gap-2 mb-4">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(251,191,36,.1);">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-amber-500/10">
                                         <svg width="16" height="16" fill="none" stroke="#fbbf24" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
                                         </svg>
                                     </div>
-                                    <span class="text-xs font-bold tracking-wider text-[#fbbf24] uppercase">تمرين تطبيقي</span>
-                                    <span class="text-xs text-[#8896b3] mr-auto">حاول الحل بنفسك أولاً</span>
+                                    <span class="text-xs font-bold tracking-wider text-amber-400 uppercase">تمرين تطبيقي</span>
+                                    <span class="text-xs text-slate-400 mr-auto">حاول الحل بنفسك أولاً</span>
                                 </div>
-                                <p class="text-[#dde4f0] text-lg mb-6">{{ $block->content }}</p>
-                                <div class="flex items-center gap-3">
-                                    <button onclick="toggleSolution({{ $block->id }})"
-                                            class="flex items-center gap-2 px-6 py-3 rounded-xl border border-[rgba(251,191,36,.28)] hover:bg-[rgba(251,191,36,.1)] text-[#fbbf24] text-sm font-medium transition-all hover:scale-105">
-                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                        </svg>
-                                        عرض الحل
-                                    </button>
-                                    <button class="flex items-center gap-2 px-6 py-3 rounded-xl border border-[#1c2538] hover:bg-[rgba(255,255,255,.02)] text-[#8896b3] text-sm font-medium transition-all">
-                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        تلميح
-                                    </button>
-                                </div>
-                                <div id="solution-{{ $block->id }}" class="hidden mt-6 p-6 rounded-xl text-sm text-[#bccae0] leading-relaxed"
-                                     style="background: rgba(25,232,160,.05); border: 1px solid rgba(25,232,160,.15);">
+                                <p class="text-white text-lg mb-6">{{ $block->content }}</p>
+                                <button onclick="toggleSolution({{ $block->id }})"
+                                        class="flex items-center gap-2 px-6 py-3 rounded-xl border border-amber-500/30 hover:bg-amber-500/10 text-amber-400 text-sm font-medium transition-all hover:scale-105">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    عرض الحل
+                                </button>
+                                <div id="solution-{{ $block->id }}" class="hidden mt-6 p-6 rounded-xl text-sm text-slate-300 leading-relaxed bg-emerald-500/5 border border-emerald-500/20">
                                     <div class="flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 rounded-full bg-[#19e8a0]/10 flex items-center justify-center text-[#19e8a0]">✓</span>
-                                        <span class="text-[#19e8a0] font-medium">الحل النموذجي</span>
+                                        <span class="w-6 h-6 rounded-full flex items-center justify-center text-emerald-400 bg-emerald-500/10">✓</span>
+                                        <span class="text-emerald-400 font-medium">الحل النموذجي</span>
                                     </div>
                                     الحل سيظهر هنا...
                                 </div>
                             </div>
                             @endif
 
-                            {{-- ======== فيديو + قسم التعليقات ======== --}}
+                            {{-- فيديو + تعليقات --}}
                             @if(isset($block->video) && $block->video)
-                            <div class="rounded-xl border border-[#1c2538] overflow-hidden group/video mt-4">
-                                <!-- رأس الفيديو -->
-                                <div class="px-6 py-4 border-b border-[#1c2538] flex items-center gap-2" style="background: #131824;">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(248,113,113,.1);">
+                            @php $video = $block->video; @endphp
+                            <div class="rounded-xl border border-white/10 overflow-hidden mt-4">
+                                <div class="px-6 py-4 border-b border-white/10 flex items-center gap-2 bg-white/5">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-rose-500/10">
                                         <svg width="16" height="16" fill="none" stroke="#f87171" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
                                     </div>
-                                    <span class="text-xs font-bold tracking-wider text-[#f87171] uppercase">فيديو توضيحي</span>
-                                    <span class="text-xs text-[#8896b3] mr-auto">{{ $block->video->duration ?? '5:30' }}</span>
+                                    <span class="text-xs font-bold tracking-wider text-rose-400 uppercase">فيديو توضيحي</span>
+                                    <span class="text-xs text-slate-400 mr-auto">{{ $video->duration ?? '' }}</span>
                                 </div>
-
-                                <!-- مشغل الفيديو -->
                                 <div class="relative">
-                                    <video controls class="w-full max-h-96" style="background: #000;">
-                                        <source src="{{ asset('storage/' . $block->video->file_path) }}" type="video/mp4">
+                                    <video controls class="w-full max-h-96 bg-black">
+                                        <source src="{{ asset('storage/' . $video->file_path) }}" type="video/mp4">
                                     </video>
-                                    <div class="absolute bottom-0 left-0 right-0 h-1 bg-[#1c2538]">
-                                        <div class="h-full w-0 bg-[#f87171] transition-all duration-300" id="progress-{{ $block->id }}"></div>
-                                    </div>
                                 </div>
                             </div>
-
-                            <!-- ===================================================== -->
-                            <!-- قسم التعليقات                                         -->
-                            <!-- ===================================================== -->
-                            <div class="rounded-2xl border border-[#1c2538] overflow-hidden mt-4" style="background: #0e1118;">
-
-                                <!-- رأس التعليقات -->
-                                <div class="px-6 py-4 border-b border-[#1c2538] flex items-center justify-between">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background: rgba(25,232,160,.1);">
-                                            <svg width="18" height="18" fill="none" stroke="#19e8a0" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                            </svg>
-                                        </div>
-                                        <h4 class="text-[15px] font-bold text-[#dde4f0]">التعليقات</h4>
-                                        <span class="text-xs px-3 py-1 rounded-full font-semibold" style="background: rgba(25,232,160,.1); color: #19e8a0;">
-                                            {{ $block->video->comments_count ?? 0 }} تعليق
-                                        </span>
-                                    </div>
-                                    <button class="text-xs text-[#8896b3] px-3 py-1.5 rounded-lg border border-[#1c2538] transition-all hover:border-[rgba(25,232,160,.3)] hover:text-[#19e8a0]" style="background: #131824;">
-                                        ترتيب: الأحدث ▾
-                                    </button>
-                                </div>
-
-                                <!-- كتابة تعليق جديد -->
-                                <div class="px-6 py-4 border-b border-[#1c2538] flex gap-3 items-start">
-                                    <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-                                         style="background: linear-gradient(135deg, #19e8a0, #10b981); color: #07090f;">
-                                        {{ mb_substr(auth()->user()->name ?? 'أ', 0, 1) }}
-                                    </div>
-                                    <div class="comment-textarea-wrap flex-1 rounded-xl border border-[#1c2538] overflow-hidden" style="background: #131824;">
-                                        <textarea
-                                            rows="1"
-                                            placeholder="اكتب تعليقك أو سؤالك عن الفيديو..."
-                                            class="w-full bg-transparent border-none outline-none px-4 py-3 text-sm text-[#dde4f0] resize-none"
-                                            style="font-family: inherit; direction: rtl;"
-                                            oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'"></textarea>
-                                        <div class="flex items-center justify-between px-3 py-2 border-t border-[#1c2538]">
-                                            <div class="flex gap-1">
-                                                <button class="w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold text-[#8896b3] hover:text-[#dde4f0] transition-all" style="font-family: Georgia, serif;">B</button>
-                                                <button class="w-7 h-7 rounded-md flex items-center justify-center text-xs text-[#8896b3] hover:text-[#dde4f0] transition-all" style="font-style: italic; font-family: Georgia, serif;">I</button>
-                                                <button class="w-7 h-7 rounded-md flex items-center justify-center text-[#8896b3] hover:text-[#dde4f0] transition-all">
-                                                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                            <button class="flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-bold transition-all hover:opacity-90 active:scale-95"
-                                                    style="background: #19e8a0; color: #07090f;">
-                                                <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                                                </svg>
-                                                إرسال
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- قائمة التعليقات -->
-                                <div class="px-6 pb-6 divide-y divide-[#131824]">
-
-                                    {{-- ---- تعليق مثبت من الأستاذ ---- --}}
-                                    <div class="py-5">
-                                        <div class="flex gap-3">
-                                            <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-                                                 style="background: linear-gradient(135deg, #fbbf24, #fb923c); color: #07090f;">م</div>
-                                            <div class="flex-1">
-                                                <div class="flex items-center flex-wrap gap-2 mb-2">
-                                                    <span class="text-sm font-bold text-[#dde4f0]">الأستاذ محمد العمري</span>
-                                                    <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background: rgba(251,191,36,.12); color: #fbbf24;">أستاذ</span>
-                                                    <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background: rgba(74,158,255,.1); color: #4a9eff;">📌 مثبت</span>
-                                                    <span class="text-[11px] text-[#4a5568] mr-auto">منذ يومين</span>
-                                                </div>
-                                                <p class="text-sm text-[#bccae0] leading-relaxed mb-3">
-                                                    مرحباً بالجميع! هذا الفيديو يشرح
-                                                    <span class="px-1.5 py-0.5 rounded text-[#19e8a0] text-xs" style="background: rgba(25,232,160,.08);">القاعدة الأساسية</span>
-                                                    للدرس. إذا كان لديكم أي سؤال لا تترددوا في التعليق وسأرد في أقرب وقت ✅
-                                                </p>
-                                                <div class="flex gap-1">
-                                                    <button class="comment-like-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all hover:bg-white/5" style="color: #f87171;">
-                                                        <svg width="13" height="13" fill="#f87171" viewBox="0 0 24 24">
-                                                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                                                        </svg>
-                                                        47
-                                                    </button>
-                                                    <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[#8896b3] hover:text-[#dde4f0] hover:bg-white/5 transition-all">
-                                                        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                                        </svg>
-                                                        رد
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- ---- تعليق مع ردود ---- --}}
-                                    <div class="py-5">
-                                        <div class="flex gap-3">
-                                            <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-                                                 style="background: linear-gradient(135deg, #667eea, #764ba2); color: #fff;">س</div>
-                                            <div class="flex-1">
-                                                <div class="flex items-center flex-wrap gap-2 mb-2">
-                                                    <span class="text-sm font-bold text-[#dde4f0]">سارة الأحمدي</span>
-                                                    <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background: rgba(25,232,160,.1); color: #19e8a0;">طالبة</span>
-                                                    <span class="text-[11px] text-[#4a5568] mr-auto">منذ 3 ساعات</span>
-                                                </div>
-                                                <p class="text-sm text-[#bccae0] leading-relaxed mb-3">جزاك الله خيراً على الشرح الرائع! سؤال: في الدقيقة 4:20 عندما تحدثت عن المعادلة، هل يمكن أن يكون المتغير x سالباً؟</p>
-                                                <div class="flex gap-1 mb-4">
-                                                    <button class="comment-like-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[#8896b3] hover:text-[#f87171] hover:bg-white/5 transition-all">
-                                                        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                                                        </svg>
-                                                        12
-                                                    </button>
-                                                    <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[#8896b3] hover:text-[#dde4f0] hover:bg-white/5 transition-all">
-                                                        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                                        </svg>
-                                                        رد (2)
-                                                    </button>
-                                                </div>
-                                                <!-- الردود -->
-                                                <div class="border-r-2 border-[#1c2538] pr-4 space-y-4">
-                                                    <div class="flex gap-2.5">
-                                                        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                                                             style="background: linear-gradient(135deg, #fbbf24, #fb923c); color: #07090f;">م</div>
-                                                        <div class="flex-1">
-                                                            <div class="flex items-center gap-2 mb-1">
-                                                                <span class="text-xs font-bold text-[#dde4f0]">الأستاذ محمد</span>
-                                                                <span class="text-[9px] px-1.5 py-0.5 rounded-full" style="background: rgba(251,191,36,.12); color: #fbbf24;">أستاذ</span>
-                                                                <span class="text-[10px] text-[#4a5568]">منذ 2 ساعة</span>
-                                                            </div>
-                                                            <p class="text-xs text-[#8896b3] leading-relaxed">نعم سارة، المتغير x يمكن أن يكون سالباً في هذه الحالة، الشرط الوحيد هو أن يكون ضمن المجال المحدد في التمرين 👍</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex gap-2.5">
-                                                        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                                                             style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: #07090f;">ع</div>
-                                                        <div class="flex-1">
-                                                            <div class="flex items-center gap-2 mb-1">
-                                                                <span class="text-xs font-bold text-[#dde4f0]">عمر خالد</span>
-                                                                <span class="text-[10px] text-[#4a5568]">منذ ساعة</span>
-                                                            </div>
-                                                            <p class="text-xs text-[#8896b3]">شكراً للتوضيح، كان عندي نفس السؤال!</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- ---- تعليق بسيط ---- --}}
-                                    <div class="py-5">
-                                        <div class="flex gap-3">
-                                            <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-                                                 style="background: linear-gradient(135deg, #f093fb, #f5576c); color: #fff;">ن</div>
-                                            <div class="flex-1">
-                                                <div class="flex items-center flex-wrap gap-2 mb-2">
-                                                    <span class="text-sm font-bold text-[#dde4f0]">نورة المطيري</span>
-                                                    <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background: rgba(25,232,160,.1); color: #19e8a0;">طالبة</span>
-                                                    <span class="text-[11px] text-[#4a5568] mr-auto">منذ 5 ساعات</span>
-                                                </div>
-                                                <p class="text-sm text-[#bccae0] leading-relaxed mb-3">الشرح واضح جداً ومرتب، أتمنى إضافة مثال تطبيقي في الحصة القادمة.</p>
-                                                <div class="flex gap-1">
-                                                    <button class="comment-like-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[#8896b3] hover:text-[#f87171] hover:bg-white/5 transition-all">
-                                                        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                                                        </svg>
-                                                        8
-                                                    </button>
-                                                    <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[#8896b3] hover:text-[#dde4f0] hover:bg-white/5 transition-all">
-                                                        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                                        </svg>
-                                                        رد
-                                                    </button>
-                                                    <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[#8896b3] hover:text-[#dde4f0] hover:bg-white/5 transition-all mr-auto">
-                                                        <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
-                                                        </svg>
-                                                        إبلاغ
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- ---- زر تحميل المزيد ---- --}}
-                                    <div class="pt-5 flex justify-center">
-                                        <button class="text-sm text-[#8896b3] px-6 py-2.5 rounded-xl border border-[#1c2538] hover:border-[rgba(25,232,160,.3)] hover:text-[#19e8a0] transition-all"
-                                                style="background: #131824;">
-                                            عرض المزيد من التعليقات
-                                            <span class="text-[#19e8a0] mr-1">↓</span>
-                                        </button>
-                                    </div>
-
-                                </div>
-                            </div>
-                            {{-- ===== نهاية قسم التعليقات ===== --}}
-
+                            @include('partials.video-comments', ['video' => $video])
                             @endif
-                            {{-- نهاية شرط الفيديو --}}
 
                         </div>
                         @endforeach
 
-                        <!-- أزرار التنقل بين القواعد -->
-                        <div class="flex items-center justify-between pt-6 border-t border-[#1c2538]">
+                        <!-- أزرار التنقل بين القواعد - Modern Navigation -->
+                        <div class="flex items-center justify-between pt-6 border-t border-white/10">
                             @if(!$loop->first)
                             <button onclick="navigateToRule({{ $lesson->rules[$loop->index - 1]->id }})"
-                                    class="flex items-center gap-2 px-4 py-2 rounded-xl border border-[#1c2538] hover:border-[#19e8a0]/30 text-[#8896b3] hover:text-[#19e8a0] transition-all">
+                                    class="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/10 hover:border-emerald-500/30 text-slate-400 hover:text-emerald-400 transition-all hover:bg-white/5">
                                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                                 </svg>
                                 القاعدة السابقة
                             </button>
-                            @else
-                            <div></div>
+                            @else<div></div>
                             @endif
-
                             @if(!$loop->last)
                             <button onclick="navigateToRule({{ $lesson->rules[$loop->index + 1]->id }})"
-                                    class="flex items-center gap-2 px-4 py-2 rounded-xl border border-[#1c2538] hover:border-[#19e8a0]/30 text-[#8896b3] hover:text-[#19e8a0] transition-all">
+                                    class="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-white/10 hover:border-emerald-500/30 text-slate-400 hover:text-emerald-400 transition-all hover:bg-white/5">
                                 القاعدة التالية
                                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                 </svg>
                             </button>
-                            @else
-                            <div></div>
+                            @else<div></div>
                             @endif
                         </div>
 
@@ -608,86 +345,117 @@
     </div>
 </div>
 
-<!-- ===================================================== -->
-<!-- مودال تكبير الصورة                                   -->
-<!-- ===================================================== -->
-<div id="imageModal" class="fixed inset-0 z-50 hidden items-center justify-center" style="background: rgba(0,0,0,.95); backdrop-filter: blur(10px);">
+<!-- مودال الصورة - Modern -->
+<div id="imageModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/95 backdrop-blur-lg">
     <div class="relative max-w-5xl max-h-[90vh] mx-4">
-        <img id="modalImage" src="" alt="صورة مكبرة" class="max-w-full max-h-[90vh] object-contain rounded-xl">
-        <button onclick="closeImageModal()" class="absolute -top-12 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl text-white text-sm"
-                style="background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);">
+        <img id="modalImage" src="" alt="صورة مكبرة" class="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl">
+        <button onclick="closeImageModal()" class="absolute -top-12 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl text-white text-sm bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-all">
             إغلاق ✕
         </button>
     </div>
 </div>
 
-<!-- Toast للقراءة -->
-<div id="speechToast" class="fixed bottom-8 right-8 z-50 hidden items-center gap-3 px-5 py-3 rounded-xl"
-     style="background: linear-gradient(135deg, #19e8a0, #10b981); color: #07090f; box-shadow: 0 8px 24px rgba(25,232,160,.3);">
-    <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
-    <span class="text-sm font-medium">جاري قراءة المعادلة...</span>
-    <button onclick="stopReading()" class="mr-3 w-6 h-6 rounded-lg flex items-center justify-center hover:bg-black/10">
-        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-    </button>
+<!-- Toast - Modern -->
+<div id="appToast" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 hidden items-center gap-3 px-5 py-3 rounded-xl transition-all bg-slate-800/90 backdrop-blur-sm border border-white/10 text-white shadow-2xl min-w-64">
+    <span id="toastIcon" class="text-base">✓</span>
+    <span id="toastMsg" class="text-sm font-medium"></span>
 </div>
 
-<!-- ===================================================== -->
-<!-- JavaScript                                           -->
-<!-- ===================================================== -->
 <script>
-let totalItems  = {{ $globalIndex }};
+// =============================================
+// المتغيرات العامة
+// =============================================
+const CSRF       = '{{ csrf_token() }}';
+const STORE_URL  = '{{ route("comments.store") }}';
+const AUTH_ID    = {{ auth()->id() }};
+const AUTH_NAME  = '{{ auth()->user()->name }}';
+const AUTH_INITIAL = '{{ substr(auth()->user()->name, 0, 1) }}';
+
+let totalItems = {{ $totalItems }};
 let viewedItems = new Set();
-const toast     = document.getElementById('speechToast');
-let currentUtterance = null;
 
-/* ---------- التقدم ---------- */
-function updateProgress() {
-    const pct = Math.round((viewedItems.size / totalItems) * 100);
-    document.getElementById('progress-percentage').textContent = pct + '%';
-    document.getElementById('progress-bar').style.width = pct + '%';
-    document.getElementById('remaining-items').textContent = totalItems - viewedItems.size;
+// =============================================
+// التقدم
+// =============================================
+
+
+function markAsViewed(id) {
+    viewedItems.add(id);
+   
 }
 
-function markAsViewed(itemId) {
-    viewedItems.add(itemId);
-    updateProgress();
-}
+// =============================================
+// FIX #1 + #2: Central section-reveal function
+// Lazy-loads comments the FIRST time a section is shown.
+// Used by sidebar clicks, navigateToRule, and startRule.
+// =============================================
+function showSection(targetId) {
+    const sections  = document.querySelectorAll('.content-section');
+    const emptyState = document.getElementById('empty-state');
+    const target    = document.getElementById(targetId);
 
-/* ---------- التنقل ---------- */
-function navigateToRule(ruleId) {
-    document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
-    const target = document.getElementById('rule-' + ruleId);
     if (!target) return;
+
+    // Hide all sections
+    sections.forEach(s => s.classList.add('hidden'));
+    if (emptyState) emptyState.classList.add('hidden');
+
+    // Show the requested section
     target.classList.remove('hidden');
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Update sidebar active state
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('nav-active'));
-    const activeNav = document.querySelector(`[data-target="rule-${ruleId}"]`);
+    const activeNav = document.querySelector(`[data-target="${targetId}"]`);
     if (activeNav) activeNav.classList.add('nav-active');
+
+    // Mark as viewed
+    markAsViewed(targetId);
+
+    // FIX #2: Lazy-load comments — only fetch when section becomes visible,
+    // and only once per container (data-loaded flag prevents duplicate fetches).
+    target.querySelectorAll('.comments-container').forEach(container => {
+        const videoId = container.dataset.videoId;
+        if (container.dataset.loaded === 'false') {
+            container.dataset.loaded = 'true';
+            // Get current sort value from the sibling select
+            const sortEl = container.closest('.rounded-2xl')?.querySelector('.comment-sort');
+            const sort   = sortEl ? sortEl.value : 'latest';
+            loadComments(videoId, sort);
+        }
+    });
+}
+
+// =============================================
+// التنقل بين القواعد
+// =============================================
+function navigateToRule(ruleId) {
+    showSection('rule-' + ruleId);
 }
 
 function startRule(ruleId) {
-    navigateToRule(ruleId);
-    markAsViewed('rule-' + ruleId);
+    showSection('rule-' + ruleId);
 }
 
-/* ---------- الحل ---------- */
+// =============================================
+// حل التمرين
+// =============================================
 function toggleSolution(blockId) {
-    const el = document.getElementById('solution-' + blockId);
-    if (!el) return;
-    el.classList.toggle('hidden');
-    if (!el.classList.contains('hidden')) el.style.animation = 'slideDown 0.3s ease';
+    const solution = document.getElementById('solution-' + blockId);
+    if (solution) solution.classList.toggle('hidden');
 }
 
-/* ---------- الصورة ---------- */
+// =============================================
+// الصورة
+// =============================================
 function openImageModal(src) {
-    document.getElementById('modalImage').src = src;
     const modal = document.getElementById('imageModal');
+    document.getElementById('modalImage').src = src;
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     document.body.style.overflow = 'hidden';
 }
+
 function closeImageModal() {
     const modal = document.getElementById('imageModal');
     modal.classList.add('hidden');
@@ -695,10 +463,21 @@ function closeImageModal() {
     document.body.style.overflow = 'auto';
 }
 
-/* ---------- قراءة المعادلة ---------- */
+// =============================================
+// قراءة المعادلة
+// =============================================
+let currentUtterance = null;
+const speechToast = document.createElement('div');
+speechToast.className = 'fixed bottom-24 right-8 z-50 hidden items-center gap-3 px-4 py-3 rounded-xl';
+speechToast.style.cssText = 'background:#19e8a0;color:#07090f;';
+speechToast.innerHTML = '<div class="w-2 h-2 rounded-full bg-white animate-pulse"></div><span class="text-sm font-medium">جاري قراءة المعادلة...</span><button onclick="stopReading()" class="mr-3 w-6 h-6 rounded-lg flex items-center justify-center hover:bg-black/10">✕</button>';
+document.body.appendChild(speechToast);
+
 function readEquation(eq) {
     if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
-    toast.classList.remove('hidden');
+    speechToast.classList.remove('hidden');
+    speechToast.classList.add('flex');
+
     let clean = eq
         .replace(/\$\$/g,'').replace(/\$/g,'').replace(/\\/g,'')
         .replace(/[{}]/g,'').replace(/frac/g,' كسر ')
@@ -707,53 +486,288 @@ function readEquation(eq) {
         .replace(/sum/g,' مجموع ').replace(/pi/g,' باي ')
         .replace(/sin/g,' جا ').replace(/cos/g,' جتا ')
         .replace(/tan/g,' ظا ').replace(/log/g,' لوغاريتم ')
-        .replace(/ln/g,' لوغاريتم طبيعي ').replace(/times/g,' في ')
-        .replace(/div/g,' على ').replace(/leq/g,' أصغر أو يساوي ')
-        .replace(/geq/g,' أكبر أو يساوي ').replace(/neq/g,' لا يساوي ')
-        .replace(/approx/g,' تقريباً ').replace(/infty/g,' مالانهاية ');
+        .replace(/ln/g,' لوغاريتم طبيعي ');
+
     currentUtterance = new SpeechSynthesisUtterance(clean);
-    currentUtterance.lang = 'ar-SA';
-    currentUtterance.rate = 0.9;
-    currentUtterance.onend  = () => toast.classList.add('hidden');
-    currentUtterance.onerror = () => toast.classList.add('hidden');
+    currentUtterance.lang  = 'ar-SA';
+    currentUtterance.rate  = 0.9;
+    currentUtterance.onend  = () => { speechToast.classList.add('hidden'); speechToast.classList.remove('flex'); };
+    currentUtterance.onerror = () => { speechToast.classList.add('hidden'); speechToast.classList.remove('flex'); };
     window.speechSynthesis.speak(currentUtterance);
 }
+
 function stopReading() {
     if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
-    toast.classList.add('hidden');
+    speechToast.classList.add('hidden');
+    speechToast.classList.remove('flex');
 }
 
-/* ---------- إعداد اللايك للتعليقات ---------- */
-function initCommentLikes() {
-    document.querySelectorAll('.comment-like-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const countEl = this.querySelector('svg + *') ?? this.lastChild;
-            const isLiked = this.dataset.liked === '1';
-            const svgEl   = this.querySelector('svg');
-            if (isLiked) {
-                this.dataset.liked = '0';
-                svgEl.setAttribute('fill', 'none');
-                svgEl.setAttribute('stroke', 'currentColor');
-                this.style.color = '';
-            } else {
-                this.dataset.liked = '1';
-                svgEl.setAttribute('fill', '#f87171');
-                svgEl.removeAttribute('stroke');
-                this.style.color = '#f87171';
-            }
+// =============================================
+// Toast
+// =============================================
+let toastTimer;
+function showToast(msg, type = 'success') {
+    const toast = document.getElementById('appToast');
+    document.getElementById('toastMsg').textContent = msg;
+    const icon = document.getElementById('toastIcon');
+    icon.textContent  = type === 'success' ? '✓' : '✕';
+    icon.style.color  = type === 'success' ? '#19e8a0' : '#f87171';
+    toast.classList.remove('hidden');
+    toast.classList.add('flex');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex');
+    }, 3000);
+}
+
+// =============================================
+// دوال التعليقات
+// =============================================
+async function loadComments(videoId, sort = 'latest') {
+    const container = document.getElementById(`comments-${videoId}`);
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="text-center py-8">
+            <svg class="animate-spin mx-auto mb-3" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="#1c2538" stroke-width="3"/>
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="#19e8a0" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+            <p class="text-sm text-[#8896b3]">جاري تحميل التعليقات...</p>
+        </div>`;
+
+    try {
+        const res  = await fetch(`/api/comments/${videoId}?sort=${sort}`);
+        const data = await res.json();
+
+        if (!data.comments || data.comments.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="text-4xl mb-2 opacity-30">💬</div>
+                    <p class="text-sm text-[#8896b3]">لا توجد تعليقات بعد، كن أول من يعلق!</p>
+                </div>`;
+            return;
+        }
+
+        let html = '';
+        data.comments.forEach(comment => {
+            const initial  = escapeHtml(comment.user?.name?.charAt(0) || 'م');
+            const isOwner  = comment.user_id === AUTH_ID;
+            const replies  = comment.replies || [];
+
+            html += `
+            <div class="border-b border-[#1c2538] pb-4 mb-4 last:border-0" id="comment-${comment.id}">
+                <div class="flex gap-3">
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+                         style="background: linear-gradient(135deg, #19e8a0, #10b981); color: #07090f;">
+                        ${initial}
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1 flex-wrap">
+                            <span class="text-sm font-bold text-[#dde4f0]">${escapeHtml(comment.user?.name || 'مجهول')}</span>
+                            <span class="text-xs text-[#8896b3]">${formatDate(comment.created_at)}</span>
+                        </div>
+                        <p class="text-sm text-[#bccae0] mb-3">${escapeHtml(comment.content)}</p>
+                        <div class="flex items-center gap-3">
+                            <button onclick="showReplyForm(${comment.id}, ${videoId})"
+                                    class="flex items-center gap-1 text-xs text-[#8896b3] hover:text-[#19e8a0] transition-colors">
+                                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                                </svg>
+                                رد ${replies.length ? `(${replies.length})` : ''}
+                            </button>
+                            ${isOwner ? `
+                            <button onclick="deleteComment(${comment.id}, ${videoId})"
+                                    class="flex items-center gap-1 text-xs text-[#8896b3] hover:text-[#f87171] transition-colors">
+                                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                                حذف
+                            </button>` : ''}
+                        </div>
+                        <div id="reply-form-${comment.id}" class="hidden mt-3">
+                            <div class="flex gap-2">
+                                <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                                     style="background: linear-gradient(135deg, #19e8a0, #10b981); color: #07090f;">
+                                    ${AUTH_INITIAL}
+                                </div>
+                                <div class="flex-1">
+                                    <textarea id="reply-input-${comment.id}" rows="2"
+                                              placeholder="اكتب ردك..."
+                                              class="w-full px-3 py-2 rounded-lg border border-[#1c2538] bg-[#0e1118] text-[#dde4f0] text-sm"
+                                              maxlength="2000"></textarea>
+                                    <div class="flex justify-end gap-2 mt-2">
+                                        <button onclick="hideReplyForm(${comment.id})"
+                                                class="px-3 py-1 text-xs text-[#8896b3]">إلغاء</button>
+                                        <button onclick="submitReply(${comment.id}, ${videoId})"
+                                                class="px-4 py-1 rounded-lg text-xs font-medium"
+                                                style="background: #19e8a0; color: #07090f;">إرسال</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        ${replies.length ? `
+                        <div class="mt-3 mr-8 space-y-2">
+                            ${replies.map(reply => `
+                            <div class="flex gap-2">
+                                <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                                     style="background: linear-gradient(135deg, #fbbf24, #fb923c); color: #07090f;">
+                                    ${escapeHtml(reply.user?.name?.charAt(0) || 'م')}
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs font-bold text-[#dde4f0]">${escapeHtml(reply.user?.name || 'مجهول')}</span>
+                                        <span class="text-[10px] text-[#8896b3]">${formatDate(reply.created_at)}</span>
+                                    </div>
+                                    <p class="text-xs text-[#bccae0]">${escapeHtml(reply.content)}</p>
+                                </div>
+                            </div>`).join('')}
+                        </div>` : ''}
+                    </div>
+                </div>
+            </div>`;
         });
+
+        container.innerHTML = html;
+
+    } catch (error) {
+        console.error('Error loading comments:', error);
+        container.innerHTML = '<div class="text-center py-8 text-[#f87171] text-sm">حدث خطأ في تحميل التعليقات</div>';
+    }
+}
+
+async function submitComment(videoId) {
+    const input   = document.getElementById(`comment-input-${videoId}`);
+    const content = input?.value?.trim();
+    if (!content) { showToast('الرجاء كتابة تعليق أولاً', 'error'); return; }
+
+    try {
+        const res = await fetch(STORE_URL, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': CSRF,
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest' // ✅ makes $request->ajax() return true
+    },
+    body: JSON.stringify({ video_id: videoId, content })
+});
+        const data = await res.json();
+              
+        if (data.success) {
+            input.value = '';
+            showToast('تم إضافة تعليقك بنجاح');
+            // FIX: force reload regardless of loaded flag
+            await loadComments(videoId, 'latest');
+
+               
+        } else {
+            showToast(data.message || 'حدث خطأ', 'error');
+        }
+    } catch { showToast('فشل الاتصال بالخادم', 'error'); }
+}
+function updateCommentCount(videoId, count) {
+    document.querySelectorAll(`.comments-count-badge-${videoId}`).forEach(el => {
+        el.textContent = count + ' تعليق'; // ✅ updates this span
     });
 }
+async function submitReply(commentId, videoId) {
+    const input   = document.getElementById(`reply-input-${commentId}`);
+    const content = input?.value?.trim();
 
-/* ---------- التشغيل عند تحميل الصفحة ---------- */
+    if (!content) { showToast('الرجاء كتابة الرد أولاً', 'error'); return; }
+
+    try {
+       const res = await fetch(`/comments/${commentId}/reply`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': CSRF,
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest' // ✅
+    },
+    body: JSON.stringify({ content })
+});
+        const data = await res.json();
+
+        if (data.success) {
+            input.value = '';
+            hideReplyForm(commentId);
+            showToast('تم إضافة ردك بنجاح');
+            loadComments(videoId, 'latest');
+        } else {
+            showToast(data.message || 'حدث خطأ', 'error');
+        }
+    } catch { showToast('فشل الاتصال بالخادم', 'error'); }
+}
+
+async function deleteComment(commentId, videoId) {
+    if (!confirm('هل أنت متأكد من حذف هذا التعليق؟')) return;
+
+    try {
+       const res = await fetch(`/comments/${commentId}`, {
+    method: 'DELETE',
+    headers: {
+        'X-CSRF-TOKEN': CSRF,
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest' // ✅
+    }
+});
+        const data = await res.json();
+
+        if (data.success) {
+            showToast('تم حذف التعليق بنجاح');
+            loadComments(videoId, 'latest');
+            document.querySelectorAll(`.comments-count-badge-${videoId}`).forEach(el => {
+                const n = parseInt(el.textContent) - 1;
+                el.textContent = Math.max(0, n) + ' تعليق';
+            });
+        } else {
+            showToast(data.message || 'حدث خطأ', 'error');
+        }
+    } catch { showToast('فشل الاتصال بالخادم', 'error'); }
+}
+
+function showReplyForm(commentId) {
+    document.getElementById(`reply-form-${commentId}`)?.classList.remove('hidden');
+}
+
+function hideReplyForm(commentId) {
+    document.getElementById(`reply-form-${commentId}`)?.classList.add('hidden');
+    const input = document.getElementById(`reply-input-${commentId}`);
+    if (input) input.value = '';
+}
+
+// =============================================
+// FIX #6: Complete escapeHtml (adds " and ')
+// =============================================
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    }[m]));
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const diff = Math.floor((Date.now() - date) / 1000);
+    if (diff < 60)      return 'الآن';
+    if (diff < 3600)    return `منذ ${Math.floor(diff / 60)} دقيقة`;
+    if (diff < 86400)   return `منذ ${Math.floor(diff / 3600)} ساعة`;
+    if (diff < 2592000) return `منذ ${Math.floor(diff / 86400)} يوم`;
+    return date.toLocaleDateString('ar-SA');
+}
+
+// =============================================
+// تهيئة الصفحة — single DOMContentLoaded
+// =============================================
 document.addEventListener('DOMContentLoaded', function () {
-    const contentSections = document.querySelectorAll('.content-section');
-    const navItems  = document.querySelectorAll('.nav-item');
+    const sections   = document.querySelectorAll('.content-section');
     const emptyState = document.getElementById('empty-state');
-    const subNavItems = document.querySelectorAll('.sub-nav-item');
 
-    /* إخفاء كل شيء ما عدا الحالة الفارغة */
-    contentSections.forEach(s => {
+    // Make sure only empty-state is visible at start
+    sections.forEach(s => {
         if (s.id !== 'empty-state') s.classList.add('hidden');
     });
     if (emptyState) {
@@ -761,88 +775,34 @@ document.addEventListener('DOMContentLoaded', function () {
         emptyState.classList.add('block');
     }
 
-    /* نقر على عناصر الشريط الجانبي */
-    navItems.forEach(item => {
+    // Sidebar nav clicks → use showSection (which also lazy-loads comments)
+    document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', function (e) {
             e.preventDefault();
             const targetId = this.getAttribute('data-target');
-            const target   = document.getElementById(targetId);
-            if (!target) return;
-
-            contentSections.forEach(s => s.classList.add('hidden'));
-            if (emptyState) emptyState.classList.add('hidden');
-            target.classList.remove('hidden');
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-            navItems.forEach(n => n.classList.remove('nav-active'));
-            this.classList.add('nav-active');
-            markAsViewed(targetId);
+            if (targetId) showSection(targetId);
         });
-    });
-
-    /* نقر على العناصر الفرعية */
-    subNavItems.forEach(item => {
-        item.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.getElementById(this.getAttribute('data-target'));
-            if (!target) return;
-            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            target.style.animation = 'pulse 0.5s ease';
-            setTimeout(() => target.style.animation = '', 500);
-            markAsViewed(this.getAttribute('data-target'));
-        });
-    });
-
-    /* إغلاق المودال بـ ESC */
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeImageModal();
     });
 
     updateProgress();
-    initCommentLikes();
 });
+
+// =============================================
+// Styles
+// =============================================
+const style = document.createElement('style');
+style.textContent = `
+    .nav-item { cursor: pointer; transition: all 0.3s ease; }
+    .nav-item:hover { background: rgba(25,232,160,.04); }
+    .nav-item.nav-active { background: rgba(25,232,160,.1) !important; border-right: 2px solid #19e8a0; }
+    .content-section { transition: opacity 0.5s ease, transform 0.5s ease; }
+    .content-section.hidden { display: none !important; }
+    .content-section:not(.hidden) { animation: fadeIn 0.5s ease; }
+    .block-content { transition: all 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+`;
+document.head.appendChild(style);
 </script>
 
-<!-- ===================================================== -->
-<!-- الأنماط                                              -->
-<!-- ===================================================== -->
-<style>
-mjx-container {
-    color: #19e8a0 !important;
-    font-size: 1.4rem !important;
-}
 
-/* شريط التمرير */
-::-webkit-scrollbar       { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: #0e1118; }
-::-webkit-scrollbar-thumb { background: #1c2538; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #19e8a0; }
-
-/* حالة النشاط في الشريط الجانبي */
-.nav-item { cursor: pointer; transition: all 0.3s ease; }
-.nav-item:hover  { background: rgba(25,232,160,.04); }
-.nav-item.nav-active {
-    background: rgba(25,232,160,.1) !important;
-    border-right: 2px solid #19e8a0;
-}
-
-/* أنيماشن الأقسام */
-.content-section { transition: opacity 0.5s ease, transform 0.5s ease; }
-.content-section.hidden { display: none !important; }
-.content-section:not(.hidden) { animation: fadeIn 0.5s ease; }
-
-/* textarea داخل التعليقات */
-.comment-textarea-wrap:focus-within {
-    border-color: rgba(25,232,160,.4) !important;
-}
-
-/* كتل المحتوى */
-.block-content { transition: all 0.3s ease; }
-.math-equation mjx-container { color: #19e8a0 !important; font-size: 1.4rem !important; }
-
-/* كيفريمز */
-@keyframes fadeIn    { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-@keyframes slideDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
-@keyframes pulse     { 0%,100% { transform:scale(1); } 50% { transform:scale(1.02); } }
-</style>
 @endsection

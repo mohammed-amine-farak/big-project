@@ -409,7 +409,7 @@ Route::get('/video_creator/dashboard', [VideoCreatorDashboardControlle::class, '
     // عرض صفحة تعديل الملف الشخصي
     Route::get('/video_creator/profile/edit', [VideoCreatorProfileController::class, 'edit'])
         ->name('video_creator.profile.edit');
-    
+        Route::put('/comments/{comment}/mark-read', [CommentController::class, 'markAsRead'])->name('comments.mark-read');
     // تحديث الملف الشخصي
     Route::put('/video_creator/profile', [VideoCreatorProfileController::class, 'update'])
         ->name('video_creator.profile.update');
@@ -431,11 +431,12 @@ Route::post('/comments/{comment}/reply', [CommentController::class, 'reply'])->n
     
     // حذف تعليق
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
-
+Route::post('/comments',[CommentController::class, 'store'])->name('comments.store');
 
     Route::prefix('api')->name('api.')->group(function () {
         Route::get('/comments/{videoId}', [App\Http\Controllers\CommentController::class, 'getVideoComments'])->name('comments');
     });
+
 
 
 
