@@ -274,15 +274,49 @@
 
                     <!-- Exercise Content -->
                     <div id="exercise_content" class="content-field hidden">
-                        <label for="content_exercise" class="block text-sm font-medium text-gray-700 mb-2">
-                            نص التمرين *
-                        </label>
-                        <textarea id="content_exercise" name="content" rows="8" 
-                                  class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition duration-150"
-                                  placeholder="اكتب نص التمرين هنا..." disabled></textarea>
+                        <!-- Exercise Text -->
+                        <div class="mb-6">
+                            <label for="content_exercise" class="block text-sm font-medium text-gray-700 mb-2">
+                                نص التمرين *
+                            </label>
+                            <textarea id="content_exercise" name="content" rows="6" 
+                                      class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition duration-150 font-arabic"
+                                      placeholder="اكتب نص التمرين هنا..." disabled></textarea>
+                        </div>
+                        
+                        <!-- Solution Section -->
+                        <div class="border-t border-gray-200 pt-6 mt-2">
+                            <div class="flex items-center gap-2 mb-4">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <h3 class="text-md font-semibold text-gray-800">حل التمرين</h3>
+                            </div>
+                            
+                            <!-- Solution Text -->
+                            <div class="mb-4">
+                                <label for="solution_text" class="block text-sm font-medium text-gray-700 mb-2">
+                                    الحل التفصيلي *
+                                </label>
+                                <textarea id="solution_text" name="solution_text" rows="6" 
+                                          class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-150 font-arabic"
+                                          placeholder="اكتب الحل التفصيلي هنا... يمكنك استخدام LaTeX: $$ E = mc^2 $$" disabled></textarea>
+                                <p class="mt-1 text-xs text-gray-500">يدعم صيغة LaTeX للمعادلات الرياضية</p>
+                            </div>
+                            
+                            <!-- Hint (Optional) -->
+                            <div>
+                                <label for="hint" class="block text-sm font-medium text-gray-700 mb-2">
+                                    تلميح <span class="text-xs text-gray-500">(اختياري)</span>
+                                </label>
+                                <textarea id="hint" name="hint" rows="3" 
+                                          class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 font-arabic"
+                                          placeholder="قدم تلميحاً لمساعدة الطالب في حل التمرين..." disabled></textarea>
+                            </div>
+                        </div>
                         
                         <!-- Exercise Tips -->
-                        <div class="mt-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                        <div class="mt-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
                             <div class="flex items-start gap-2">
                                 <svg class="w-5 h-5 text-orange-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -293,6 +327,7 @@
                                         <li>اكتب التمرين بشكل واضح ومفهوم</li>
                                         <li>يمكنك إضافة خطوات الحل إذا لزم الأمر</li>
                                         <li>يمكنك تضمين معادلات باستخدام LaTeX بين علامات $$</li>
+                                        <li>الحل التفصيلي سيساعد الطالب في فهم طريقة الحل الصحيحة</li>
                                     </ul>
                                 </div>
                             </div>
@@ -353,6 +388,10 @@
             video: document.getElementById('content_video'),
             exercise: document.getElementById('content_exercise')
         };
+        
+        // Solution fields
+        const solutionTextarea = document.getElementById('solution_text');
+        const hintTextarea = document.getElementById('hint');
         
         // Additional elements
         const imageUploadArea = document.getElementById('image_upload_area');
@@ -432,8 +471,21 @@
                         }
                     }
                 }
+                
+                // Enable/disable solution fields for exercise type
+                if (type === 'exercise') {
+                    if (solutionTextarea) solutionTextarea.disabled = false;
+                    if (hintTextarea) hintTextarea.disabled = false;
+                } else {
+                    if (solutionTextarea) solutionTextarea.disabled = true;
+                    if (hintTextarea) hintTextarea.disabled = true;
+                }
             });
         });
+        
+        // Initially disable solution fields
+        if (solutionTextarea) solutionTextarea.disabled = true;
+        if (hintTextarea) hintTextarea.disabled = true;
         
         // Image Upload Handling
         if (imageUploadArea) {
@@ -544,12 +596,33 @@
                 return false;
             }
             
+            // Additional validation for exercise type
+            if (selectedType === 'exercise') {
+                const solutionText = document.getElementById('solution_text')?.value.trim();
+                if (!solutionText) {
+                    e.preventDefault();
+                    alert('يرجى إدخال حل التمرين');
+                    document.getElementById('solution_text')?.focus();
+                    return false;
+                }
+            }
+            
             // Additional validation for image
             if (selectedType === 'image') {
                 const imageInput = document.getElementById('content_image');
                 if (imageInput && imageInput.files.length === 0) {
                     e.preventDefault();
                     alert('يرجى اختيار صورة');
+                    return false;
+                }
+            }
+            
+            // Additional validation for video
+            if (selectedType === 'video') {
+                const videoUrl = document.getElementById('content_video')?.value.trim();
+                if (videoUrl && !videoUrl.match(/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be|vimeo\.com)\/.+$/)) {
+                    e.preventDefault();
+                    alert('يرجى إدخال رابط فيديو صالح من YouTube أو Vimeo');
                     return false;
                 }
             }

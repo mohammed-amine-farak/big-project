@@ -752,6 +752,7 @@ body {
     padding: 24px;
     position: relative;
     overflow: hidden;
+    margin-bottom: 24px;
 }
 
 .exercise-header {
@@ -786,6 +787,84 @@ body {
     line-height: 1.8;
     color: var(--text);
     white-space: pre-line;
+}
+
+/* Solution content */
+.solution-content-modern {
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    border: 1px solid #6ee7b7;
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 16px;
+    position: relative;
+}
+
+.solution-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.solution-badge {
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 1px solid #6ee7b7;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--success);
+}
+
+.solution-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--success);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.solution-text {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text);
+    white-space: pre-line;
+}
+
+.solution-text p {
+    margin-bottom: 12px;
+}
+
+.solution-text:last-child {
+    margin-bottom: 0;
+}
+
+.hint-content {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed #6ee7b7;
+}
+
+.hint-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--warning);
+}
+
+.hint-text {
+    font-size: 14px;
+    color: var(--text-light);
+    font-style: italic;
+    padding-right: 24px;
+    border-right: 3px solid var(--warning);
+    line-height: 1.6;
 }
 
 /* Modern Video Player */
@@ -1129,6 +1208,7 @@ body {
                 $videos = $rule->content_blocks->filter(function($block) { 
                     return isset($block->video); 
                 })->count();
+                $exercises = $rule->content_blocks->where('type', 'exercise')->count();
             @endphp
             
             <div class="sidebar-stats">
@@ -1141,8 +1221,8 @@ body {
                     <div class="stat-label">نصوص</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">{{ $videos }}</div>
-                    <div class="stat-label">فيديوهات</div>
+                    <div class="stat-number">{{ $exercises }}</div>
+                    <div class="stat-label">تمارين</div>
                 </div>
             </div>
         </div>
@@ -1262,6 +1342,16 @@ body {
             </div>
             @endif
             
+            @if($exercises > 0)
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background: var(--orange-light); color: var(--orange);">✏️</div>
+                <div class="stat-card-info">
+                    <div class="stat-card-value">{{ $exercises }}</div>
+                    <div class="stat-card-label">تمارين</div>
+                </div>
+            </div>
+            @endif
+            
             @if($videos > 0)
             <div class="stat-card">
                 <div class="stat-card-icon" style="background: var(--teal-light); color: var(--teal);">🎥</div>
@@ -1363,10 +1453,36 @@ body {
                     <div class="exercise-content-modern">
                         <div class="exercise-header">
                             <div class="exercise-badge">✏️</div>
-                            <span class="exercise-title">تمرين تطبيقي</span>
+                            <span class="exercise-title">التمرين</span>
                         </div>
                         <div class="exercise-text">{{ $block->content }}</div>
                     </div>
+                    
+                    @php
+                        $exerciseSolution = $block->exerciseSolution;
+                    @endphp
+                    
+                    @if($exerciseSolution)
+                    <div class="solution-content-modern">
+                        <div class="solution-header">
+                            <div class="solution-badge">✅</div>
+                            <span class="solution-title">الحل النموذجي</span>
+                        </div>
+                        <div class="solution-text">{!! nl2br(e($exerciseSolution->solution_text)) !!}</div>
+                        
+                        @if($exerciseSolution->hint)
+                        <div class="hint-content">
+                            <div class="hint-header">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>تلميح</span>
+                            </div>
+                            <div class="hint-text">{{ $exerciseSolution->hint }}</div>
+                        </div>
+                        @endif
+                    </div>
+                    @endif
                     
                     @elseif($block->type == 'text')
                     <div class="text-content">{{ $block->content }}</div>

@@ -78,5 +78,8 @@ class content_blocks extends Model
                 return 10;
         }
     }
-    
+    public function exerciseSolution()
+{
+    return $this->hasOne(exercise_solution::class, 'content_block_id');
+}
 }

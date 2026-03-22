@@ -243,7 +243,7 @@
                                         </svg>
                                     </div>
                                     <span class="text-xs font-bold tracking-wider text-blue-400 uppercase">صورة توضيحية</span>
-                                    <span class="text-xs text-slate-400 mr-auto">{{ basename($block->content) }}</span>
+                                    <span class="text-xs text-slate-400 mr-auto"></span>
                                 </div>
                                 <div class="relative group cursor-pointer" onclick="openImageModal('{{ asset('storage/' . $block->content) }}')">
                                     <img src="{{ asset('storage/' . $block->content) }}" alt="صورة"
@@ -255,36 +255,60 @@
                             </div>
 
                             {{-- تمرين --}}
-                            @elseif($block->type == 'exercise')
-                            <div class="relative rounded-xl p-6 overflow-hidden bg-gradient-to-r from-amber-500/5 to-orange-500/3 border border-amber-500/20">
-                                <div class="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-orange-500"></div>
-                                <div class="flex items-center gap-2 mb-4">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-amber-500/10">
-                                        <svg width="16" height="16" fill="none" stroke="#fbbf24" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                                        </svg>
-                                    </div>
-                                    <span class="text-xs font-bold tracking-wider text-amber-400 uppercase">تمرين تطبيقي</span>
-                                    <span class="text-xs text-slate-400 mr-auto">حاول الحل بنفسك أولاً</span>
-                                </div>
-                                <p class="text-white text-lg mb-6">{{ $block->content }}</p>
-                                <button onclick="toggleSolution({{ $block->id }})"
-                                        class="flex items-center gap-2 px-6 py-3 rounded-xl border border-amber-500/30 hover:bg-amber-500/10 text-amber-400 text-sm font-medium transition-all hover:scale-105">
-                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                    </svg>
-                                    عرض الحل
-                                </button>
-                                <div id="solution-{{ $block->id }}" class="hidden mt-6 p-6 rounded-xl text-sm text-slate-300 leading-relaxed bg-emerald-500/5 border border-emerald-500/20">
-                                    <div class="flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 rounded-full flex items-center justify-center text-emerald-400 bg-emerald-500/10">✓</span>
-                                        <span class="text-emerald-400 font-medium">الحل النموذجي</span>
-                                    </div>
-                                    الحل سيظهر هنا...
-                                </div>
-                            </div>
-                            @endif
+      @elseif($block->type == 'exercise')
+    <div class="relative rounded-xl p-6 overflow-hidden bg-gradient-to-r from-amber-500/5 to-orange-500/3 border border-amber-500/20">
+        <div class="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-orange-500"></div>
+        <div class="flex items-center gap-2 mb-4">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-amber-500/10">
+                <svg width="16" height="16" fill="none" stroke="#fbbf24" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                </svg>
+            </div>
+            <span class="text-xs font-bold tracking-wider text-amber-400 uppercase">تمرين تطبيقي</span>
+            <span class="text-xs text-slate-400 mr-auto">حاول الحل بنفسك أولاً</span>
+        </div>
+        <p class="text-white text-lg mb-6">{{ $block->content }}</p>
+        
+        @if($block->exerciseSolution)
+            <button onclick="toggleSolution({{ $block->id }})"
+                    class="flex items-center gap-2 px-6 py-3 rounded-xl border border-amber-500/30 hover:bg-amber-500/10 text-amber-400 text-sm font-medium transition-all hover:scale-105">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+                عرض الحل
+            </button>
+            
+            <div id="solution-{{ $block->id }}" class="hidden mt-6 p-6 rounded-xl text-sm text-slate-300 leading-relaxed bg-emerald-500/5 border border-emerald-500/20">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="w-6 h-6 rounded-full flex items-center justify-center text-emerald-400 bg-emerald-500/10">✓</span>
+                    <span class="text-emerald-400 font-medium">الحل النموذجي</span>
+                </div>
+                <p class="text-slate-300 leading-relaxed text-lg">{{ $block->exerciseSolution->solution_text }}</p>
+                @if($block->exerciseSolution->hint)
+                    <div class="mt-4 pt-4 border-t border-emerald-500/20">
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg width="14" height="14" fill="none" stroke="#f59e0b" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span class="text-amber-400 text-sm font-medium">تلميح</span>
+                        </div>
+                        <p class="text-slate-400 text-sm italic">{{ $block->exerciseSolution->hint }}</p>
+                    </div>
+                @endif
+            </div>
+        @else
+            <div class="mt-4 p-4 rounded-xl bg-red-500/5 border border-red-500/20">
+                <div class="flex items-center gap-2">
+                    <svg width="18" height="18" fill="none" stroke="#ef4444" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-red-400 text-sm">⚠️ لم يتم إضافة حل لهذا التمرين بعد</p>
+                </div>
+            </div>
+        @endif
+    </div>
+@endif
 
                             {{-- فيديو + تعليقات --}}
                             @if(isset($block->video) && $block->video)
