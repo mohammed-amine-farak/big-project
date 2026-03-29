@@ -157,9 +157,9 @@ class StudentLessonController extends Controller
                 $query->orderBy('block_order', 'asc');
             },
             'rules.content_blocks.video',
-            'rules.content_blocks.exerciseSolution'
+            'rules.content_blocks.exerciseSolution',
+
         ]);
-       
         return view('student-dashboard.lesson.show', compact('lesson'));
     }
 }

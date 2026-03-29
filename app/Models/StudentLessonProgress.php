@@ -15,7 +15,8 @@ class StudentLessonProgress extends Model
         'completed',
         'completed_at',
         'viewed_links',
-        'last_accessed_at'
+        'last_accessed_at',
+        'status'
     ];
 
     protected $casts = [

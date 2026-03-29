@@ -1,195 +1,241 @@
 @extends('layouts.student_dashboard')
 
 @section('content')
-<div class="p-4 sm:p-6 lg:p-8">
-    <div class="max-w-7xl mx-auto">
-        
-        <!-- Header -->
-        <div class="mb-8">
-            <div class="bg-gradient-to-r from-emerald-500 to-green-600 rounded-2xl shadow-xl p-6 text-white">
-                <h1 class="text-3xl font-bold mb-1">📚 الدروس</h1>
-                <p class="text-emerald-100">تصفح جميع الدروس وتابع تقدمك</p>
-            </div>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.page { background: #f5f5f3; padding: 2rem 1.5rem; min-height: 100vh; direction: rtl; }
+.max-w { max-width: 1100px; margin: 0 auto; }
+
+.page-header { margin-bottom: 1.5rem; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.page-title { font-size: 22px; font-weight: 500; color: #1a1a1a; }
+.page-sub { font-size: 13px; color: #6b6b6b; margin-top: 3px; }
+.breadcrumb { font-size: 13px; color: #9b9b9b; display: flex; align-items: center; gap: 6px; }
+.breadcrumb b { color: #6b6b6b; font-weight: 400; }
+
+.toolbar { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.toolbar-label { font-size: 13px; color: #6b6b6b; white-space: nowrap; }
+.pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.pill { padding: 5px 14px; border-radius: 999px; border: 0.5px solid rgba(0,0,0,0.2); font-size: 13px; color: #6b6b6b; background: transparent; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-block; }
+.pill:hover { background: #f5f5f3; color: #1a1a1a; }
+.pill.active { background: #1D9E75; border-color: #1D9E75; color: #fff; font-weight: 500; }
+
+.stats-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+.stat { background: #efefed; border-radius: 8px; padding: 14px 16px; }
+.stat-label { font-size: 12px; color: #6b6b6b; margin-bottom: 4px; }
+.stat-num { font-size: 26px; font-weight: 500; color: #1a1a1a; }
+.stat-num.g { color: #0F6E56; }
+.stat-num.a { color: #854F0B; }
+.stat-num.m { color: #9b9b9b; }
+
+.section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
+.section-title { font-size: 14px; font-weight: 500; color: #1a1a1a; }
+.ftabs { display: flex; gap: 4px; }
+.ftab { padding: 4px 12px; border-radius: 999px; font-size: 12px; border: 0.5px solid rgba(0,0,0,0.1); color: #6b6b6b; background: transparent; cursor: pointer; transition: all 0.15s; }
+.ftab:hover, .ftab.active { background: #efefed; color: #1a1a1a; border-color: rgba(0,0,0,0.2); }
+
+.lessons-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+.lesson-card { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; transition: border-color 0.15s; }
+.lesson-card:hover { border-color: rgba(0,0,0,0.25); }
+.card-top-bar { height: 3px; }
+.bar-g { background: #1D9E75; }
+.bar-a { background: #EF9F27; }
+.bar-n { background: rgba(0,0,0,0.15); }
+.card-body { padding: 1.25rem; }
+.card-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+.badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.badge { font-size: 11px; padding: 3px 9px; border-radius: 999px; font-weight: 500; }
+.bg-g { background: #E1F5EE; color: #085041; }
+.bg-a { background: #FAEEDA; color: #633806; }
+.bg-n { background: #efefed; color: #5f5e5a; }
+.bg-b { background: #E6F1FB; color: #0C447C; }
+.card-title { font-size: 15px; font-weight: 500; color: #1a1a1a; margin-bottom: 6px; line-height: 1.4; }
+.card-desc { font-size: 13px; color: #6b6b6b; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 12px; border-top: 0.5px solid rgba(0,0,0,0.08); }
+.meta { font-size: 12px; color: #9b9b9b; display: flex; align-items: center; gap: 4px; }
+.meta svg { width: 14px; height: 14px; }
+.actions { display: flex; gap: 6px; }
+.btn { padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 500; border: none; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-flex; align-items: center; }
+.btn-ghost { background: transparent; border: 0.5px solid rgba(0,0,0,0.2); color: #6b6b6b; }
+.btn-ghost:hover { background: #f5f5f3; }
+.btn-teal { background: #1D9E75; color: #fff; }
+.btn-teal:hover { background: #0F6E56; }
+.btn-dark { background: #085041; color: #fff; }
+.btn-dark:hover { background: #04342C; }
+
+.empty-state { grid-column: 1/-1; text-align: center; padding: 4rem 1rem; }
+.empty-icon { width: 52px; height: 52px; border-radius: 12px; background: #efefed; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+.empty-icon svg { width: 24px; height: 24px; color: #9b9b9b; }
+.empty-title { font-size: 15px; font-weight: 500; color: #1a1a1a; margin-bottom: 4px; }
+.empty-sub { font-size: 13px; color: #6b6b6b; }
+
+.select-prompt { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 4rem 2rem; text-align: center; }
+.select-prompt-icon { width: 52px; height: 52px; border-radius: 12px; background: #E1F5EE; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+.select-prompt-icon svg { width: 24px; height: 24px; color: #1D9E75; }
+.select-prompt-title { font-size: 17px; font-weight: 500; color: #1a1a1a; margin-bottom: 6px; }
+.select-prompt-sub { font-size: 13px; color: #6b6b6b; }
+
+@media(max-width: 640px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .lessons-grid { grid-template-columns: 1fr; }
+    .ftabs { flex-wrap: wrap; }
+}
+</style>
+
+<div class="page">
+<div class="max-w">
+
+    {{-- Header --}}
+    <div class="page-header">
+        <div>
+            <div class="page-title">الدروس</div>
+            <div class="page-sub">تصفح جميع الدروس المتاحة</div>
         </div>
-
-        <!-- Subject Selection Form -->
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-8">
-            <form method="GET" action="{{ route('student.lesson.index') }}" class="flex flex-col md:flex-row gap-4 items-end">
-                <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        اختر المادة <span class="text-red-500">*</span>
-                    </label>
-                    <select name="subject_id" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                        <option value="">-- اختر المادة --</option>
-                        @foreach($subjects as $subject)
-                            <option value="{{ $subject->id }}" {{ $selectedSubjectId == $subject->id ? 'selected' : '' }}>
-                                {{ $subject->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-medium transition-colors">
-                    عرض الدروس
-                </button>
-            </form>
+        <div class="breadcrumb">
+            لوحة التحكم
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"/>
+            </svg>
+            <b>الدروس</b>
         </div>
-
-        @if($selectedSubjectId)
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-5">
-                    <p class="text-sm text-gray-500">إجمالي الدروس</p>
-                    <p class="text-3xl font-bold">{{ $totalLessons }}</p>
-                </div>
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-5">
-                    <p class="text-sm text-gray-500">مكتمل</p>
-                    <p class="text-3xl font-bold text-green-600">{{ $completedLessons }}</p>
-                </div>
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-5">
-                    <p class="text-sm text-gray-500">قيد التعلم</p>
-                    <p class="text-3xl font-bold text-emerald-600">{{ $inProgressLessons }}</p>
-                </div>
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-5">
-                    <p class="text-sm text-gray-500">لم يبدأ</p>
-                    <p class="text-3xl font-bold text-gray-400">{{ $notStartedLessons }}</p>
-                </div>
-            </div>
-
-            <!-- Continue Learning -->
-            @if($lastLessonProgress && $lastLessonProgress->lesson)
-            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-8">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">⏯️ استئناف التعلم</h2>
-                <div class="bg-gradient-to-l from-emerald-50 to-green-50 p-6 rounded-xl border border-emerald-200">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex items-center gap-4">
-                            <div class="w-16 h-16 bg-emerald-100 rounded-xl flex items-center justify-center">
-                                <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-bold text-gray-900">{{ $lastLessonProgress->lesson->title }}</h3>
-                                <p class="text-gray-600">آخر نشاط: {{ $lastLessonProgress->updated_at->diffForHumans() }}</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-48">
-                                <div class="flex justify-between text-sm mb-1">
-                                    <span class="text-gray-600">التقدم</span>
-                                    <span class="font-medium text-emerald-600">{{ $lastLessonProgress->progress }}%</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-emerald-600 h-2 rounded-full" style="width: {{ $lastLessonProgress->progress }}%"></div>
-                                </div>
-                            </div>
-                            <a href="{{ route('student.lessons.show', $lastLessonProgress->lesson_id) }}" 
-                               class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-medium transition-colors">
-                                متابعة
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endif
-
-            <!-- Lessons Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @forelse($lessonsWithProgress as $item)
-                    @php
-                        if ($item['status'] == 'completed') {
-                            $statusColor = 'bg-green-500';
-                            $statusBadge = 'bg-green-100 text-green-700';
-                            $statusText = 'مكتمل';
-                            $icon = '✅';
-                            $buttonText = 'مراجعة';
-                            $buttonClass = 'bg-gray-600 hover:bg-gray-700';
-                        } elseif ($item['status'] == 'in_progress') {
-                            $statusColor = 'bg-emerald-500';
-                            $statusBadge = 'bg-emerald-100 text-emerald-700';
-                            $statusText = 'قيد التعلم';
-                            $icon = '🔄';
-                            $buttonText = 'متابعة';
-                            $buttonClass = 'bg-emerald-600 hover:bg-emerald-700';
-                        } else {
-                            $statusColor = 'bg-gray-300';
-                            $statusBadge = 'bg-gray-100 text-gray-500';
-                            $statusText = 'لم يبدأ';
-                            $icon = '📘';
-                            $buttonText = 'بدء';
-                            $buttonClass = 'bg-emerald-600 hover:bg-emerald-700';
-                        }
-                    @endphp
-
-                    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all">
-                        <div class="h-2 {{ $statusColor }}"></div>
-                        <div class="p-6">
-                            <div class="flex items-start justify-between mb-4">
-                                <div>
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <span class="text-xs font-medium {{ $statusBadge }} px-3 py-1 rounded-full">
-                                            {{ $icon }} {{ $statusText }}
-                                        </span>
-                                        @if($item['subject'])
-                                        <span class="text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-                                            {{ $item['subject']->name }}
-                                        </span>
-                                        @endif
-                                    </div>
-                                    <h3 class="text-xl font-bold text-gray-900">{{ $item['title'] }}</h3>
-                                </div>
-                            </div>
-                            
-                            <p class="text-gray-600 mb-4 line-clamp-2">{{ $item['description'] ?? 'شرح مفصل للدرس...' }}</p>
-                            
-                            <div class="mb-4">
-                                <div class="flex justify-between text-sm mb-1">
-                                    <span class="text-gray-500">التقدم</span>
-                                    <span class="font-medium text-emerald-600">{{ $item['progress'] }}%</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="bg-emerald-600 h-2 rounded-full" style="width: {{ $item['progress'] }}%"></div>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2 text-sm text-gray-500">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    <span>{{ $item['created_at']->diffForHumans() }}</span>
-                                </div>
-                                
-                                <a href="{{ route('student.lessons.show', $item['id']) }}" 
-                                   class="{{ $buttonClass }} text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                                    {{ $buttonText }}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-span-full text-center py-12">
-                        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">لا توجد دروس</h3>
-                        <p class="text-gray-500">لم يتم إضافة دروس لهذه المادة بعد</p>
-                    </div>
-                @endforelse
-            </div>
-        @else
-            <!-- لم يختر مادة بعد -->
-            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-16 text-center">
-                <div class="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-12 h-12 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 9l4-4 4 4m0 8l-4 4-4-4"/>
-                    </svg>
-                </div>
-                <h3 class="text-2xl font-bold text-gray-900 mb-3">اختر مادة للبدء</h3>
-                <p class="text-gray-500 text-lg">الرجاء اختيار مادة من القائمة أعلاه لعرض الدروس</p>
-            </div>
-        @endif
     </div>
+
+    {{-- Subject Toolbar --}}
+    <div class="toolbar">
+        <span class="toolbar-label">المادة:</span>
+        <div class="pills">
+            @foreach($subjects as $subject)
+                <a href="{{ route('student.lesson.index', ['subject_id' => $subject->id]) }}"
+                   class="pill {{ $selectedSubjectId == $subject->id ? 'active' : '' }}">
+                    {{ $subject->name }}
+                </a>
+            @endforeach
+        </div>
+    </div>
+
+    @if($selectedSubjectId)
+
+        {{-- Stats --}}
+        <div class="stats-row">
+            <div class="stat">
+                <div class="stat-label">إجمالي الدروس</div>
+                <div class="stat-num">{{ $totalLessons }}</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">مكتمل</div>
+                <div class="stat-num g">{{ $completedLessons }}</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">قيد التعلم</div>
+                <div class="stat-num a">{{ $inProgressLessons }}</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">لم يبدأ</div>
+                <div class="stat-num m">{{ $notStartedLessons }}</div>
+            </div>
+        </div>
+
+        {{-- Section Header + Filter Tabs --}}
+        <div class="section-head">
+            <div class="section-title">جميع الدروس</div>
+            <div class="ftabs">
+                <div class="ftab active" onclick="filterCards(this,'all')">الكل</div>
+                <div class="ftab" onclick="filterCards(this,'in_progress')">قيد التعلم</div>
+                <div class="ftab" onclick="filterCards(this,'completed')">مكتمل</div>
+                <div class="ftab" onclick="filterCards(this,'not_started')">لم يبدأ</div>
+            </div>
+        </div>
+
+        {{-- Lessons Grid --}}
+        <div class="lessons-grid" id="lessonsGrid">
+            @forelse($lessonsWithProgress as $item)
+                @php
+                    if ($item['status'] === 'completed') {
+                        $barClass    = 'bar-g';
+                        $badgeClass  = 'bg-g';
+                        $statusText  = 'مكتمل';
+                        $btnClass    = 'btn-dark';
+                        $btnText     = 'مراجعة';
+                    } elseif ($item['status'] === 'in_progress') {
+                        $barClass    = 'bar-a';
+                        $badgeClass  = 'bg-a';
+                        $statusText  = 'قيد التعلم';
+                        $btnClass    = 'btn-teal';
+                        $btnText     = 'متابعة';
+                    } else {
+                        $barClass    = 'bar-n';
+                        $badgeClass  = 'bg-n';
+                        $statusText  = 'لم يبدأ';
+                        $btnClass    = 'btn-teal';
+                        $btnText     = 'بدء';
+                    }
+                @endphp
+
+                <div class="lesson-card" data-status="{{ $item['status'] }}">
+                    <div class="card-top-bar {{ $barClass }}"></div>
+                    <div class="card-body">
+                        <div class="card-head">
+                            <div class="badges">
+                                <span class="badge {{ $badgeClass }}">{{ $statusText }}</span>
+                                @if($item['subject'])
+                                    <span class="badge bg-b">{{ $item['subject']->name }}</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="card-title">{{ $item['title'] }}</div>
+                        <div class="card-desc">{{ $item['description'] ?? 'شرح مفصل للدرس...' }}</div>
+                        <div class="card-footer">
+                            <div class="meta">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                {{ $item['created_at']->diffForHumans() }}
+                            </div>
+                            <div class="actions">
+                                <a href="{{ route('student.lessons.show', $item['id']) }}" class="btn btn-ghost">تفاصيل</a>
+                                <a href="{{ route('student.lessons.show', $item['id']) }}" class="btn {{ $btnClass }}">{{ $btnText }}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            @empty
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                    </div>
+                    <div class="empty-title">لا توجد دروس</div>
+                    <div class="empty-sub">لم يتم إضافة دروس لهذه المادة بعد</div>
+                </div>
+            @endforelse
+        </div>
+
+    @else
+
+        {{-- No subject selected --}}
+        <div class="select-prompt">
+            <div class="select-prompt-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+            </div>
+            <div class="select-prompt-title">اختر مادة للبدء</div>
+            <div class="select-prompt-sub">الرجاء اختيار مادة من الأزرار أعلاه لعرض الدروس</div>
+        </div>
+
+    @endif
+
 </div>
+</div>
+
+<script>
+function filterCards(el, status) {
+    document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.lesson-card').forEach(card => {
+        card.style.display = (status === 'all' || card.dataset.status === status) ? '' : 'none';
+    });
+}
+</script>
 @endsection

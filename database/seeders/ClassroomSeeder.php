@@ -28,7 +28,7 @@ class ClassroomSeeder extends Seeder
             [
                 'study_year_id' => 1,
                 'teacher_id' => 12,
-                'subject_id' => 1,
+                'subject_id' => 32,
                 'school_id' => 1,
                 'class_name' => 'Mathematics 101',
                 'class_name_ar' => 'رياضيات ١٠١',
@@ -42,7 +42,7 @@ class ClassroomSeeder extends Seeder
             [
                 'study_year_id' => 1,
                 'teacher_id' => 12,
-                'subject_id' => 1,
+                'subject_id' => 32,
                 'school_id' => 1,
                 'class_name' => 'Science Fundamentals',
                 'class_name_ar' => 'أساسيات العلوم',
@@ -56,7 +56,7 @@ class ClassroomSeeder extends Seeder
             [
                 'study_year_id' => 1,
                 'teacher_id' => 12,
-                'subject_id' => 1,
+                'subject_id' => 32,
                 'school_id' => 1,
                 'class_name' => 'English Literature',
                 'class_name_ar' => 'الأدب الإنجليزي',
@@ -70,7 +70,7 @@ class ClassroomSeeder extends Seeder
             [
                 'study_year_id' => 1,
                 'teacher_id' => 12,
-                'subject_id' => 1,
+                'subject_id' => 32,
                 'school_id' => 1,
                 'class_name' => 'History Class',
                 'class_name_ar' => 'صف التاريخ',
@@ -84,7 +84,7 @@ class ClassroomSeeder extends Seeder
             [
                 'study_year_id' => 1,
                 'teacher_id' => 12,
-                'subject_id' => 1,
+                'subject_id' => 32,
                 'school_id' => 1,
                 'class_name' => 'Computer Science',
                 'class_name_ar' => 'علوم الحاسوب',
@@ -98,7 +98,7 @@ class ClassroomSeeder extends Seeder
             [
                 'study_year_id' => 1,
                 'teacher_id' => 12,
-                'subject_id' => 1,
+                'subject_id' => 32,
                 'school_id' => 1,
                 'class_name' => 'Physical Education',
                 'class_name_ar' => 'التربية البدنية',
@@ -112,7 +112,7 @@ class ClassroomSeeder extends Seeder
             [
                 'study_year_id' => 1,
                 'teacher_id' => 12,
-                'subject_id' => 1,
+                'subject_id' => 32,
                 'school_id' => 1,
                 'class_name' => 'Advanced Mathematics',
                 'class_name_ar' => 'رياضيات متقدمة',
@@ -126,7 +126,7 @@ class ClassroomSeeder extends Seeder
             [
                 'study_year_id' => 1,
                 'teacher_id' => 12,
-                'subject_id' => 1,
+                'subject_id' => 32,
                 'school_id' => 1,
                 'class_name' => 'Arabic Language',
                 'class_name_ar' => 'اللغة العربية',
@@ -140,7 +140,7 @@ class ClassroomSeeder extends Seeder
             [
                 'study_year_id' => 1,
                 'teacher_id' => 12,
-                'subject_id' => 1,
+                'subject_id' => 32,
                 'school_id' => 1,
                 'class_name' => 'Art Class',
                 'class_name_ar' => 'صف الفن',
@@ -154,7 +154,7 @@ class ClassroomSeeder extends Seeder
             [
                 'study_year_id' => 1,
                 'teacher_id' => 12,
-                'subject_id' => 1,
+                'subject_id' => 32,
                 'school_id' => 1,
                 'class_name' => 'Music Theory',
                 'class_name_ar' => 'نظرية الموسيقى',

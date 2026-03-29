@@ -27,7 +27,7 @@ class exam_weeckly_Controller extends Controller
         if ($request->filled('subject_id')) {
             $query->where('subject_id', $request->subject_id);
         }
-    
+        
         if ($request->filled('classroom_id')) {
             $query->where('classroom_id', $request->classroom_id);
         }
