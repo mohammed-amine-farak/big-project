@@ -16,6 +16,7 @@ use App\Http\Controllers\admine_report_controller;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ReseacherDashboardController;
 use App\Http\Controllers\ResearcherProductionRequestController;
+use App\Http\Controllers\StudentExamController;
 use App\Http\Controllers\StudentLessonController;
 use App\Http\Controllers\StudentPsychologyController;
 use App\Http\Controllers\teacher_admine_reports_view_Controller;
@@ -446,6 +447,9 @@ Route::get('student/lesson', [StudentLessonController::class, 'index'])
 Route::get('/student/lessons/{lesson}', [StudentLessonController::class, 'show'])->name('student.lessons.show');
 Route::post('/lessons/{lesson}/mark-viewed', [StudentLessonController::class, 'markLinkAsViewed'])
     ->name('student.lessons.mark-viewed');
+Route::get('student/exam/{exam}', [StudentExamController::class, 'show'])->name('student.exam.show');
+    Route::post('student/exam/{exam}/submit', [StudentExamController::class, 'submit'])->name('student.exam.submit');
+    Route::get('student/exam/{exam}/results', [StudentExamController::class, 'results'])->name('student.exam.results');
 
 /*
 Route::get('about_us', function () {

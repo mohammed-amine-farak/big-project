@@ -184,25 +184,28 @@ class StudentLessonController extends Controller
         'studentClassrooms'
     ));
 }
-         public function show(lessonss $lesson)
-    {
-        $student = 17;
-        
-        
-        // تحميل جميع العلاقات المطلوبة
-        $lesson->load([
-            'subject',
-            'researcher',
-            'rules' => function($query) {
-                $query->orderBy('id');
-            },
-            'rules.content_blocks' => function($query) {
-                $query->orderBy('block_order', 'asc');
-            },
-            'rules.content_blocks.video',
-            'rules.content_blocks.exerciseSolution',
-
-        ]);
-        return view('student-dashboard.lesson.show', compact('lesson'));
-    }
+     public function show(lessonss $lesson)
+{
+    $student = 17;
+    
+    // تحميل جميع العلاقات المطلوبة
+    $lesson->load([
+        'subject',
+        'researcher',
+        'exams', // ✅ Add this to load the exam relationship
+        'rules' => function($query) {
+            $query->orderBy('id');
+        },
+        'rules.content_blocks' => function($query) {
+            $query->orderBy('block_order', 'asc');
+        },
+        'rules.content_blocks.video',
+        'rules.content_blocks.exerciseSolution',
+        'exams.questions', // ✅ Optional: load questions with the exam
+        'exams.questions.choices' // ✅ Optional: load choices for each question
+    ]);
+   
+    
+    return view('student-dashboard.lesson.show', compact('lesson'));
+}
 }

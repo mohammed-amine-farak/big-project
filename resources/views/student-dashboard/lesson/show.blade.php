@@ -8,6 +8,10 @@
             $totalItems = 0;
             if ($lesson->videos && $lesson->videos->isNotEmpty()) $totalItems++;
             $totalItems += $lesson->rules->count();
+            
+            // Check if lesson has an exam
+            $hasExam = $lesson->exams ? true : false;
+            if ($hasExam) $totalItems++;
         @endphp
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -91,6 +95,28 @@
                                     </div>
                                 </div>
                             @endforeach
+
+                            <!-- ✅ Exam Link - Added after rules -->
+                            @if($hasExam)
+                                <div class="nav-item cursor-pointer rounded-xl transition-all duration-300 group hover:bg-white/5 mt-2 border-t border-white/10 pt-2"
+                                     data-target="exam-section" data-index="{{ $lesson->rules->count() + 1 }}">
+                                    <div class="flex items-center gap-3 px-4 py-3">
+                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-purple-500/10 group-hover:scale-110 transition-transform">
+                                            <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 2v4h4"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="text-sm font-medium text-white group-hover:text-purple-400 transition-colors">اختبار الدرس</div>
+                                            <div class="text-xs text-slate-400">قياس مستوى الفهم</div>
+                                        </div>
+                                        <div class="flex items-center gap-1">
+                                            <span class="text-xs px-2 py-1 rounded-lg bg-purple-500/10 text-purple-400">امتحان</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="px-5 py-4 border-t border-white/10 mt-2">
@@ -255,60 +281,60 @@
                             </div>
 
                             {{-- تمرين --}}
-      @elseif($block->type == 'exercise')
-    <div class="relative rounded-xl p-6 overflow-hidden bg-gradient-to-r from-amber-500/5 to-orange-500/3 border border-amber-500/20">
-        <div class="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-orange-500"></div>
-        <div class="flex items-center gap-2 mb-4">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-amber-500/10">
-                <svg width="16" height="16" fill="none" stroke="#fbbf24" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                </svg>
-            </div>
-            <span class="text-xs font-bold tracking-wider text-amber-400 uppercase">تمرين تطبيقي</span>
-            <span class="text-xs text-slate-400 mr-auto">حاول الحل بنفسك أولاً</span>
-        </div>
-        <p class="text-white text-lg mb-6">{{ $block->content }}</p>
-        
-        @if($block->exerciseSolution)
-            <button onclick="toggleSolution({{ $block->id }})"
-                    class="flex items-center gap-2 px-6 py-3 rounded-xl border border-amber-500/30 hover:bg-amber-500/10 text-amber-400 text-sm font-medium transition-all hover:scale-105">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                </svg>
-                عرض الحل
-            </button>
-            
-            <div id="solution-{{ $block->id }}" class="hidden mt-6 p-6 rounded-xl text-sm text-slate-300 leading-relaxed bg-emerald-500/5 border border-emerald-500/20">
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="w-6 h-6 rounded-full flex items-center justify-center text-emerald-400 bg-emerald-500/10">✓</span>
-                    <span class="text-emerald-400 font-medium">الحل النموذجي</span>
-                </div>
-                <p class="text-slate-300 leading-relaxed text-lg">{{ $block->exerciseSolution->solution_text }}</p>
-                @if($block->exerciseSolution->hint)
-                    <div class="mt-4 pt-4 border-t border-emerald-500/20">
-                        <div class="flex items-center gap-2 mb-2">
-                            <svg width="14" height="14" fill="none" stroke="#f59e0b" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span class="text-amber-400 text-sm font-medium">تلميح</span>
-                        </div>
-                        <p class="text-slate-400 text-sm italic">{{ $block->exerciseSolution->hint }}</p>
-                    </div>
-                @endif
-            </div>
-        @else
-            <div class="mt-4 p-4 rounded-xl bg-red-500/5 border border-red-500/20">
-                <div class="flex items-center gap-2">
-                    <svg width="18" height="18" fill="none" stroke="#ef4444" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <p class="text-red-400 text-sm">⚠️ لم يتم إضافة حل لهذا التمرين بعد</p>
-                </div>
-            </div>
-        @endif
-    </div>
-@endif
+                            @elseif($block->type == 'exercise')
+                            <div class="relative rounded-xl p-6 overflow-hidden bg-gradient-to-r from-amber-500/5 to-orange-500/3 border border-amber-500/20">
+                                <div class="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-orange-500"></div>
+                                <div class="flex items-center gap-2 mb-4">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-amber-500/10">
+                                        <svg width="16" height="16" fill="none" stroke="#fbbf24" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                        </svg>
+                                    </div>
+                                    <span class="text-xs font-bold tracking-wider text-amber-400 uppercase">تمرين تطبيقي</span>
+                                    <span class="text-xs text-slate-400 mr-auto">حاول الحل بنفسك أولاً</span>
+                                </div>
+                                <p class="text-white text-lg mb-6">{{ $block->content }}</p>
+                                
+                                @if($block->exerciseSolution)
+                                    <button onclick="toggleSolution({{ $block->id }})"
+                                            class="flex items-center gap-2 px-6 py-3 rounded-xl border border-amber-500/30 hover:bg-amber-500/10 text-amber-400 text-sm font-medium transition-all hover:scale-105">
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        عرض الحل
+                                    </button>
+                                    
+                                    <div id="solution-{{ $block->id }}" class="hidden mt-6 p-6 rounded-xl text-sm text-slate-300 leading-relaxed bg-emerald-500/5 border border-emerald-500/20">
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span class="w-6 h-6 rounded-full flex items-center justify-center text-emerald-400 bg-emerald-500/10">✓</span>
+                                            <span class="text-emerald-400 font-medium">الحل النموذجي</span>
+                                        </div>
+                                        <p class="text-slate-300 leading-relaxed text-lg">{{ $block->exerciseSolution->solution_text }}</p>
+                                        @if($block->exerciseSolution->hint)
+                                            <div class="mt-4 pt-4 border-t border-emerald-500/20">
+                                                <div class="flex items-center gap-2 mb-2">
+                                                    <svg width="14" height="14" fill="none" stroke="#f59e0b" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                    <span class="text-amber-400 text-sm font-medium">تلميح</span>
+                                                </div>
+                                                <p class="text-slate-400 text-sm italic">{{ $block->exerciseSolution->hint }}</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @else
+                                    <div class="mt-4 p-4 rounded-xl bg-red-500/5 border border-red-500/20">
+                                        <div class="flex items-center gap-2">
+                                            <svg width="18" height="18" fill="none" stroke="#ef4444" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <p class="text-red-400 text-sm">⚠️ لم يتم إضافة حل لهذا التمرين بعد</p>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                            @endif
 
                             {{-- فيديو + تعليقات --}}
                             @if(isset($block->video) && $block->video)
@@ -364,6 +390,91 @@
                 </div>
                 @endforeach
 
+                <!-- ✅ Exam Section - Added after rules -->
+                @if($hasExam)
+                <div id="exam-section" class="content-section hidden rounded-3xl border border-white/10 overflow-hidden bg-white/5 backdrop-blur-sm">
+                    <div class="relative px-8 py-6 border-b border-white/10 bg-gradient-to-r from-purple-500/5 to-transparent">
+                        <div class="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 to-transparent"></div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-purple-500/10">
+                                    <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-xs px-2 py-1 rounded-lg bg-purple-500/10 text-purple-400 font-medium">اختبار</span>
+                                        <span class="text-xs text-slate-400">{{ $lesson->exams->questions->count() ?? 0 }} أسئلة</span>
+                                    </div>
+                                    <h2 class="text-xl font-bold text-white">{{ $lesson->exams->title ?? 'اختبار الدرس' }}</h2>
+                                    @if($lesson->exams->subject)
+                                    <p class="text-sm text-slate-400 mt-1">{{ $lesson->exams->subject }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                            <a href="{{ route('student.exam.show', $lesson->exams->id) }}" 
+                               class="px-6 py-3 rounded-xl text-sm font-medium transition-all hover:scale-105 bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40">
+                                بدء الاختبار
+                                <svg class="inline-block w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Exam Preview Card -->
+                    <div class="p-8">
+                        <div class="rounded-xl bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 p-6">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-purple-500/20">
+                                    <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-white font-bold">معلومات الاختبار</h3>
+                                    <p class="text-xs text-slate-400">اختبار يقيس مدى فهمك للمادة</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                                <div class="text-center p-3 rounded-lg bg-white/5">
+                                    <div class="text-2xl font-bold text-purple-400">{{ $lesson->exams->questions->count() ?? 0 }}</div>
+                                    <div class="text-xs text-slate-400">عدد الأسئلة</div>
+                                </div>
+                                <div class="text-center p-3 rounded-lg bg-white/5">
+                                    <div class="text-2xl font-bold text-purple-400">
+                                        @if($lesson->exams->start_time && $lesson->exams->end_time)
+                                            @php
+                                                $start = \Carbon\Carbon::parse($lesson->exams->start_time);
+                                                $end = \Carbon\Carbon::parse($lesson->exams->end_time);
+                                                $duration = $start->diffInMinutes($end);
+                                            @endphp
+                                            {{ $duration }}
+                                        @else
+                                            ?
+                                        @endif
+                                    </div>
+                                    <div class="text-xs text-slate-400">المدة (دقيقة)</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between pt-4 border-t border-purple-500/20">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                                    <span class="text-xs text-slate-400">جاهز للاختبار</span>
+                                </div>
+                                <a href="{{ route('student.exam.show', $lesson->exams->id) }}" 
+                                   class="text-purple-400 hover:text-purple-300 text-sm font-medium transition-colors">
+                                    ابدأ الاختبار الآن ←
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
             </div>
         </div>
     </div>
@@ -402,10 +513,8 @@ let viewedItems = new Set();
 // التقدم
 // =============================================
 
-
 function markAsViewed(id) {
     viewedItems.add(id);
-   
 }
 
 // =============================================
@@ -673,7 +782,7 @@ async function submitComment(videoId) {
         'Content-Type': 'application/json',
         'X-CSRF-TOKEN': CSRF,
         'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest' // ✅ makes $request->ajax() return true
+        'X-Requested-With': 'XMLHttpRequest'
     },
     body: JSON.stringify({ video_id: videoId, content })
 });
@@ -682,20 +791,19 @@ async function submitComment(videoId) {
         if (data.success) {
             input.value = '';
             showToast('تم إضافة تعليقك بنجاح');
-            // FIX: force reload regardless of loaded flag
             await loadComments(videoId, 'latest');
-
-               
         } else {
             showToast(data.message || 'حدث خطأ', 'error');
         }
     } catch { showToast('فشل الاتصال بالخادم', 'error'); }
 }
+
 function updateCommentCount(videoId, count) {
     document.querySelectorAll(`.comments-count-badge-${videoId}`).forEach(el => {
-        el.textContent = count + ' تعليق'; // ✅ updates this span
+        el.textContent = count + ' تعليق';
     });
 }
+
 async function submitReply(commentId, videoId) {
     const input   = document.getElementById(`reply-input-${commentId}`);
     const content = input?.value?.trim();
@@ -709,7 +817,7 @@ async function submitReply(commentId, videoId) {
         'Content-Type': 'application/json',
         'X-CSRF-TOKEN': CSRF,
         'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest' // ✅
+        'X-Requested-With': 'XMLHttpRequest'
     },
     body: JSON.stringify({ content })
 });
@@ -735,7 +843,7 @@ async function deleteComment(commentId, videoId) {
     headers: {
         'X-CSRF-TOKEN': CSRF,
         'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest' // ✅
+        'X-Requested-With': 'XMLHttpRequest'
     }
 });
         const data = await res.json();
@@ -827,6 +935,5 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 </script>
-
 
 @endsection

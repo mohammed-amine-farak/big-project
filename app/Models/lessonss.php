@@ -14,10 +14,10 @@ class lessonss extends Model
         // The foreign key on 'lessonss' table is 'researcher_id'.
         return $this->belongsTo(User::class, 'researcher_id');
     }
-    public function exams()
-    {
-        return $this->hasMany(exams::class, 'lesson_id');
-    }
+    public function exams()   // ← singular, hasOne
+{
+    return $this->hasOne(exams::class, 'lesson_id');
+}
     public function rules()
     {
         // A Lesson has many Rules.
