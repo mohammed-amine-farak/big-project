@@ -29,7 +29,7 @@ class StudentExamController extends Controller
         return view('student-dashboard.exam.show', compact('exam', 'student', 'hasTaken', 'lesson'));
     }
     
-    public function submit(Request $request, exams $exam)
+ public function submit(Request $request, exams $exam)
 {
     $student = 17;
     
@@ -71,56 +71,29 @@ class StudentExamController extends Controller
         ]);
     }
     
-    $scorePercentage = ($correctAnswers / $totalQuestions) * 100;
-    
     // ==============================================
-    // Update progress: Exam gives 40% of total lesson progress
-    // Each question answered gives a portion of 40%
-    // Future activities will give the remaining 60%
+    // Progress = (Correct Answers / Total Questions) × 40
+    // Maximum progress from exam is 40%
     // ==============================================
     $lesson = $exam->lesson;
-    $answeredCount = count($request->answers);
     
     $progress = StudentLessonProgress::firstOrCreate([
         'student_id' => $student,
         'lesson_id' => $lesson->id
     ]);
     
-    // Exam contribution is 40% of total lesson progress
-    $examTotalPercentage = 40;
-    
-    // Each question answered gives a portion of the 40%
-    $percentagePerQuestion = $examTotalPercentage / $totalQuestions;
-    
-    // Calculate exam progress based on number of questions answered
-    $examProgress = $answeredCount * $percentagePerQuestion;
-    
-    // Get current progress from future activities (will be added later)
-    // For now, this is 0 because future activities not implemented yet
-    $futureActivitiesProgress = 0;
-    
-    // Calculate total progress (exam 40% + future activities 60%)
-    $totalProgress = min($examProgress + $futureActivitiesProgress, 100);
+    // Calculate progress based on correct answers (max 40%)
+    $progressPercentage = ($correctAnswers / $totalQuestions) * 40;
     
     // Update progress
     $progress->update([
-        'progress' => round($totalProgress, 2),
+        'progress' => round($progressPercentage, 2),
         'last_accessed_at' => now()
     ]);
     
-    // If all questions answered, exam part is complete (40%)
-    if ($answeredCount >= $totalQuestions) {
-        $totalProgress = min(40 + $futureActivitiesProgress, 100);
-        
-        $progress->update([
-            'progress' => round($totalProgress, 2)
-        ]);
-    }
-    
     return redirect()->route('student.exam.results', $exam)
         ->with('success', 'تم إرسال الاختبار بنجاح');
-}
-    
+} 
     public function results(exams $exam)
     {
         $student = 17;

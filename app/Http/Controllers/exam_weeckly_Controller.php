@@ -101,7 +101,7 @@ class exam_weeckly_Controller extends Controller
         $request->validate([
             'subject_id' => 'required|exists:subjects,id'
         ]);
-
+        
         $classrooms = Classroom::where('subject_id', $request->subject_id)->get();
 
         Log::info('Classrooms found:', $classrooms->toArray());
