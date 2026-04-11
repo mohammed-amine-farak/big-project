@@ -229,7 +229,7 @@ class Exam_grade_Controller extends Controller
                 'student_id' => $validatedData['student_id'],
                 'exam_weecklies_id' => $validatedData['exam_weecklies_id'],
                 'exam_total_point' => $validatedData['exam_total_point'],
-                'exam_note' => $validatedData['exam_note'],
+                'exam_nzote' => $validatedData['exam_note'],
                 'teacher_id' => Auth::user()->id,
             ]);
 
