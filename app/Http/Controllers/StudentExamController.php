@@ -72,28 +72,43 @@ class StudentExamController extends Controller
     }
     
     // ==============================================
-    // Progress = (Correct Answers / Total Questions) × 40
-    // Maximum progress from exam is 40%
+    // Progress = Existing Progress + (Correct Answers / Total Questions) × 40
+    // Maximum total progress is 100%
     // ==============================================
     $lesson = $exam->lesson;
     
+    // Get or create progress record
     $progress = StudentLessonProgress::firstOrCreate([
         'student_id' => $student,
         'lesson_id' => $lesson->id
     ]);
     
-    // Calculate progress based on correct answers (max 40%)
-    $progressPercentage = ($correctAnswers / $totalQuestions) * 40;
+    // Get existing progress (from teacher notes, etc.)
+    $existingProgress = $progress->progress ?? 0;
+    
+    // Calculate exam progress based on correct answers (max 40%)
+    $examProgress = ($correctAnswers / $totalQuestions) * 40;
+    
+    // Calculate total progress (existing + exam)
+    $totalProgress = min($existingProgress + $examProgress, 100);
     
     // Update progress
     $progress->update([
-        'progress' => round($progressPercentage, 2),
+        'progress' => round($totalProgress, 2),
         'last_accessed_at' => now()
     ]);
     
+    // Mark as completed if reached 100%
+    if ($totalProgress >= 100 && !$progress->completed) {
+        $progress->update([
+            'completed' => true,
+            'completed_at' => now()
+        ]);
+    }
+    
     return redirect()->route('student.exam.results', $exam)
         ->with('success', 'تم إرسال الاختبار بنجاح');
-} 
+}
     public function results(exams $exam)
     {
         $student = 17;

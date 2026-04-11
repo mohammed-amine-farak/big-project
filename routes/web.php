@@ -289,7 +289,7 @@ Route::get('/Interaction_Notes_student/{Interaction_Notes_students}',[Interactio
 Route::put('/Interaction_Notes_student/edit/{edit}',[Interaction_Notes_student::class,'edit'])->name('Interaction_Notes_student.edit');
 // Interaction Notes AJAX Routes
 Route::get('/ajax/get-classroom-students/{classroomId}', [Interaction_Notes_student::class, 'getClassroomStudentsAjax'])->name('ajax.get-classroom-students');
-
+Route::get('/ajax/get-lessons-without-notes/{studentId}', [Interaction_Notes_student::class, 'getLessonsWithoutNotesForStudent']);
 Route::get('/Exam_Grade/index',[Exam_grade_Controller::class,'index'])->name('Exam_Grade.index');
 Route::get('/Exam_Grade/create',[Exam_grade_Controller::class,'create'])->name('Exam_Grade.create');
 Route::post('/Exam_Grade/store',[Exam_grade_Controller::class,'store'])->name('Exam_Grade.store');

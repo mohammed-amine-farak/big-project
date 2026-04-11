@@ -88,24 +88,70 @@
                         @enderror
                     </div>
 
-                    <!-- Lesson -->
+                    <!-- Lesson - Will be populated dynamically -->
                     <div>
                         <label for="lesson_id" class="block text-sm font-medium text-gray-700 mb-2">
                             الدرس *
                         </label>
-                        <select id="lesson_id" name="lesson_id" required
-                                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150">
-                            <option value="">اختر الدرس...</option>
-                            @foreach ($lessons as $lesson)
-                                <option value="{{ $lesson->id }}" {{ old('lesson_id') == $lesson->id ? 'selected' : '' }}>
-                                    {{ $lesson->title }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="relative">
+                            <select id="lesson_id" name="lesson_id" required disabled
+                                    class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 bg-gray-50">
+                                <option value="">اختر الطالب أولاً...</option>
+                            </select>
+                            <div id="lessons_loading" class="hidden absolute right-3 top-3">
+                                <div class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                        </div>
                         @error('lesson_id')
                             <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
+
+                <!-- Progress Input -->
+                <div class="mb-6">
+                    <label for="progress" class="block text-sm font-medium text-gray-700 mb-2">
+                        نسبة التقدم من التفاعل (%) *
+                    </label>
+                    <div class="relative">
+                        <input type="range" 
+                               id="progress_slider" 
+                               name="progress" 
+                               min="0" 
+                               max="25" 
+                               step="1" 
+                               value="{{ old('progress', 0) }}"
+                               class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                               required>
+                        <div class="flex items-center justify-between mt-3">
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm text-gray-600">القيمة:</span>
+                                    <input type="number" 
+                                           id="progress_value" 
+                                           name="progress_input"
+                                           min="0" 
+                                           max="25" 
+                                           step="1" 
+                                           value="{{ old('progress', 0) }}"
+                                           class="w-20 px-2 py-1 text-center border border-gray-300 rounded-lg"
+                                           required>
+                                    <span class="text-sm text-gray-600">%</span>
+                                </div>
+                                <div class="h-6 w-px bg-gray-300"></div>
+                                <div>
+                                    <span class="text-xs text-gray-500">الحد الأقصى: 25%</span>
+                                </div>
+                            </div>
+                            <div id="progress_preview" class="text-sm font-medium px-3 py-1 rounded-full bg-blue-100 text-blue-700">
+                                0%
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">تحدد هذه النسبة مدى تقدم الطالب بناءً على تفاعله في الدرس (تضاف إلى تقدم الطالب الكلي)</p>
+                    @error('progress')
+                        <p class="text-red-500 text-xs mt-2">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Notes Section -->
@@ -167,15 +213,73 @@
         const submitBtn = document.querySelector('button[type="submit"]');
         const submitText = document.getElementById('submit_text');
         
+        // Progress elements
+        const progressSlider = document.getElementById('progress_slider');
+        const progressValue = document.getElementById('progress_value');
+        const progressPreview = document.getElementById('progress_preview');
+        
+        // Loading elements
+        const studentsLoading = document.getElementById('students_loading');
+        const lessonsLoading = document.getElementById('lessons_loading');
+        
         // State
         let currentClassroomId = null;
+
+        // =============================================
+        // Progress Input Sync (Slider & Number Input)
+        // =============================================
+        function updateProgress(value) {
+            value = Math.min(25, Math.max(0, parseInt(value) || 0));
+            
+            if (progressSlider) progressSlider.value = value;
+            if (progressValue) progressValue.value = value;
+            
+            if (progressPreview) {
+                progressPreview.textContent = value + '%';
+                
+                if (value === 0) {
+                    progressPreview.className = 'text-sm font-medium px-3 py-1 rounded-full bg-gray-100 text-gray-700';
+                } else if (value <= 5) {
+                    progressPreview.className = 'text-sm font-medium px-3 py-1 rounded-full bg-red-100 text-red-700';
+                } else if (value <= 10) {
+                    progressPreview.className = 'text-sm font-medium px-3 py-1 rounded-full bg-yellow-100 text-yellow-700';
+                } else if (value <= 20) {
+                    progressPreview.className = 'text-sm font-medium px-3 py-1 rounded-full bg-blue-100 text-blue-700';
+                } else {
+                    progressPreview.className = 'text-sm font-medium px-3 py-1 rounded-full bg-green-100 text-green-700';
+                }
+            }
+            
+            if (progressSlider) {
+                const percentage = (value / 25) * 100;
+                progressSlider.style.background = `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${percentage}%, #e5e7eb ${percentage}%, #e5e7eb 100%)`;
+            }
+        }
+        
+        // Slider event
+        if (progressSlider) {
+            progressSlider.addEventListener('input', function() {
+                updateProgress(this.value);
+            });
+            updateProgress(progressSlider.value);
+        }
+        
+        // Number input event
+        if (progressValue) {
+            progressValue.addEventListener('input', function() {
+                let value = parseInt(this.value);
+                if (isNaN(value)) value = 0;
+                if (value > 25) value = 25;
+                if (value < 0) value = 0;
+                updateProgress(value);
+            });
+        }
 
         // Character Counter
         noteContent.addEventListener('input', function() {
             const count = this.value.length;
             characterCount.textContent = `${count} حرف`;
             
-            // Update count badge color
             if (count === 0) {
                 characterCount.className = 'text-sm text-gray-600 px-3 py-1 bg-gray-100 rounded-full';
             } else if (count > 0 && count <= 500) {
@@ -186,49 +290,83 @@
                 characterCount.className = 'text-sm text-yellow-600 px-3 py-1 bg-yellow-100 rounded-full';
             }
             
-            // Show warning if approaching limit
             if (count > 19000) {
                 characterCount.className = 'text-sm text-red-600 px-3 py-1 bg-red-100 rounded-full';
             }
         });
 
-        // Initialize character count
         noteContent.dispatchEvent(new Event('input'));
 
-        // Classroom Change
+        // Classroom Change - Load Students
         classroomSelect.addEventListener('change', async function() {
             const classroomId = this.value;
             currentClassroomId = classroomId;
             
             if (!classroomId) {
                 resetStudentSelect();
+                resetLessonSelect();
                 return;
             }
             
-            // Reset student select
             resetStudentSelect();
-            
-            // Show loading
-            showLoading(true);
+            showStudentsLoading(true);
             
             try {
-                // Fetch students for this classroom
                 const response = await fetch(`/ajax/get-classroom-students/${classroomId}`);
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Populate students dropdown
                     populateStudentSelect(data.students);
                 } else {
                     throw new Error('فشل في تحميل بيانات الطلاب');
                 }
-                
             } catch (error) {
                 console.error('Error:', error);
                 studentSelect.innerHTML = '<option value="">خطأ في تحميل البيانات</option>';
                 studentSelect.disabled = true;
             } finally {
-                showLoading(false);
+                showStudentsLoading(false);
+            }
+        });
+
+        // Student Change - Load Lessons WITHOUT existing notes
+        studentSelect.addEventListener('change', async function() {
+            const studentId = this.value;
+            
+            if (!studentId) {
+                resetLessonSelect();
+                return;
+            }
+            
+            // Reset and disable lesson select while loading
+            lessonSelect.innerHTML = '<option value="">جاري تحميل الدروس...</option>';
+            lessonSelect.disabled = true;
+            showLessonsLoading(true);
+            
+            try {
+                // Fetch lessons that don't have interaction notes for this student
+                const response = await fetch(`/ajax/get-lessons-without-notes/${studentId}`);
+                const data = await response.json();
+                
+                if (data.success && data.lessons && data.lessons.length > 0) {
+                    lessonSelect.innerHTML = '<option value="">اختر الدرس...</option>';
+                    data.lessons.forEach(lesson => {
+                        const option = document.createElement('option');
+                        option.value = lesson.id;
+                        option.textContent = lesson.title;
+                        lessonSelect.appendChild(option);
+                    });
+                    lessonSelect.disabled = false;
+                } else {
+                    lessonSelect.innerHTML = '<option value="">⚠️ لا توجد دروس متاحة (جميع الدروس لها ملاحظات)</option>';
+                    lessonSelect.disabled = true;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                lessonSelect.innerHTML = '<option value="">خطأ في تحميل الدروس</option>';
+                lessonSelect.disabled = true;
+            } finally {
+                showLessonsLoading(false);
             }
         });
 
@@ -250,13 +388,23 @@
             }
         }
 
-        function showLoading(show) {
-            const loadingDiv = document.getElementById('students_loading');
-            
-            if (show) {
-                loadingDiv.classList.remove('hidden');
-            } else {
-                loadingDiv.classList.add('hidden');
+        function showStudentsLoading(show) {
+            if (studentsLoading) {
+                if (show) {
+                    studentsLoading.classList.remove('hidden');
+                } else {
+                    studentsLoading.classList.add('hidden');
+                }
+            }
+        }
+
+        function showLessonsLoading(show) {
+            if (lessonsLoading) {
+                if (show) {
+                    lessonsLoading.classList.remove('hidden');
+                } else {
+                    lessonsLoading.classList.add('hidden');
+                }
             }
         }
 
@@ -265,7 +413,12 @@
             studentSelect.disabled = true;
         }
 
-        // Initialize student select if classroom is already selected
+        function resetLessonSelect() {
+            lessonSelect.innerHTML = '<option value="">اختر الطالب أولاً...</option>';
+            lessonSelect.disabled = true;
+        }
+
+        // Initialize if classroom is already selected
         const initialClassroomId = classroomSelect.value;
         if (initialClassroomId) {
             classroomSelect.dispatchEvent(new Event('change'));
@@ -273,7 +426,6 @@
 
         // Form Validation
         document.getElementById('createNoteForm').addEventListener('submit', function(e) {
-            // Validate note content length
             const noteLength = noteContent.value.trim().length;
             
             if (noteLength === 0) {
@@ -290,7 +442,13 @@
                 return false;
             }
             
-            // Validate all required fields
+            const progressValueNum = parseInt(progressValue?.value || 0);
+            if (progressValueNum < 0 || progressValueNum > 25) {
+                e.preventDefault();
+                alert('نسبة التقدم يجب أن تكون بين 0% و 25%');
+                return false;
+            }
+            
             const classroomId = classroomSelect.value;
             const studentId = studentSelect.value;
             const lessonId = lessonSelect.value;
@@ -301,7 +459,6 @@
                 return false;
             }
             
-            // Add loading state to submit button
             submitBtn.disabled = true;
             submitText.innerHTML = `
                 <div class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
@@ -331,10 +488,34 @@
         min-height: 150px;
     }
     
-    /* Focus styles */
-    input:focus, select:focus, textarea:focus {
-        outline: none;
-        ring-width: 2px;
+    #progress_slider {
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    
+    #progress_slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #3b82f6;
+        cursor: pointer;
+        border: 2px solid white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    
+    #progress_slider::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+    }
+    
+    #progress_slider::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #3b82f6;
+        cursor: pointer;
+        border: 2px solid white;
     }
 </style>
 

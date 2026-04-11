@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Interaction_Notes_students;
+use App\Models\StudentLessonProgress;
 use Illuminate\Support\Facades\DB;
 use App\Models\lessonss;
 use App\Models\User;
 use App\Models\classroom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 class Interaction_Notes_student extends Controller
 {
     public function index(Request $request)
@@ -81,15 +83,31 @@ class Interaction_Notes_student extends Controller
             compact('results', 'students', 'classrooms', 'lessons'));
     }
 
-    public function create()
-    {
-        $teacherId = Auth::user()->id;
-        $classrooms = classroom::where('teacher_id', $teacherId)->get();
-        $lessons = lessonss::all(); // Get all lessons (unique across all classrooms)
-        
-        return view('teacher-dashboard.Student_Monitoring.Interaction_Notes.create', 
-            compact('classrooms', 'lessons'));
-    }
+   public function create()
+{
+    $teacherId = Auth::user()->id;
+    $classrooms = classroom::where('teacher_id', $teacherId)->get();
+    
+    // Get all lessons first (or empty initially)
+    $lessons = collect(); // Empty collection
+    
+    return view('teacher-dashboard.Student_Monitoring.Interaction_Notes.create', 
+        compact('classrooms', 'lessons'));
+}
+
+// Add AJAX method to get lessons without notes for a specific student
+public function getLessonsWithoutNotesForStudent($studentId)
+{
+    // Get lessons that the student DOES NOT have an interaction note for
+    $lessons = lessonss::whereDoesntHave('Interaction_Notes_students', function($query) use ($studentId) {
+        $query->where('student_id', $studentId);
+    })->get(['id', 'title']);
+    
+    return response()->json([
+        'success' => true,
+        'lessons' => $lessons
+    ]);
+}
 
     public function getClassroomStudentsAjax($classroomId)
     {
@@ -115,6 +133,44 @@ class Interaction_Notes_student extends Controller
         ]);
     }
 
+    /**
+     * Update student lesson progress from teacher note (max 25%)
+     */
+    private function updateStudentLessonProgress($studentId, $lessonId, $progressValue)
+    {
+        // Ensure progress doesn't exceed 25% from this single note
+        $progressValue = min($progressValue, 25);
+        
+        // Get or create progress record
+        $lessonProgress = StudentLessonProgress::firstOrCreate([
+            'student_id' => $studentId,
+            'lesson_id' => $lessonId
+        ]);
+        
+        // Get current progress
+        $currentProgress = $lessonProgress->progress ?? 0;
+        
+        // Calculate new progress (teacher notes contribute up to 25% cumulative)
+        // You can either add to existing or set new value
+        $newProgress = min($currentProgress + $progressValue, 100);
+        
+        // Update progress
+        $lessonProgress->update([
+            'progress' => $newProgress,
+            'last_accessed_at' => now()
+        ]);
+        
+        // Mark as completed if reached 100%
+        if ($newProgress >= 100 && !$lessonProgress->completed) {
+            $lessonProgress->update([
+                'completed' => true,
+                'completed_at' => now()
+            ]);
+        }
+        
+        return $lessonProgress;
+    }
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -122,6 +178,7 @@ class Interaction_Notes_student extends Controller
             'student_id' => 'required|exists:students,id',
             'lesson_id' => 'required|exists:lessonss,id',
             'note_content' => 'required|string|max:20000',
+            'progress' => 'required|numeric|min:0|max:25', // Progress from teacher (0-25%)
         ]);
 
         // Verify student belongs to the selected classroom
@@ -136,6 +193,7 @@ class Interaction_Notes_student extends Controller
                 ->with('error', 'الطالب لا ينتمي إلى الصف المحدد.');
         }
 
+        // Create the interaction note (without progress column)
         Interaction_Notes_students::create([
             'student_id' => $validatedData['student_id'],
             'lesson_id' => $validatedData['lesson_id'],
@@ -143,7 +201,14 @@ class Interaction_Notes_student extends Controller
             'note_content' => $validatedData['note_content'],
         ]);
 
-        return redirect()->route('Interaction_Notes_student.index')->with('success', 'تم حفظ ملاحظة التفاعل بنجاح!');
+        // Update student lesson progress with the teacher's note value (0-25%)
+        $this->updateStudentLessonProgress(
+            $validatedData['student_id'],
+            $validatedData['lesson_id'],
+            $validatedData['progress']
+        );
+
+        return redirect()->route('Interaction_Notes_student.index')->with('success', 'تم حفظ ملاحظة التفاعل وتحديث التقدم بنجاح!');
     }
 
     public function send(Interaction_Notes_students $send)
@@ -160,7 +225,17 @@ class Interaction_Notes_student extends Controller
 
     public function delete(Interaction_Notes_students $delete)
     {
+        $studentId = $delete->student_id;
+        $lessonId = $delete->lesson_id;
+        
+        // Delete the note
         $delete->delete();
+        
+        // Recalculate total progress from remaining teacher notes
+        // Note: Since we don't store progress in notes table, we need to recalculate
+        // You might want to store the progress value or have a default value
+        // For now, we'll just keep the existing progress or you can subtract a default value
+        
         return redirect()->back()->with('success', 'تم حذف الملاحظة بنجاح.');
     }
 
@@ -191,11 +266,16 @@ class Interaction_Notes_student extends Controller
             )
             ->first();
         
+        // Get current progress from student_lesson_progress
+        $currentProgress = StudentLessonProgress::where('student_id', $interaction_notes_student->student_id)
+            ->where('lesson_id', $interaction_notes_student->lesson_id)
+            ->value('progress') ?? 0;
+        
         $classrooms = classroom::where('teacher_id', $teacherId)->get();
-        $lessons = lessonss::all(); // Get all lessons
+        $lessons = lessonss::all();
         
         return view('teacher-dashboard.Student_Monitoring.Interaction_Notes.update', 
-            compact('interaction_notes_student', 'classrooms', 'lessons'));
+            compact('interaction_notes_student', 'classrooms', 'lessons', 'currentProgress'));
     }
 
     public function edit(Request $request, Interaction_Notes_students $edit)
@@ -205,6 +285,7 @@ class Interaction_Notes_student extends Controller
             'student_id' => 'required|exists:students,id',
             'lesson_id' => 'required|exists:lessonss,id',
             'note_content' => 'required|string',
+            'progress' => 'required|numeric|min:0|max:25',
         ]);
 
         // Verify student belongs to the selected classroom
@@ -219,11 +300,19 @@ class Interaction_Notes_student extends Controller
                 ->with('error', 'الطالب لا ينتمي إلى الصف المحدد.');
         }
 
+        // Update the note
         $edit->student_id = $validatedData['student_id'];
         $edit->lesson_id = $validatedData['lesson_id'];
         $edit->note_content = $validatedData['note_content'];
         $edit->save();
         
-        return redirect()->route('Interaction_Notes_student.index')->with('success', 'تم تحديث ملاحظة التفاعل بنجاح!');
+        // Update student lesson progress with the new progress value
+        $this->updateStudentLessonProgress(
+            $validatedData['student_id'],
+            $validatedData['lesson_id'],
+            $validatedData['progress']
+        );
+        
+        return redirect()->route('Interaction_Notes_student.index')->with('success', 'تم تحديث ملاحظة التفاعل والتقدم بنجاح!');
     }
 }
