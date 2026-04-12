@@ -460,6 +460,10 @@ Route::get('/student/interaction-notes', [Interaction_Notes_student::class, 'stu
  Route::get('student/exam-weekly-reports', [StudentExamWeeklyController::class, 'index'])->name('student.exam_weekly_reports.index');
     Route::get('student/exam-weekly-reports/{exam_weekly_report}', [StudentExamWeeklyController::class, 'show'])->name('student.exam_weekly_reports.show');
  Route::get('student/skills', [StudentSkillsController::class, 'studentSkills'])->name('student.skills.index');
+ Route::get('student/skills/{skillId}', [StudentSkillsController::class, 'show'])->name('student.skills.show');
+    Route::get('student/skills-data', [StudentSkillsController::class, 'getSkillsData'])->name('student.skills.data');
+ 
+ 
  /*
 Route::get('about_us', function () {
     return view('about.about');
