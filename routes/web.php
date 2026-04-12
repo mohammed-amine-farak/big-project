@@ -17,8 +17,10 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ReseacherDashboardController;
 use App\Http\Controllers\ResearcherProductionRequestController;
 use App\Http\Controllers\StudentExamController;
+use App\Http\Controllers\StudentExamWeeklyController;
 use App\Http\Controllers\StudentLessonController;
 use App\Http\Controllers\StudentPsychologyController;
+use App\Http\Controllers\StudentSkillsController;
 use App\Http\Controllers\teacher_admine_reports_view_Controller;
 use App\Http\Controllers\teacher_lesson_controller;
 use App\Http\Controllers\teacher_lesson_report_controller;
@@ -450,8 +452,15 @@ Route::post('/lessons/{lesson}/mark-viewed', [StudentLessonController::class, 'm
 Route::get('student/exam/{exam}', [StudentExamController::class, 'show'])->name('student.exam.show');
     Route::post('student/exam/{exam}/submit', [StudentExamController::class, 'submit'])->name('student.exam.submit');
     Route::get('student/exam/{exam}/results', [StudentExamController::class, 'results'])->name('student.exam.results');
+// For student
+Route::get('/student/interaction-notes', [Interaction_Notes_student::class, 'studentNotes'])
+    ->name('student.interaction_notes.index');
 
-/*
+ Route::get('student/interaction-notes/{note}', [Interaction_Notes_student::class, 'studentNotesShow'])->name('student.interaction_notes.show');
+ Route::get('student/exam-weekly-reports', [StudentExamWeeklyController::class, 'index'])->name('student.exam_weekly_reports.index');
+    Route::get('student/exam-weekly-reports/{exam_weekly_report}', [StudentExamWeeklyController::class, 'show'])->name('student.exam_weekly_reports.show');
+ Route::get('student/skills', [StudentSkillsController::class, 'studentSkills'])->name('student.skills.index');
+ /*
 Route::get('about_us', function () {
     return view('about.about');
 })->name('about');

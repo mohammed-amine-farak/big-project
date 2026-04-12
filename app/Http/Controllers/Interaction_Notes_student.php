@@ -315,4 +315,39 @@ public function getLessonsWithoutNotesForStudent($studentId)
         
         return redirect()->route('Interaction_Notes_student.index')->with('success', 'تم تحديث ملاحظة التفاعل والتقدم بنجاح!');
     }
+    public function studentNotes(Request $request)
+{
+    $studentId = 17;
+    
+    $query = Interaction_Notes_students::where('student_id', $studentId)
+        ->with(['lesson', 'lesson.subject', 'teacher.user'])
+        ->where('status','send');
+    
+    // Filter by subject
+    if ($request->filled('subject_id')) {
+        $query->whereHas('lesson.subject', function($q) use ($request) {
+            $q->where('id', $request->subject_id);
+        });
+    }
+    
+    $notes = $query->orderBy('created_at', 'desc')->paginate(10);
+    
+    // Get subjects from student's enrolled classrooms (if no notes yet)
+    $subjects = \App\Models\Subject::whereHas('classrooms.students', function($q) use ($studentId) {
+        $q->where('students.id', $studentId);
+    })->get();
+    
+    return view('student-dashboard.interaction_notes.index', compact('notes', 'subjects'));
+}
+public function studentNotesShow(Interaction_Notes_students $note)
+{
+    // Ensure the student can only see their own notes
+    if ($note->student_id != 17) {
+        abort(403, 'غير مصرح لك بمشاهدة هذه الملاحظة');
+    }
+    
+    $note->load(['lesson', 'lesson.subject', 'teacher.user']);
+    
+    return view('student-dashboard.interaction_notes.show', compact('note'));
+}
 }
