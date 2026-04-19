@@ -7,6 +7,7 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Models\Fields_Of_Study;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -64,7 +65,8 @@ class FortifyServiceProvider extends ServiceProvider
 
         // صفحة التسجيل
         Fortify::registerView(function () {
-            return view('auth.register');
+            $fieldsOfStudy = Fields_Of_Study::all();
+            return view('auth.register',compact('fieldsOfStudy'));
         });
 
          Fortify::redirects('register', function () {

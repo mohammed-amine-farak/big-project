@@ -9,6 +9,7 @@ use App\Models\Researcher;
 use App\Models\Researchers;
 use App\Models\video_creator;
 use App\Models\VideoCreator;
+use App\Models\Student;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -42,6 +43,13 @@ class CreateNewUser implements CreatesNewUsers
             $rules['city'] = ['nullable', 'string'];
             $rules['degree'] = ['nullable', 'in:Master,PhD'];
             $rules['certificate'] = ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'];
+        }
+
+        // ✅ قواعد التحقق للطالب (Student)
+        if ($input['user_type'] === 'student') {
+            $rules['school_level'] = ['nullable', 'string', 'in:الابتدائي,المتوسط,الثانوي,الجامعي'];
+            $rules['score_level'] = ['nullable', 'string', 'max:255'];
+            $rules['birth_date'] = ['nullable', 'date', 'before:today'];
         }
 
         // ✅ قواعد التحقق لمنشئ الفيديو
@@ -93,6 +101,16 @@ class CreateNewUser implements CreatesNewUsers
                 ]);
                 break;
 
+            // ✅ إنشاء الطالب (Student)
+            case 'student':
+                Student::create([
+                    'id' => $user->id,
+                    'school_level' => $input['school_level'] ?? null,
+                    'score_level' => $input['score_level'] ?? null,
+                    'birth_date' => $input['birth_date'] ?? null,
+                ]);
+                break;
+
             // ✅ إنشاء منشئ الفيديو
             case 'video_creator':
                 video_creator::create([
@@ -111,10 +129,6 @@ class CreateNewUser implements CreatesNewUsers
 
             case 'parent':
                 // Parent::create([...]);
-                break;
-
-            case 'student':
-                // Student::create([...]);
                 break;
 
             case 'admin':

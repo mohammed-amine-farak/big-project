@@ -349,51 +349,17 @@
                 </li>
 
                 <!-- الإنجازات -->
-                <li>
-                    <a href="{{ route('student.skills.index') }}" 
-   class="flex items-center gap-3 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition group">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-    </svg>
-    <span>🎯 مهاراتي</span>
-</a>
+              <li>
+                    <a href="{{ route('student.skills.index') }}"  class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
+                        <div class="flex items-center space-x-3 space-x-reverse">
+                            
+                            <span class="text-base font-medium">🎯 مهاراتي</span>
+                        </div>
+                    </a>
                 </li>
 
                 <!-- التواصل مع المعلم -->
-                <li>
-                    <button class="sidebar-toggle-btn flex items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
-                        <svg class="arrow-icon h-5 w-5 text-gray-400 transition-transform duration-300 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        <div class="flex items-center space-x-3 space-x-reverse">
-                            <div class="w-8 h-8 rounded-lg bg-indigo-900/20 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8s-9-3.582-9-8 4.03-8 9-8 9 3.582 9 8z" />
-                                </svg>
-                            </div>
-                            <span class="text-base font-medium">التواصل مع المعلم</span>
-                        </div>
-                    </button>
-                    <ul class="sidebar-submenu hidden space-y-1 pt-2 pl-8 border-r-2 border-indigo-500 mr-4">
-                        <li>
-                            <a href="#" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
-                                <span class="relative">
-                                    الرسائل
-                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-indigo-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="block py-2 px-4 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors text-right text-sm font-normal group">
-                                <span class="relative">
-                                    ملاحظاتي
-                                    <span class="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-indigo-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                                </span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
+                
                 <!-- الإعدادات -->
                 <li>
                     <button class="sidebar-toggle-btn flex items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">

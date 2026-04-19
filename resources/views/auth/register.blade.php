@@ -70,7 +70,18 @@
                 <label class="block text-lg font-semibold text-gray-700 mb-3 text-right">
                     نوع الحساب
                 </label>
-                <div class="grid grid-cols-4 gap-4">
+                <div class="grid grid-cols-5 gap-4">
+                    <!-- Student -->
+                    <label class="cursor-pointer">
+                        <input type="radio" name="user_type" value="student" class="sr-only peer" {{ old('user_type') == 'student' ? 'checked' : '' }}>
+                        <div class="border-2 border-gray-300 rounded-xl p-4 text-center peer-checked:border-green-600 peer-checked:bg-green-50 transition-all">
+                            <svg class="w-8 h-8 mx-auto text-green-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                            <span class="text-sm font-medium">طالب</span>
+                        </div>
+                    </label>
+                    
                     <!-- Teacher -->
                     <label class="cursor-pointer">
                         <input type="radio" name="user_type" value="teacher" class="sr-only peer" {{ old('user_type') == 'teacher' ? 'checked' : '' }}>
@@ -95,7 +106,7 @@
                     
                     <!-- Admin -->
                     <label class="cursor-pointer">
-                        <input type="radio" name="user_type" value="admin" class="sr-only peer" {{ old('user_type') == 'admin' ? 'checked' : '' }}>
+                        <input type="radio" name="user_type" value="admin" class="sr-only peer" {{ old('user_type') == 'admin' ? 'selected' : '' }}>
                         <div class="border-2 border-gray-300 rounded-xl p-4 text-center peer-checked:border-emerald-600 peer-checked:bg-emerald-50 transition-all">
                             <svg class="w-8 h-8 mx-auto text-emerald-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -172,18 +183,63 @@
                 </div>
             </div>
 
+            <!-- Student Specific Fields -->
+            <div id="student-fields" class="space-y-6 hidden">
+                <h3 class="text-xl font-bold text-gray-800 border-b pb-2">معلومات الطالب</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="school_level" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
+                            المرحلة الدراسية <span class="text-red-500">*</span>
+                        </label>
+                        <select name="school_level" 
+                                id="school_level"
+                                class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 text-base">
+                            <option value="">اختر المرحلة الدراسية</option>
+                            <option value="الابتدائي" {{ old('school_level') == 'الابتدائي' ? 'selected' : '' }}>المرحلة الابتدائية</option>
+                            <option value="المتوسط" {{ old('school_level') == 'المتوسط' ? 'selected' : '' }}>المرحلة المتوسطة</option>
+                            <option value="الثانوي" {{ old('school_level') == 'الثانوي' ? 'selected' : '' }}>المرحلة الثانوية</option>
+                            <option value="الجامعي" {{ old('school_level') == 'الجامعي' ? 'selected' : '' }}>المرحلة الجامعية</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="score_level" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
+                            المستوى الدراسي / الصف
+                        </label>
+                        <input type="text" 
+                               name="score_level" 
+                               id="score_level" 
+                               value="{{ old('score_level') }}"
+                               class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 text-base text-right"
+                               placeholder="مثال: الصف الأول ثانوي، السنة الثانية جامعي">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="birth_date" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
+                        تاريخ الميلاد
+                    </label>
+                    <input type="date" 
+                           name="birth_date" 
+                           id="birth_date" 
+                           value="{{ old('birth_date') }}"
+                           class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 text-base">
+                </div>
+            </div>
+
             <!-- Teacher Specific Fields -->
             <div id="teacher-fields" class="space-y-6 hidden">
                 <h3 class="text-xl font-bold text-gray-800 border-b pb-2">معلومات المعلم</h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label for="school_level" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
+                        <label for="teacher_school_level" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
                             المرحلة التعليمية
                         </label>
                         <input type="text" 
                                name="school_level" 
-                               id="school_level" 
+                               id="teacher_school_level" 
                                value="{{ old('school_level') }}"
                                class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-base text-right"
                                placeholder="مثال: المرحلة الثانوية">
@@ -423,6 +479,7 @@
         // Show/hide fields based on user type selection
         document.addEventListener('DOMContentLoaded', function() {
             const userTypeRadios = document.querySelectorAll('input[name="user_type"]');
+            const studentFields = document.getElementById('student-fields');
             const teacherFields = document.getElementById('teacher-fields');
             const researcherFields = document.getElementById('researcher-fields');
             const videoCreatorFields = document.getElementById('video-creator-fields');
@@ -431,17 +488,20 @@
                 const selectedType = document.querySelector('input[name="user_type"]:checked')?.value;
                 
                 // Hide all fields first
-                teacherFields.classList.add('hidden');
-                researcherFields.classList.add('hidden');
-                videoCreatorFields.classList.add('hidden');
+                if (studentFields) studentFields.classList.add('hidden');
+                if (teacherFields) teacherFields.classList.add('hidden');
+                if (researcherFields) researcherFields.classList.add('hidden');
+                if (videoCreatorFields) videoCreatorFields.classList.add('hidden');
                 
                 // Show appropriate fields
-                if (selectedType === 'teacher') {
-                    teacherFields.classList.remove('hidden');
+                if (selectedType === 'student') {
+                    if (studentFields) studentFields.classList.remove('hidden');
+                } else if (selectedType === 'teacher') {
+                    if (teacherFields) teacherFields.classList.remove('hidden');
                 } else if (selectedType === 'researcher') {
-                    researcherFields.classList.remove('hidden');
+                    if (researcherFields) researcherFields.classList.remove('hidden');
                 } else if (selectedType === 'video_creator') {
-                    videoCreatorFields.classList.remove('hidden');
+                    if (videoCreatorFields) videoCreatorFields.classList.remove('hidden');
                 }
             }
 
@@ -451,19 +511,6 @@
 
             // Initial toggle based on old value
             toggleFields();
-
-            // Update validation for mobile devices
-            const videoCreatorInputs = videoCreatorFields.querySelectorAll('input[data-required="video_creator"]');
-            videoCreatorInputs.forEach(input => {
-                input.addEventListener('invalid', function(e) {
-                    if (!this.value && document.querySelector('input[name="user_type"]:checked')?.value === 'video_creator') {
-                        e.target.setCustomValidity('هذا الحقل مطلوب');
-                    }
-                });
-                input.addEventListener('input', function(e) {
-                    e.target.setCustomValidity('');
-                });
-            });
         });
     </script>
 </body>
