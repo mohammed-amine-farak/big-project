@@ -15,8 +15,8 @@ class StudentLessonController extends Controller
 
     public function index(Request $request)
 {
-    $studentId = 17; // In production, use: auth()->id()
-
+    $studentId = Auth::user()->id; // In production, use: auth()->id()
+    
     // =========================================================
     // 1. Get student's enrolled classrooms with their subjects
     // =========================================================
@@ -186,7 +186,7 @@ class StudentLessonController extends Controller
 }
      public function show(lessonss $lesson)
 {
-    $student = 17;
+    $student =  Auth::user()->id;
     
     // تحميل جميع العلاقات المطلوبة
     $lesson->load([

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('students', function (Blueprint $table) {
-            $table->string('field');
+          $table->string('certificate_path')->nullable()->after('birth_date');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('student', function (Blueprint $table) {
+        Schema::table('students', function (Blueprint $table) {
             //
         });
     }

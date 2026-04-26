@@ -20,7 +20,7 @@ class StudentSkillsController extends Controller
      */
     public function studentSkills(Request $request)
     {
-        $studentId = 17; // In production: Auth::user()->id
+        $studentId =  Auth::user()->id; // In production: Auth::user()->id
         
         // Get all skills from the database
         $allSkills = Skills::all();
@@ -105,7 +105,7 @@ class StudentSkillsController extends Controller
  */
 public function show($skillId)
 {
-    $studentId = 17; // In production: Auth::user()->id
+    $studentId =  Auth::user()->id; // In production: Auth::user()->id
     
     // Get the skill with its levels
     $skill = Skills::with(['levelSkills' => function($q) {

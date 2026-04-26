@@ -15,7 +15,7 @@ class StudentExamController extends Controller
 {
     public function show(exams $exam)
     {
-        $student =17;
+        $student = Auth::user()->id;
         $lesson = $exam->lesson;
         
         // Load exam with questions and choices
@@ -31,7 +31,7 @@ class StudentExamController extends Controller
     
  public function submit(Request $request, exams $exam)
 {
-    $student = 17;
+    $student =  Auth::user()->id;
     
     $request->validate([
         'answers' => 'required|array',
@@ -111,7 +111,7 @@ class StudentExamController extends Controller
 }
     public function results(exams $exam)
     {
-        $student = 17;
+        $student =  Auth::user()->id;
         $lesson = $exam->lesson;
         
         $answers = student_answers::where('student_id', $student)

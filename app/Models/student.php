@@ -6,12 +6,39 @@ use Illuminate\Database\Eloquent\Model;
 
 class student extends Model
 {
+    protected $table = 'students';
+    public $incrementing = false; // لأن المفتاح ليس auto-increment هنا
+    protected $primaryKey = 'id';
+    protected $fillable = [
+        'id',           // This is the foreign key to users table
+        'fields_id',     // Foreign key to fields_of_studies table
+        'school_level',
+        'birth_date',
+        'certificate_path',
+        'transcript_path',
+         'father_name',
+        'father_job',
+        'father_phone',
+        'father_email',
+        'mother_name',
+        'mother_job',
+        'mother_phone',
+        'mother_email',
+        'parent_address',
+        'family_situation',
+        'number_of_siblings'
+        
+    ];
     public function user() // Defines the inverse of the One-to-One relationship
     {
         // Eloquent assumes 'user_id' foreign key on the current (Student) model's table.
         // If your foreign key is named differently, pass it as the second argument:
         // return $this->belongsTo(User::class, 'owner_id');
         return $this->belongsTo(User::class,'id','id');
+    }
+    public function fieldStudy()
+    {
+        return $this->belongsTo(Fields_Of_Study::class, 'fields_id');
     }
 
     public function Interaction_Notes_students()

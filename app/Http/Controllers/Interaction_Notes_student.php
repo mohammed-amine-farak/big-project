@@ -317,7 +317,7 @@ public function getLessonsWithoutNotesForStudent($studentId)
     }
     public function studentNotes(Request $request)
 {
-    $studentId = 17;
+    $studentId =  Auth::user()->id;
     
     $query = Interaction_Notes_students::where('student_id', $studentId)
         ->with(['lesson', 'lesson.subject', 'teacher.user'])
@@ -342,7 +342,7 @@ public function getLessonsWithoutNotesForStudent($studentId)
 public function studentNotesShow(Interaction_Notes_students $note)
 {
     // Ensure the student can only see their own notes
-    if ($note->student_id != 17) {
+    if ($note->student_id !=  Auth::user()->id) {
         abort(403, 'غير مصرح لك بمشاهدة هذه الملاحظة');
     }
     

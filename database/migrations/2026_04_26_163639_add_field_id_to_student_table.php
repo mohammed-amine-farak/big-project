@@ -12,11 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('students', function (Blueprint $table) {
-            $table->drop('field');
+            $table->unsignedBigInteger('fields_id')->nullable()->after('id');
             
             // Add foreign key constraint
-           
-        
+            $table->foreign('fields_id')
+                  ->references('id')
+                  ->on('fields_of_studies')
+                  ->onDelete('set null');
         });
     }
 
@@ -26,7 +28,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('students', function (Blueprint $table) {
-            //
+            // Drop foreign key first
+            $table->dropForeign(['fields_id']);
+            
+            // Then drop the column
+            $table->dropColumn('fields_id');
         });
     }
 };

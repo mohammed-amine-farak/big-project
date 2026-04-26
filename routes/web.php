@@ -16,6 +16,7 @@ use App\Http\Controllers\admine_report_controller;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ReseacherDashboardController;
 use App\Http\Controllers\ResearcherProductionRequestController;
+use App\Http\Controllers\StudentDashController;
 use App\Http\Controllers\StudentExamController;
 use App\Http\Controllers\StudentExamWeeklyController;
 use App\Http\Controllers\StudentLessonController;
@@ -26,6 +27,7 @@ use App\Http\Controllers\teacher_lesson_controller;
 use App\Http\Controllers\teacher_lesson_report_controller;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use App\Http\Controllers\TeacherDashboardController;
+use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\VideoCreatorDashboardControlle;
 use App\Http\Controllers\VideoCreatorVideoController;
 use App\Http\Controllers\VideoCreatorProductionRequestController;
@@ -99,6 +101,23 @@ Route::get('/', function () {
     return view('welcome');
 })->name('index');
  // هذا يستدعي routes Fortify
+
+
+
+
+
+//admine
+Route::get('admin/users', [UserManagementController::class, 'index'])->name('admin.users.index');
+Route::get('admin/users/{id}', [UserManagementController::class, 'show'])->name('admin.users.show');
+    Route::post('admin/users/{id}/approve', [UserManagementController::class, 'approve'])->name('admin.users.approve');
+    Route::post('admin/users/{id}/reject', [UserManagementController::class, 'reject'])->name('admin.users.reject');
+    Route::delete('admin/users/{id}', [UserManagementController::class, 'destroy'])->name('admin.users.destroy');
+    Route::post('admin/users/bulk-approve', [UserManagementController::class, 'bulkApprove'])->name('admin.users.bulk-approve');
+
+
+
+
+
 
 
 
@@ -461,8 +480,10 @@ Route::get('/student/interaction-notes', [Interaction_Notes_student::class, 'stu
     Route::get('student/exam-weekly-reports/{exam_weekly_report}', [StudentExamWeeklyController::class, 'show'])->name('student.exam_weekly_reports.show');
  Route::get('student/skills', [StudentSkillsController::class, 'studentSkills'])->name('student.skills.index');
  Route::get('student/skills/{skillId}', [StudentSkillsController::class, 'show'])->name('student.skills.show');
-    Route::get('student/skills-data', [StudentSkillsController::class, 'getSkillsData'])->name('student.skills.data');
+ Route::get('student/skills-data', [StudentSkillsController::class, 'getSkillsData'])->name('student.skills.data');
+ Route::get('student/dashboard', [StudentDashController::class, 'index'])->name('student.dashboard');
  
+
  
  /*
 Route::get('about_us', function () {

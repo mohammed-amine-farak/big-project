@@ -62,7 +62,7 @@
         @endif
 
         <!-- Register Form -->
-        <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data" class="space-y-6">
+        <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data"class="space-y-6">
             @csrf
 
             <!-- User Type Selection -->
@@ -184,92 +184,240 @@
             </div>
 
             <!-- Student Specific Fields -->
-            <div id="student-fields" class="space-y-6 hidden">
-                <h3 class="text-xl font-bold text-gray-800 border-b pb-2">معلومات الطالب</h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="school_level" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
-                            المرحلة الدراسية <span class="text-red-500">*</span>
-                        </label>
-                        <select name="school_level" 
-                                id="school_level"
-                                class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 text-base">
-                            <option value="">اختر المرحلة الدراسية</option>
-                            <option value="الابتدائي" {{ old('school_level') == 'الابتدائي' ? 'selected' : '' }}>المرحلة الابتدائية</option>
-                            <option value="المتوسط" {{ old('school_level') == 'المتوسط' ? 'selected' : '' }}>المرحلة المتوسطة</option>
-                            <option value="الثانوي" {{ old('school_level') == 'الثانوي' ? 'selected' : '' }}>المرحلة الثانوية</option>
-                            <option value="الجامعي" {{ old('school_level') == 'الجامعي' ? 'selected' : '' }}>المرحلة الجامعية</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label for="score_level" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
-                            المستوى الدراسي / الصف
-                        </label>
-                        <input type="text" 
-                               name="score_level" 
-                               id="score_level" 
-                               value="{{ old('score_level') }}"
-                               class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 text-base text-right"
-                               placeholder="مثال: الصف الأول ثانوي، السنة الثانية جامعي">
-                    </div>
-                </div>
+            {{-- resources/views/auth/register.blade.php --}}
+<!-- Student Specific Fields -->
+<div id="student-fields" class="space-y-6 hidden">
+    <h3 class="text-xl font-bold text-gray-800 border-b pb-2">🎓 معلومات الطالب</h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <label for="school_level" class="block text-sm font-semibold text-gray-700 mb-2 text-right">
+                المرحلة الدراسية <span class="text-red-500">*</span>
+            </label>
+            <select name="school_level" 
+                    id="school_level"
+                    class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-base"
+                    required>
+                <option value="">اختر المرحلة الدراسية</option>
+                <option value="الابتدائي" {{ old('school_level') == 'الابتدائي' ? 'selected' : '' }}>المرحلة الابتدائية</option>
+                <option value="المتوسط" {{ old('school_level') == 'المتوسط' ? 'selected' : '' }}>المرحلة المتوسطة</option>
+                <option value="الثانوي" {{ old('school_level') == 'الثانوي' ? 'selected' : '' }}>المرحلة الثانوية</option>
+                <option value="الجامعي" {{ old('school_level') == 'الجامعي' ? 'selected' : '' }}>المرحلة الجامعية</option>
+            </select>
+        </div>
+        
+        <div>
+            <label for="birth_date" class="block text-sm font-semibold text-gray-700 mb-2 text-right">
+                تاريخ الميلاد
+            </label>
+            <input type="date" 
+                   name="birth_date" 
+                   id="birth_date" 
+                   value="{{ old('birth_date') }}"
+                   class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-base">
+        </div>
+    </div>
+    <label for="field_id" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
+                مجال الدراسة / الشعبة <span class="text-red-500">*</span>
+            </label>
+            <select name="fields_id" 
+                    id="field_id"
+                    class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 text-base"
+                    required>
+                <option value="">اختر مجال الدراسة</option>
+                @foreach($fieldsOfStudy as $field)
+                    <option value="{{ $field->id }}" {{ old('field_id') == $field->id ? 'selected' : '' }}>
+                        {{ $field->name }} - {{ $field->study_level }}
+                    </option>
+                @endforeach
+            </select>
+            <p class="text-sm text-gray-500 mt-1">مثال: العلوم الرياضية، العلوم التجريبية، الآداب</p>
+    <!-- Documents -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <label for="certificate" class="block text-sm font-semibold text-gray-700 mb-2 text-right">
+                الشهادة المدرسية <span class="text-red-500">*</span>
+            </label>
+            <input type="file" 
+                   name="certificate_schol" 
+                   id="certificate" 
+                   accept=".pdf,.jpg,.jpeg,.png"
+                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                   required>
+            <p class="text-xs text-gray-500 mt-1">الحد الأقصى 5 ميجابايت - PDF, JPG, PNG</p>
+        </div>
 
-                <div>
-                    <label for="birth_date" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
-                        تاريخ الميلاد
-                    </label>
-                    <input type="date" 
-                           name="birth_date" 
-                           id="birth_date" 
-                           value="{{ old('birth_date') }}"
-                           class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 text-base">
-                </div>
-            </div>
+        <div>
+            <label for="transcript" class="block text-sm font-semibold text-gray-700 mb-2 text-right">
+                كشف النقاط <span class="text-red-500">*</span>
+            </label>
+            <input type="file" 
+                   name="transcript" 
+                   id="transcript" 
+                   accept=".pdf,.jpg,.jpeg,.png"
+                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                   required>
+            <p class="text-xs text-gray-500 mt-1">الحد الأقصى 5 ميجابايت - PDF, JPG, PNG</p>
+        </div>
+    </div>
 
-            <!-- Teacher Specific Fields -->
-            <div id="teacher-fields" class="space-y-6 hidden">
-                <h3 class="text-xl font-bold text-gray-800 border-b pb-2">معلومات المعلم</h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label for="teacher_school_level" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
-                            المرحلة التعليمية
-                        </label>
-                        <input type="text" 
-                               name="school_level" 
-                               id="teacher_school_level" 
-                               value="{{ old('school_level') }}"
-                               class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-base text-right"
-                               placeholder="مثال: المرحلة الثانوية">
-                    </div>
-                    
-                    <div>
-                        <label for="school" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
-                            المدرسة
-                        </label>
-                        <input type="text" 
-                               name="school" 
-                               id="school" 
-                               value="{{ old('school') }}"
-                               class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-base text-right"
-                               placeholder="اسم المدرسة">
-                    </div>
-                    
-                    <div>
-                        <label for="subject" class="block text-lg font-semibold text-gray-700 mb-2 text-right">
-                            المادة
-                        </label>
-                        <input type="text" 
-                               name="subject" 
-                               id="subject" 
-                               value="{{ old('subject') }}"
-                               class="block w-full px-5 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-base text-right"
-                               placeholder="مادة التخصص">
-                    </div>
-                </div>
+    <!-- Parent Information Section -->
+    <h3 class="text-xl font-bold text-gray-800 border-b pb-2 mt-6">👨‍👩‍👧‍👦 معلومات الأبوين</h3>
+    
+    <!-- Father Information -->
+    <div class="bg-blue-50 rounded-xl p-4">
+        <h4 class="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            معلومات الأب
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="father_name" class="block text-sm font-semibold text-gray-700 mb-2 text-right">
+                    اسم الأب الكامل
+                </label>
+                <input type="text" 
+                       name="father_name" 
+                       id="father_name" 
+                       value="{{ old('father_name') }}"
+                       class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base text-right"
+                       placeholder="أدخل اسم الأب">
             </div>
+            <div>
+                <label for="father_job" class="block text-sm font-semibold text-gray-700 mb-2 text-right">
+                    وظيفة الأب
+                </label>
+                <input type="text" 
+                       name="father_job" 
+                       id="father_job" 
+                       value="{{ old('father_job') }}"
+                       class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base text-right"
+                       placeholder="مثال: مهندس، طبيب، أستاذ">
+            </div>
+            <div>
+                <label for="father_phone" class="block text-sm font-semibold text-gray-700 mb-2 text-right">
+                    رقم هاتف الأب
+                </label>
+                <input type="tel" 
+                       name="father_phone" 
+                       id="father_phone" 
+                       value="{{ old('father_phone') }}"
+                       class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base text-right"
+                       placeholder="رقم الهاتف">
+            </div>
+            <div>
+                <label for="father_email" class="block text-sm font-semibold text-gray-700 mb-2 text-right">
+                    البريد الإلكتروني للأب
+                </label>
+                <input type="email" 
+                       name="father_email" 
+                       id="father_email" 
+                       value="{{ old('father_email') }}"
+                       class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base text-right"
+                       placeholder="example@email.com">
+            </div>
+        </div>
+    </div>
+
+    <!-- Mother Information -->
+    <div class="bg-pink-50 rounded-xl p-4">
+        <h4 class="text-lg font-semibold text-pink-800 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+            معلومات الأم
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="mother_name" class="block text-sm font-semibold text-gray-700 mb-2 text-right">
+                    اسم الأم الكامل
+                </label>
+                <input type="text" 
+                       name="mother_name" 
+                       id="mother_name" 
+                       value="{{ old('mother_name') }}"
+                       class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-base text-right"
+                       placeholder="أدخل اسم الأم">
+            </div>
+            <div>
+                <label for="mother_job" class="block text-sm font-semibold text-gray-700 mb-2 text-right">
+                    وظيفة الأم
+                </label>
+                <input type="text" 
+                       name="mother_job" 
+                       id="mother_job" 
+                       value="{{ old('mother_job') }}"
+                       class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-base text-right"
+                       placeholder="مثال: طبيبة، معلمة، ربة منزل">
+            </div>
+            <div>
+                <label for="mother_phone" class="block text-sm font-semibold text-gray-700 mb-2 text-right">
+                    رقم هاتف الأم
+                </label>
+                <input type="tel" 
+                       name="mother_phone" 
+                       id="mother_phone" 
+                       value="{{ old('mother_phone') }}"
+                       class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-base text-right"
+                       placeholder="رقم الهاتف">
+            </div>
+            <div>
+                <label for="mother_email" class="block text-sm font-semibold text-gray-700 mb-2 text-right">
+                    البريد الإلكتروني للأم
+                </label>
+                <input type="email" 
+                       name="mother_email" 
+                       id="mother_email" 
+                       value="{{ old('mother_email') }}"
+                       class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-base text-right"
+                       placeholder="example@email.com">
+            </div>
+        </div>
+    </div>
+
+    <!-- Family Information -->
+    <div class="bg-green-50 rounded-xl p-4">
+        <h4 class="text-lg font-semibold text-green-800 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 21v-4H7v4M7 3v4h10V3"/>
+            </svg>
+            معلومات العائلة
+        </h4>
+        <div class="grid grid-cols-1 gap-4">
+            <div>
+                <label for="parent_address" class="block text-sm font-semibold text-gray-700 mb-2 text-right">
+                    عنوان السكن
+                </label>
+                <textarea 
+                    name="parent_address" 
+                    id="parent_address" 
+                    rows="2"
+                    class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-base text-right"
+                    placeholder="العنوان الكامل">{{ old('parent_address') }}</textarea>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Note -->
+    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+        <div class="flex items-start gap-3">
+            <div class="flex-shrink-0">
+                <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <h4 class="text-sm font-semibold text-yellow-800 mb-1">ملاحظة هامة</h4>
+                <p class="text-sm text-yellow-700">
+                    سيتم مراجعة المستندات المرفقة من قبل الإدارة. يرجى التأكد من وضوح جميع المعلومات قبل الإرسال.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 
             <!-- Researcher Specific Fields -->
             <div id="researcher-fields" class="space-y-6 hidden">

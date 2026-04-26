@@ -14,7 +14,7 @@ class StudentExamWeeklyController extends Controller
      */
    public function index(Request $request)
     {
-        $studentId = 17;
+        $studentId = Auth::user()->id;
         
         $query = exam_schol_weeckly_report::where('student_id', $studentId)
             ->with(['examWeeckly', 'teacher.user']);
@@ -51,7 +51,7 @@ class StudentExamWeeklyController extends Controller
     public function show(exam_schol_weeckly_report $exam_weekly_report)
     {
         // Ensure student can only see their own reports
-        if ($exam_weekly_report->student_id != 17) {
+        if ($exam_weekly_report->student_id !=  Auth::user()->id) {
             abort(403, 'غير مصرح لك بمشاهدة هذا التقرير');
         }
         

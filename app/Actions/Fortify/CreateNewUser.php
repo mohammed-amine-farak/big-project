@@ -8,7 +8,7 @@ use App\Models\Teacher;
 use App\Models\Researcher;
 use App\Models\Researchers;
 use App\Models\video_creator;
-use App\Models\VideoCreator;
+
 use App\Models\Student;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -48,8 +48,20 @@ class CreateNewUser implements CreatesNewUsers
         // ✅ قواعد التحقق للطالب (Student)
         if ($input['user_type'] === 'student') {
             $rules['school_level'] = ['nullable', 'string', 'in:الابتدائي,المتوسط,الثانوي,الجامعي'];
-            $rules['score_level'] = ['nullable', 'string', 'max:255'];
+            $rules['fields_id'] = ['required', 'exists:fields_of_studies,id'];
             $rules['birth_date'] = ['nullable', 'date', 'before:today'];
+              $rules['certificate_schol'] = ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'];
+            
+               $rules['father_name'] = ['nullable', 'string', 'max:255'];
+    $rules['father_job'] = ['nullable', 'string', 'max:255'];
+    $rules['father_phone'] = ['nullable', 'string', 'max:20'];
+    $rules['father_email'] = ['nullable', 'email', 'max:255'];
+    $rules['mother_name'] = ['nullable', 'string', 'max:255'];
+    $rules['mother_job'] = ['nullable', 'string', 'max:255'];
+    $rules['mother_phone'] = ['nullable', 'string', 'max:20'];
+    $rules['mother_email'] = ['nullable', 'email', 'max:255'];
+    $rules['parent_address'] = ['nullable', 'string', 'max:500'];
+   
         }
 
         // ✅ قواعد التحقق لمنشئ الفيديو
@@ -66,6 +78,7 @@ class CreateNewUser implements CreatesNewUsers
 
         // رفع الشهادة إذا كانت موجودة (للباحثين)
         $certificatePath = null;
+        
         if (isset($input['certificate']) && $input['certificate']) {
             $certificatePath = $input['certificate']->store('certificates', 'public');
         }
@@ -106,8 +119,19 @@ class CreateNewUser implements CreatesNewUsers
                 Student::create([
                     'id' => $user->id,
                     'school_level' => $input['school_level'] ?? null,
-                    'score_level' => $input['score_level'] ?? null,
+                    'fields_id' => $input['fields_id'] ,
                     'birth_date' => $input['birth_date'] ?? null,
+                     'certificate_path' => $certificatePath,
+                   
+                    'father_name' => $input['father_name'] ?? null,
+        'father_job' => $input['father_job'] ?? null,
+        'father_phone' => $input['father_phone'] ?? null,
+        'father_email' => $input['father_email'] ?? null,
+        'mother_name' => $input['mother_name'] ?? null,
+        'mother_job' => $input['mother_job'] ?? null,
+        'mother_phone' => $input['mother_phone'] ?? null,
+        'mother_email' => $input['mother_email'] ?? null,
+        'parent_address' => $input['parent_address'] ?? null,
                 ]);
                 break;
 

@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Fields_Of_Study extends Model
 {
     protected $table = 'fields_of_studies';
+  
+public function student(){
+    return $this->hasMany(student::class, 'fields_id');
+}
 
     public function subjects()
     {
