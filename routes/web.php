@@ -1,5 +1,6 @@
 <?php
 
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\rule_controller;
@@ -14,6 +15,7 @@ use App\Http\Controllers\exam_weeckly_Controller;
 use App\Http\Controllers\teacher_report;
 use App\Http\Controllers\admine_report_controller;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FieldOfStudyController;
 use App\Http\Controllers\ReseacherDashboardController;
 use App\Http\Controllers\ResearcherProductionRequestController;
 use App\Http\Controllers\StudentDashController;
@@ -22,6 +24,7 @@ use App\Http\Controllers\StudentExamWeeklyController;
 use App\Http\Controllers\StudentLessonController;
 use App\Http\Controllers\StudentPsychologyController;
 use App\Http\Controllers\StudentSkillsController;
+use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\teacher_admine_reports_view_Controller;
 use App\Http\Controllers\teacher_lesson_controller;
 use App\Http\Controllers\teacher_lesson_report_controller;
@@ -114,8 +117,14 @@ Route::get('admin/users/{id}', [UserManagementController::class, 'show'])->name(
     Route::delete('admin/users/{id}', [UserManagementController::class, 'destroy'])->name('admin.users.destroy');
     Route::post('admin/users/bulk-approve', [UserManagementController::class, 'bulkApprove'])->name('admin.users.bulk-approve');
 
-
-
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('subjects', SubjectController::class);
+});
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('fields-of-study', FieldOfStudyController::class);
+    Route::get('fields-of-study/export/csv', [FieldOfStudyController::class, 'export'])->name('fields-of-study.export');
+    Route::get('fields-of-study/get-by-level/{level}', [FieldOfStudyController::class, 'getFieldsByLevel'])->name('fields-of-study.get-by-level');
+});
 
 
 

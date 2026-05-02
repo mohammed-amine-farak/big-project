@@ -316,7 +316,36 @@
                         </li>
                     </ul>
                 </li>
-
+ <li>
+                    <a href="{{ route('admin.subjects.index') }}" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
+                        <div class="flex items-center space-x-3 space-x-reverse">
+                            <div class="w-8 h-8 rounded-lg bg-blue-900/20 flex items-center justify-center">
+                                <i class="fas fa-chart-pie text-blue-400"></i>
+                            </div>
+                            <span class="text-base font-medium">المواد</span>
+                        </div>
+                    </a>
+                </li>
+                 <li>
+                    <a href="{{ route('admin.fields-of-study.index') }}" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
+                        <div class="flex items-center space-x-3 space-x-reverse">
+                            <div class="w-8 h-8 rounded-lg bg-blue-900/20 flex items-center justify-center">
+                                <i class="fas fa-chart-pie text-blue-400"></i>
+                            </div>
+                            <span class="text-base font-medium" > الشعب الدراسية</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="" class="sidebar-toggle-btn flex flex-row-reverse items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">
+                        <div class="flex items-center space-x-3 space-x-reverse">
+                            <div class="w-8 h-8 rounded-lg bg-blue-900/20 flex items-center justify-center">
+                                <i class="fas fa-chart-pie text-blue-400"></i>
+                            </div>
+                            <span class="text-base font-medium" >الاقسام</span>
+                        </div>
+                    </a>
+                </li>
                 <!-- Content Management -->
                 <li>
                     <button class="sidebar-toggle-btn flex items-center justify-between w-full py-3 px-4 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all-custom focus-ring group">

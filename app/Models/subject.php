@@ -8,6 +8,12 @@ class subject extends Model
 {
     protected $table = 'subjects';
 
+ protected $fillable = [
+        'name',
+        'fields_id'
+    ];
+    
+
     public function skill()
     {
         
@@ -26,6 +32,8 @@ class subject extends Model
         // The foreign key on 'lessonss' table is 'subject_id'.
         return $this->hasMany(lessonss::class, 'subject_id');
     }
+
+    
     public function exam_weecklies(){
         return $this->hasMany(exam_weeckly::class, 'subject_id');
 
