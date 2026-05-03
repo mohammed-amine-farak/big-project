@@ -111,7 +111,7 @@ class FieldOfStudyController extends Controller
             return redirect()->back()->with('error', 'لا يمكن حذف مجال الدراسة لأنه مرتبط بمواد دراسية');
         }
         
-        if ($fields_of_study->students()->count() > 0) {
+        if ($fields_of_study->student()->count() > 0) {
             return redirect()->back()->with('error', 'لا يمكن حذف مجال الدراسة لأنه مرتبط بطلاب');
         }
         

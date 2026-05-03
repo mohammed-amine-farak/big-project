@@ -6,6 +6,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class classroom extends Model
 {
+    protected $fillable = [
+    'study_year_id',
+    'teacher_id',
+    'subject_id',
+    'school_id',
+    'class_name',
+    'class_name_ar',
+    'grade_level',
+    'description',
+    'max_students',
+    'is_active'
+];
+    public function studyYear(){
+        return $this->belongsTo(study_year::class);
+    }
+    public function school(){
+        return $this->belongsTo(school::class);
+    }
+
     public function examWeeklies()
     {
         return $this->hasMany(exam_weeckly::class);

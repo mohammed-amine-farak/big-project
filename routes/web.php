@@ -14,6 +14,7 @@ use App\Http\Controllers\exam_skills_level_Controller;
 use App\Http\Controllers\exam_weeckly_Controller;
 use App\Http\Controllers\teacher_report;
 use App\Http\Controllers\admine_report_controller;
+use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FieldOfStudyController;
 use App\Http\Controllers\ReseacherDashboardController;
@@ -119,7 +120,22 @@ Route::get('admin/users/{id}', [UserManagementController::class, 'show'])->name(
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('subjects', SubjectController::class);
-});
+      Route::resource('classrooms', ClassroomController::class);
+       Route::get('get-teacher-subject/{teacherId}', [ClassroomController::class, 'getTeacherSubject'])->name('get.teacher.subject');
+    Route::get('check-teacher-subject/{teacherId}/{subjectId}', [ClassroomController::class, 'checkTeacherSubject'])->name('check.teacher.subject');
+    Route::get('{classroom}/students', [ClassroomController::class, 'students'])->name('classrooms.students');
+        Route::post('{classroom}/add-student', [ClassroomController::class, 'addStudent'])->name('classrooms.add-student');
+        Route::delete('{classroom}/remove-student/{student}', [ClassroomController::class, 'removeStudent'])->name('classrooms.remove-student');
+        Route::put('{classroom}/update-student-status/{student}', [ClassroomController::class, 'updateStudentStatus'])->name('classrooms.update-student-status');
+        
+        // Export
+        Route::get('{classroom}/export-students', [ClassroomController::class, 'exportStudents'])->name('classrooms.export-students');
+        
+        // Teacher-subject validation AJAX
+        Route::get('get-teacher-subject/{teacherId}', [ClassroomController::class, 'getTeacherSubject'])->name('get-teacher-subject');
+        Route::get('check-teacher-subject/{teacherId}/{subjectId}', [ClassroomController::class, 'checkTeacherSubject'])->name('check-teacher-subject');
+    });
+
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('fields-of-study', FieldOfStudyController::class);
     Route::get('fields-of-study/export/csv', [FieldOfStudyController::class, 'export'])->name('fields-of-study.export');

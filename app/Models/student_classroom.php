@@ -6,7 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class student_classroom extends Model
 {
-    
+     protected $table = 'student_classrooms';
+        protected $fillable = [
+        'student_id',
+        'classroom_id',
+        'enrollment_date',
+        'is_active'
+    ];
+
    
 public function student()
     {
